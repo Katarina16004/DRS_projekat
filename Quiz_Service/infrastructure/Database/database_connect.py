@@ -18,5 +18,4 @@ def test_connection():
         except Exception as e:
             print("Database connection failed:", e)
 
-if __name__ == "__main__":
-    test_connection()
+
