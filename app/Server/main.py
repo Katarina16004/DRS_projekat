@@ -1,8 +1,20 @@
 from flask import Flask
+from sqlalchemy import create_engine, text
 import jwt
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
+# Database 
+engine = create_engine(os.getenv("DATABASE_URL"))
+with engine.connect() as conn:
+    row = conn.execute(text("SELECT DATABASE(), VERSION()")).one()
+    print(row)
+
+# Ruteri (prebaciti u drugi fajl)
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
@@ -27,7 +39,6 @@ def login():
         # jwt logika
         pass
 
-print(__name__)
-
+# Boot up
 if __name__ == "__main__":
     app.run(debug=True)
