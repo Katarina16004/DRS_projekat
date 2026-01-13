@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import RegistrationPage from "./pages/auth/RegistrationPage";
+import NotFoundStranica from "./pages/not_found/NotFoundPage";
+import { Toaster } from "react-hot-toast";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <Toaster
+      position="top-center"
+      reverseOrder={false}
+      toastOptions={{
+        duration: 3000,
+        style: {
+          padding: '16px',
+          color: '#fff',
+          borderRadius: '8px',
+          fontWeight: '600',
+        },
+        success: {
+          style: {
+            background: 'green', 
+          },
+        },
+        error: {
+          style: {
+            background: 'red', 
+          },
+        },
+      }}
+    />
+    <Routes>
+      <Route path="/register" element={<RegistrationPage/>} />
+      <Route path="/404" element={<NotFoundStranica />} />
+      <Route path="/" element={<Navigate to="/register" replace />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
+    </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
