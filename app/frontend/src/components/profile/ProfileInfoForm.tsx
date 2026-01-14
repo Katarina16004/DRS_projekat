@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 interface UserProfile {
     username: string;
     email: string;
-    fullName: string;
+    name: string;
+    surname: string;
     phone: string;
     address: string;
     country: string;
@@ -16,11 +17,11 @@ interface UserProfile {
 export const ProfileInfoForm = () => {
     const navigate = useNavigate();
 
-    // MOCK USER (kasnije iz auth-a)
     const [user, setUser] = useState<UserProfile>({
         username: "admin",
         email: "admin@email.com",
-        fullName: "Admin User",
+        name: "Admin",
+        surname: "User",
         phone: "+38164123456",
         address: "Main Street 10",
         country: "Serbia",
@@ -31,40 +32,63 @@ export const ProfileInfoForm = () => {
 
     const [isEditing, setIsEditing] = useState(false);
 
+    // Menjanje polja forme
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     };
 
+    // Menjanje avatara
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const imageUrl = URL.createObjectURL(file);
+        setUser((prev) => ({ ...prev, avatarUrl: imageUrl }));
+    };
+
     return (
-        <div className="min-h-screen flex items-center justify-center font-poppins bg-gradient-to-br from-[#C3FDB8] via-[#FFF8C6] to-[#BDEDFF]">
-            <div className="bg-white rounded-2xl shadow-xl w-[400px] p-6 relative">
+        <div className="min-h-screen flex items-center justify-center font-poppins bg-gradient-to-br from-[#C3FDB8] via-[#FFF8C6] to-[#BDEDFF] p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 relative">
 
                 {/* Back */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="absolute top-3 left-3 text-gray-400 hover:text-gray-600"
+                    className="absolute top-4 left-4 text-gray-400 hover:text-gray-600 text-4xl font-bold"
                 >
                     ←
                 </button>
 
-                {/* Avatar */}
-                <div className="flex flex-col items-center">
-                    <img
-                        src={
-                            user.avatarUrl ??
-                            "https://ui-avatars.com/api/?name=User&background=82CAFF&color=fff"
-                        }
-                        className="w-24 h-24 rounded-full object-cover border mb-3 cursor-pointer"
+                {/* Header sa avatarom */}
+                <div className="flex flex-col items-center mb-6">
+                    <label htmlFor="avatarUpload" className="cursor-pointer">
+                        <img
+                            src={
+                                user.avatarUrl ??
+                                "https://ui-avatars.com/api/?name=User&background=82CAFF&color=fff"
+                            }
+                            className="w-32 h-32 rounded-full object-cover border mb-3 hover:opacity-90 transition"
+                            alt="avatar"
+                        />
+                    </label>
+                    <input
+                        id="avatarUpload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleAvatarChange}
                     />
-                    <p className="text-lg font-semibold">{user.fullName}</p>
+                    <p className="text-lg font-semibold">
+                        {user.name} {user.surname}
+                    </p>
                     <p className="text-sm text-gray-500">{user.role}</p>
                 </div>
 
-                {/* FORM */}
-                <div className="mt-5 space-y-3 text-sm">
+                {/* FORM u dve kolone */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
                     <ProfileField label="Username" name="username" value={user.username} disabled={!isEditing} onChange={handleChange} />
                     <ProfileField label="Email" name="email" value={user.email} disabled={!isEditing} onChange={handleChange} />
-                    <ProfileField label="Full name" name="fullName" value={user.fullName} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Name" name="name" value={user.name} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Surname" name="surname" value={user.surname} disabled={!isEditing} onChange={handleChange} />
                     <ProfileField label="Phone" name="phone" value={user.phone} disabled={!isEditing} onChange={handleChange} />
                     <ProfileField label="Address" name="address" value={user.address} disabled={!isEditing} onChange={handleChange} />
                     <ProfileField label="Country" name="country" value={user.country} disabled={!isEditing} onChange={handleChange} />
@@ -74,27 +98,17 @@ export const ProfileInfoForm = () => {
                 {/* ACTIONS */}
                 <div className="mt-6 flex gap-3">
                     {!isEditing ? (
-                        <>
-                            <button
-                                onClick={() => setIsEditing(true)}
-                                className="flex-1 bg-[#54C571] hover:bg-[#3fa85a] text-white rounded-xl py-2 font-semibold font-poppins transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
-
-                            >
-                                Edit profile
-                            </button>
-                            <button
-                                className="flex-1 border border-red-500 text-red-500 rounded-lg py-2 hover:bg-red-50"
-                                onClick={() => alert("Delete profile")}
-                            >
-                                Delete profile
-                            </button>
-                        </>
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="flex-1 bg-[#54C571] hover:bg-[#3fa85a] text-white rounded-xl py-2 font-semibold font-poppins transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
+                        >
+                            Edit profile
+                        </button>
                     ) : (
                         <>
                             <button
                                 onClick={() => setIsEditing(false)}
                                 className="flex-1 bg-[#54C571] hover:bg-[#3fa85a] text-white rounded-xl py-2 font-semibold font-poppins transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
-
                             >
                                 Save
                             </button>

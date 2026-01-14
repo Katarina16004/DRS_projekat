@@ -4,8 +4,8 @@ import { ProfileInfoForm } from "../../components/profile/ProfileInfoForm";
 export default function ProfilePage() {
     // Primer korisnika koji je ulogovan
     const user = {
-        username: "Bojana",
-        role: "PLAYER" as const,
+        username: "admin",
+        role: "ADMIN" as const,
         avatarUrl: "", // može biti link ka slici ili prazan string za default avatar
     };
 
