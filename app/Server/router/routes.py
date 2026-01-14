@@ -4,6 +4,7 @@ from classes.database import Session
 from classes.models import User
 from util.extensions import bcrypt  
 import jwt
+import datetime
 
 routes = Blueprint("routes", __name__)
 
@@ -23,8 +24,7 @@ def hello_world():
             return "ARR"
 
         session.add(User(
-            ID_User="test124",
-            username="testuser5",
+            username="testuser1",
             password=bcrypt.generate_password_hash("password"),
             role="user"
         ))
@@ -33,26 +33,80 @@ def hello_world():
 @routes.route("/register", methods=['POST'])
 def register():
     if request.method == "POST":
-        # fetch datu iz headera
-        data = request.json
-        
-        # proveri jel postoji
-        if User.query.filter_by(username=data["username"]).first():
-            # ako postoji baci error
-            return jsonify({"error": "User already exists"}), 409
-        
-        hashed_pw = bcrypt.generate_password_hash(data["password"])
-        db.sess
-        # hash, i u bazu podataka
-        pass
+        with Session.begin() as session:
+            data = request.form
+            print(request.form.get("username"))
+            existing_user = (
+                session.query(User)
+                .filter(User.username == data["username"])
+                .first()
+            )
+
+            # Da li korisnik vec postoji?
+            if existing_user:
+                return jsonify({"error": "User already exists"}), 409
+
+            session.add(User(
+                username=data["username"],
+                password=bcrypt.generate_password_hash(data["password"]),
+                role="user"
+            ))
+            return jsonify({"message": "User registered successfully"}), 201
+
+    # Invalid request
+    return jsonify({"error": "Invalid request"}), 400
 
 @routes.route("/login", methods=['POST'])
 def login():
     if request.method == "POST":
-        data = request.json
-        # fetch datu iz headera
-        # proveri jel postoji
-        # ako ne postoji ili pass nije valid, baci error
+        with Session.begin() as session:
+            data = request.form
+            print(request.form.get("username"))
+            existing_user = (
+                session.query(User)
+                .filter(User.username == data["username"])
+                .first()
+            )
 
-        # jwt logika
-        pass
+            # Da li korisnik postoji?
+            if not existing_user:
+                return jsonify({"error": "No such user!"}), 409
+
+            # Da li je lozinka tacna?
+            if not bcrypt.check_password_hash(existing_user.password, data["password"]):
+                return jsonify({"error": "Wrong password!"}), 409
+
+            # JWT token
+            payload = {
+                "user": existing_user.ID_User,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+            }
+
+            token = jwt.encode(
+                payload,
+                "temporary_secret_key",
+                algorithm="HS256" 
+            )
+
+
+            return jsonify({ "token": token, "message": "User exists!"}), 201
+
+    # Invalid request
+    return jsonify({"error": "Invalid request"}), 400
+
+@routes.route("/check", methods=['POST'])
+def check():
+    if request.method == "POST":
+        try:
+            token = request.headers.get("Authorization").split(" ")[1]
+            print(token)
+            decoded = jwt.decode(token, "temporary_secret_key", algorithms=["HS256"])
+            return jsonify({"message": "Token is valid", "user": decoded["user"]}), 200
+
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token has expired"}), 401
+
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Invalid token"}), 401
+
+    return jsonify({"error": "Invalid request"}), 400

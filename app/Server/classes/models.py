@@ -1,4 +1,4 @@
-from sqlalchemy import text, Column, String, Date, ForeignKey
+from sqlalchemy import text, Column, String, Date, ForeignKey, Integer
 from sqlalchemy.orm import declarative_base, relationship
 
 
@@ -7,7 +7,7 @@ Base = declarative_base()
 # Classes
 class User(Base):
     __tablename__ = 'Users'
-    ID_User = Column(String(45), primary_key=True)
+    ID_User = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(45), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     role = Column(String(45), nullable=False)
@@ -22,7 +22,7 @@ class UserProfile(Base):
     __tablename__ = "User_Profiles"
 
     ID_User = Column(
-        String(45),
+        Integer,
         ForeignKey("Users.ID_User"),
         primary_key=True
     )
