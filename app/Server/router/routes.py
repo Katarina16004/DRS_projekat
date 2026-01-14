@@ -8,28 +8,6 @@ import datetime
 
 routes = Blueprint("routes", __name__)
 
-# Ruteri (prebaciti u drugi fajl)
-@routes.route("/")
-def hello_world():
-    with Session.begin() as session:
-        data = request.form
-        existing_user = (
-            session.query(User)
-            .filter(User.username == "testuser5")
-            .first()
-        )
-
-        if existing_user:
-            print(existing_user)
-            return "ARR"
-
-        session.add(User(
-            username="testuser1",
-            password=bcrypt.generate_password_hash("password"),
-            role="user"
-        ))
-        return "Added"
-
 @routes.route("/register", methods=['POST'])
 def register():
     if request.method == "POST":
