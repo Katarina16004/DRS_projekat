@@ -36,6 +36,7 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/profileInfo" element={<ProfilePage />} />
         <Route path="/adminUsers" element={<AdminUsersPage />} />
+       
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/404" element={<NotFoundStranica />} />
         <Route path="*" element={<Navigate to="/404" replace />} />

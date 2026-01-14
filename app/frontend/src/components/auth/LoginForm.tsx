@@ -59,7 +59,7 @@ export const LoginForm = () => {
                 form.password === "test123"
             ) {
                 toast.success("Login successful!");
-                navigate("/profileInfo");
+                navigate("/adminUsers");
             } else {
                 //provera da li korisnik postoji
                 toast.error("User does not exist!");

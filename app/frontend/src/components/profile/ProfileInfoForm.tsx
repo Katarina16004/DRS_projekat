@@ -1,52 +1,136 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-interface UserInfo {
+interface UserProfile {
     username: string;
+    email: string;
+    fullName: string;
+    phone: string;
+    address: string;
+    country: string;
+    birthDate: string;
     role: "PLAYER" | "MODERATOR" | "ADMIN";
     avatarUrl?: string;
-    onLogout: () => void;
 }
 
-export const ProfileInfoForm = ({ username, role, avatarUrl, onLogout }: UserInfo) => {
+export const ProfileInfoForm = () => {
+    const navigate = useNavigate();
+
+    // MOCK USER (kasnije iz auth-a)
+    const [user, setUser] = useState<UserProfile>({
+        username: "admin",
+        email: "admin@email.com",
+        fullName: "Admin User",
+        phone: "+38164123456",
+        address: "Main Street 10",
+        country: "Serbia",
+        birthDate: "1995-05-05",
+        role: "ADMIN",
+        avatarUrl: undefined,
+    });
+
+    const [isEditing, setIsEditing] = useState(false);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUser({ ...user, [e.target.name]: e.target.value });
+    };
+
     return (
-        <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <img
-                src={
-                    avatarUrl ??
-                    "https://ui-avatars.com/api/?name=User&background=82CAFF&color=fff"
-                }
-                alt="avatar"
-                className="w-10 h-10 rounded-full object-cover border"
-            />
+        <div className="min-h-screen flex items-center justify-center font-poppins bg-gradient-to-br from-[#C3FDB8] via-[#FFF8C6] to-[#BDEDFF]">
+            <div className="bg-white rounded-2xl shadow-xl w-[400px] p-6 relative">
 
-            {/* Username + Role */}
-            <div className="text-right leading-tight">
-                <p className="text-sm font-semibold font-poppins">{username}</p>
-                <p className="text-xs text-gray-500 font-poppins">{role}</p>
-            </div>
-
-            {/* Logout dugme */}
-            <button
-                onClick={onLogout}
-                className="text-red-500 hover:text-red-600 transition text-xl"
-                title="Logout"
-            >
-                {/* Logout ikonica (simple SVG) */}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                {/* Back */}
+                <button
+                    onClick={() => navigate(-1)}
+                    className="absolute top-3 left-3 text-gray-400 hover:text-gray-600"
                 >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5"
+                    ←
+                </button>
+
+                {/* Avatar */}
+                <div className="flex flex-col items-center">
+                    <img
+                        src={
+                            user.avatarUrl ??
+                            "https://ui-avatars.com/api/?name=User&background=82CAFF&color=fff"
+                        }
+                        className="w-24 h-24 rounded-full object-cover border mb-3 cursor-pointer"
                     />
-                </svg>
-            </button>
+                    <p className="text-lg font-semibold">{user.fullName}</p>
+                    <p className="text-sm text-gray-500">{user.role}</p>
+                </div>
+
+                {/* FORM */}
+                <div className="mt-5 space-y-3 text-sm">
+                    <ProfileField label="Username" name="username" value={user.username} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Email" name="email" value={user.email} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Full name" name="fullName" value={user.fullName} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Phone" name="phone" value={user.phone} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Address" name="address" value={user.address} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Country" name="country" value={user.country} disabled={!isEditing} onChange={handleChange} />
+                    <ProfileField label="Birth date" name="birthDate" type="date" value={user.birthDate} disabled={!isEditing} onChange={handleChange} />
+                </div>
+
+                {/* ACTIONS */}
+                <div className="mt-6 flex gap-3">
+                    {!isEditing ? (
+                        <>
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="flex-1 bg-[#54C571] hover:bg-[#3fa85a] text-white rounded-xl py-2 font-semibold font-poppins transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
+
+                            >
+                                Edit profile
+                            </button>
+                            <button
+                                className="flex-1 border border-red-500 text-red-500 rounded-lg py-2 hover:bg-red-50"
+                                onClick={() => alert("Delete profile")}
+                            >
+                                Delete profile
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="flex-1 bg-[#54C571] hover:bg-[#3fa85a] text-white rounded-xl py-2 font-semibold font-poppins transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
+
+                            >
+                                Save
+                            </button>
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="flex-1 border rounded-lg py-2"
+                            >
+                                Cancel
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };
+
+/* HELPER */
+const ProfileField = ({
+    label,
+    name,
+    value,
+    disabled,
+    onChange,
+    type = "text",
+}: any) => (
+    <div className="flex flex-col">
+        <label className="text-gray-500 text-xs mb-1">{label}</label>
+        <input
+            type={type}
+            name={name}
+            value={value}
+            disabled={disabled}
+            onChange={onChange}
+            className={`border rounded-lg px-3 py-2 text-sm ${disabled ? "bg-gray-100 text-gray-600" : "bg-white"
+                }`}
+        />
+    </div>
+);

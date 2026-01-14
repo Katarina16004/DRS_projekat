@@ -26,9 +26,7 @@ export default function ProfilePage() {
                     background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
                 }}
             >
-                <ProfileInfoForm username={""} role={"PLAYER"} onLogout={function (): void {
-                    throw new Error("Function not implemented.");
-                } }   />
+                <ProfileInfoForm />
             </div>
         </div>
     );
