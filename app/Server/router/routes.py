@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 from classes.database import Session
 from classes.models import User
 from util.extensions import bcrypt  
+from functools import wraps
 import jwt
 import datetime
 
@@ -88,3 +89,47 @@ def check():
             return jsonify({"error": "Invalid token"}), 401
 
     return jsonify({"error": "Invalid request"}), 400
+
+# Protection
+def protected(required_role=None):
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = None
+
+            # Get token from header
+            if 'Authorization' in request.headers:
+                auth_header = request.headers['Authorization']
+                if auth_header.startswith("Bearer "):
+                    token = auth_header.split(" ")[1]
+
+            if not token:
+                return jsonify({"msg": "Token is missing!"}), 401
+
+            try:
+                data = jwt.decode(token, "temporary_secret_key", algorithms=["HS256"])
+                current_user = data["user"]
+                if (required_role):
+                    allowed_roles = (
+                        [required_role] if isinstance(required_role, str) else list(required_role)
+                    )
+                    
+                    with Session.begin() as session:
+                        user = session.query(User).filter(User.ID_User == current_user).first()
+                        if user.role not in allowed_roles:
+                            return jsonify({"msg": "Insufficient permissions!"}), 403
+            except jwt.ExpiredSignatureError:
+                return jsonify({"msg": "Token has expired!"}), 401
+            except jwt.InvalidTokenError:
+                return jsonify({"msg": "Invalid token!"}), 401
+
+            return f(current_user, *args, **kwargs)
+        return decorated
+    return decorator
+
+
+@routes.route("/admin", methods=['GET'])
+@protected(required_role=['admin'])
+def admin(current_user):  
+    return jsonify({"message": "Welcome, admin!"}), 200
+
