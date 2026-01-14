@@ -14,18 +14,19 @@ def register():
     if request.method == "POST":
         with Session.begin() as session:
             data = request.form
-            print(request.form.get("username"))
             existing_user = (
                 session.query(User)
-                .filter(User.username == data["username"])
+                .filter(User.username == data["username"] or User.email == data["email"])
                 .first()
             )
 
             # Da li korisnik vec postoji?
             if existing_user:
-                return jsonify({"error": "User already exists"}), 409
+                return jsonify({"error": "Username or email already exists!"}), 409
+
 
             session.add(User(
+                email=data["email"],
                 username=data["username"],
                 password=bcrypt.generate_password_hash(data["password"]),
                 role="user"
@@ -40,10 +41,10 @@ def login():
     if request.method == "POST":
         with Session.begin() as session:
             data = request.form
-            print(request.form.get("username"))
+            print(request.form.get("email"))
             existing_user = (
                 session.query(User)
-                .filter(User.username == data["username"])
+                .filter(User.email == data["email"])
                 .first()
             )
 
