@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 
 interface NavbarProps {
@@ -14,6 +14,16 @@ export const NavbarForm = ({ user, onLogout }: NavbarProps) => {
     const navLinkClass = ({ isActive }: { isActive: boolean }) =>
         `px-3 py-1 text-base font-poppins transition ${isActive ? "underline underline-offset-4 font-semibold" : "hover:underline"
         }`;
+
+    const navigate = useNavigate();
+
+    const handleLogoutClick = () => {
+        if (onLogout) {
+          onLogout();
+        }
+        // Redirect to login page
+        navigate("/login");
+    };
 
     return (
         <nav className="fixed top-0 left-0 w-full h-16 bg-white shadow-md px-8 flex items-center justify-between z-50">
@@ -45,21 +55,23 @@ export const NavbarForm = ({ user, onLogout }: NavbarProps) => {
                             <div className="text-xs text-gray-500 font-poppins">{user.role}</div>
                         </div>
 
-                        {/* Avatar ikonica */}
-                        {user.avatarUrl ? (
-                            <img
-                                src={user.avatarUrl}
-                                alt="avatar"
-                                className="w-10 h-10 rounded-full object-cover border border-gray-300"
-                            />
-                        ) : (
-                            <FaUserCircle size={36} className="text-gray-400" />
-                        )}
+                        {/* Avatar ikonica kao link */}
+                        <NavLink to="/profileInfo" className="outline-none focus:outline-none">
+                            {user.avatarUrl ? (
+                                <img
+                                    src={user.avatarUrl}
+                                    alt="avatar"
+                                    className="w-10 h-10 rounded-full object-cover border border-gray-300 cursor-pointer"
+                                />
+                            ) : (
+                                <FaUserCircle size={36} className="text-gray-400 cursor-pointer" />
+                            )}
+                        </NavLink>
 
                         {/* Logout ikonica */}
                         <button
-                            onClick={onLogout ?? (() => console.log("logout"))}
-                            className="text-red-500 hover:text-red-600 transition"
+                            onClick={handleLogoutClick}
+                            className="text-red-500 hover:text-red-600 transition cursor-pointer"
                         >
                             <FaSignOutAlt size={22} />
                         </button>

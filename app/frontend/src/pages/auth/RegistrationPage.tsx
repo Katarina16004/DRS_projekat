@@ -10,7 +10,7 @@ export default function RegisterPage() {
 
       {/* CONTENT */}
       <div
-        className="flex-1 flex items-center justify-center"
+        className="flex-1 flex items-center justify-center pt-20"
         style={{
           background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
         }}

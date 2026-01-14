@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 
 interface FormState {
   username: string;
@@ -32,6 +33,7 @@ export const RegistrationForm = () => {
     number: "",
   });
 
+  const navigate = useNavigate();
   const [errors, setErrors] = useState<ErrorState>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -107,7 +109,8 @@ export const RegistrationForm = () => {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      alert("Registration successful! (front-end validacija prosla)");
+      toast.success("Registration successful!");
+      navigate("/adminUsers");
     }
   };
 

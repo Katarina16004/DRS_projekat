@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 interface LoginFormState {
     email: string;
@@ -42,10 +43,7 @@ export const LoginForm = () => {
         return newErrors;
     }
 
-    const navigate = useNavigate(); // dodaj ovo
-
-
-
+    const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,10 +53,20 @@ export const LoginForm = () => {
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length === 0) {
-            alert("Login successful! (front-end validacija prošla)");
-            navigate("/profileInfo"); // <<< ovo vodi na ProfilePage
+            // SIMULACIJA: Logovanje je uspešno SAMO za test@test.com / test123
+            if (
+                form.email === "test@test.com" &&
+                form.password === "test123"
+            ) {
+                toast.success("Login successful!");
+                navigate("/profileInfo");
+            } else {
+                //provera da li korisnik postoji
+                toast.error("User does not exist!");
+            }
         }
     };
+
     const errorClass =
         "block min-h-[1.05rem] text-xs font-poppins transition-colors";
 
