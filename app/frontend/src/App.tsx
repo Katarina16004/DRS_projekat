@@ -10,6 +10,7 @@ import NotFoundStranica from "./pages/not_found/NotFoundPage";
 import { Toaster } from "react-hot-toast";
 import ProfilePage from "./pages/profile/ProfilePage";
 import AdminUsersPage from "./pages/admin/UsersPage";
+import { ProtectedRoute } from "./components/protected_route/ProtectedRoute";
 
 function App() {
   return (
@@ -29,19 +30,35 @@ function App() {
           error: { style: { background: "red" } },
         }}
       />
-
-
       <Routes>
+        {/* Javno dostupno */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegistrationPage />} />
-        <Route path="/profileInfo" element={<ProfilePage />} />
-        <Route path="/adminUsers" element={<AdminUsersPage />} />
+
+        {/* Zaštićeno za sve ulogovane */}
+        <Route
+          path="/profileInfo"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Samo za admin rolu */}
+        <Route
+          path="/adminUsers"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminUsersPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/404" element={<NotFoundStranica />} />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
-
     </>
   );
 }

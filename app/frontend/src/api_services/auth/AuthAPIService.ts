@@ -1,0 +1,50 @@
+import axios from "axios";
+import type { AuthResponse } from "../../types/auth/AuthResponse";
+import type { IAuthAPIService, RegistrationData } from "./IAuthAPIService";
+
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+
+export const authApi: IAuthAPIService = {
+  async login(username: string, password: string): Promise<AuthResponse> {
+    try {
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("password", password);
+
+      const res = await axios.post<AuthResponse>(`${API_URL}/login`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      return res.data;
+    } catch (error: any) {
+      let err: AuthResponse = {};
+      if (axios.isAxiosError(error) && error.response) {
+        err.error = error.response.data.error || "Unknown error";
+      } else {
+        err.error = "Server error";
+      }
+      return err;
+    }
+  },
+
+  async register(data: RegistrationData): Promise<AuthResponse> {
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+
+      const res = await axios.post<AuthResponse>(`${API_URL}/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      return res.data;
+    } catch (error: any) {
+      let err: AuthResponse = {};
+      if (axios.isAxiosError(error) && error.response) {
+        err.error = error.response.data.error || "Unknown error";
+      } else {
+        err.error = "Server error";
+      }
+      return err;
+    }
+  },
+};
