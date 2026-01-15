@@ -11,6 +11,8 @@ import { Toaster } from "react-hot-toast";
 import ProfilePage from "./pages/profile/ProfilePage";
 import AdminUsersPage from "./pages/admin/UsersPage";
 import { ProtectedRoute } from "./components/protected_route/ProtectedRoute";
+import UserPage from "./pages/user/UserQuizzesPage";
+import { authApi } from "./api_services/auth/AuthAPIService";
 
 function App() {
   return (
@@ -32,7 +34,7 @@ function App() {
       />
       <Routes>
         {/* Javno dostupno */}
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage authApi={authApi} />} />
         <Route path="/register" element={<RegistrationPage />} />
 
         {/* Zaštićeno za sve ulogovane */}
@@ -54,6 +56,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute requiredRole={["user", "moderator"]}>
+              <UserPage />
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/404" element={<NotFoundStranica />} />

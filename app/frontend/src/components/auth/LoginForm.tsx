@@ -1,7 +1,10 @@
 import { useState } from "react";
 import type { AuthFormProps } from "../../types/props/auth/AuthFormProps";
 import { useAuth } from "../../hooks/auth/useAuthHook";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { jwtDecode } from "jwt-decode"; 
+import type { JwtTokenClaims } from "../../types/auth/JwtTokenClaims";
 
 export function LoginForm({ authApi }: AuthFormProps) {
     const [email, setEmail] = useState("");
@@ -10,6 +13,7 @@ export function LoginForm({ authApi }: AuthFormProps) {
     const [showPassword, setShowPassword] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const sendForm = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,6 +24,17 @@ export function LoginForm({ authApi }: AuthFormProps) {
 
             if (res.token) {
                 login(res.token);
+                toast.success("Login successful!");
+
+                const claims = jwtDecode<JwtTokenClaims>(res.token);
+                const role = claims.role;
+
+                if (role === "admin") {
+                    navigate("/adminUsers");
+                } else if (role === "user" || role === "moderator") {
+                    navigate("/user");
+                }
+
             } else {
                 setErr(res.error ?? res.message ?? "Login failed");
                 setEmail("");
@@ -88,9 +103,9 @@ export function LoginForm({ authApi }: AuthFormProps) {
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-[#4451A4] hover:text-[#2b2b7a]"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-sm text-[#4451A4] hover:text-[#2b2b7a]"
                     >
-                        {showPassword ? "Sakrij" : "Prikaži"}
+                        {showPassword ? "Hide" : "Show"}
                     </button>
                     {passwordError && <span className={errorClass}>{passwordError}</span>}
                 </div>

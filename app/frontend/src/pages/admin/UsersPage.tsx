@@ -14,16 +14,16 @@ const adminNavbarUser = {
 
 // Demo korisnici
 const initialUsers: UserDTO[] = [
-  { id: 1, name: "John", surname: "Doe", username: "jdoe", role: "PLAYER", avatarUrl: undefined, date_of_birth: '1990-01-01', gender: "male", email: 'jdoe@email.com', country: 'USA', street: 'Main', number: '101' },
-  { id: 2, name: "Jane", surname: "Smith", username: "jsmith", role: "MODERATOR", avatarUrl: undefined, date_of_birth: '1992-02-14', gender: "female", email: 'jsmith@email.com', country: 'UK', street: 'King', number: '33' },
-  { id: 3, name: "Alex", surname: "Johnson", username: "ajohnson", role: "PLAYER", avatarUrl: undefined, date_of_birth: '1993-03-23', gender: "other", email: 'alexj@email.com', country: 'Canada', street: 'Oak', number: '22B' },
-  { id: 4, name: "Emily", surname: "Williams", username: "ewilliams", role: "ADMIN", avatarUrl: undefined, date_of_birth: '1995-05-05', gender: "female", email: 'emilyw@email.com', country: 'Australia', street: 'Pine', number: '12' },
-  { id: 5, name: "Michael", surname: "Brown", username: "mbrown", role: "PLAYER", avatarUrl: undefined, date_of_birth: '1988-07-08', gender: "male", email: 'mbrown@email.com', country: 'USA', street: 'Elm', number: '402' },
-  { id: 6, name: "Sophia", surname: "Davis", username: "sdavis", role: "MODERATOR", avatarUrl: undefined, date_of_birth: '1996-08-19', gender: "female", email: 'sophiad@email.com', country: 'Germany', street: 'Linden', number: '5' },
-  { id: 7, name: "Liam", surname: "Martinez", username: "lmartinez", role: "PLAYER", avatarUrl: undefined, date_of_birth: '1991-11-11', gender: "male", email: 'liam@email.com', country: 'Spain', street: 'Calle Real', number: '17' },
-  { id: 8, name: "Olivia", surname: "Garcia", username: "ogarcia", role: "ADMIN", avatarUrl: undefined, date_of_birth: '1994-12-25', gender: "female", email: 'oliviag@email.com', country: 'France', street: 'Rue de Paris', number: '8' },
-  { id: 9, name: "Noah", surname: "Lee", username: "nlee", role: "PLAYER", avatarUrl: undefined, date_of_birth: '1987-04-16', gender: "male", email: 'noahl@email.com', country: 'South Korea', street: 'Gangnam-daero', number: '110' },
-  { id: 10, name: "Emma", surname: "Gonzalez", username: "egonzalez", role: "PLAYER", avatarUrl: undefined, date_of_birth: '1998-09-10', gender: "female", email: 'emmag@email.com', country: 'Mexico', street: 'Juarez', number: '404' },
+  { id: 1, name: "John", surname: "Doe", username: "jdoe", role: "user", avatarUrl: undefined, date_of_birth: '1990-01-01', gender: "male", email: 'jdoe@email.com', country: 'USA', street: 'Main', number: '101' },
+  { id: 2, name: "Jane", surname: "Smith", username: "jsmith", role: "moderator", avatarUrl: undefined, date_of_birth: '1992-02-14', gender: "female", email: 'jsmith@email.com', country: 'UK', street: 'King', number: '33' },
+  { id: 3, name: "Alex", surname: "Johnson", username: "ajohnson", role: "user", avatarUrl: undefined, date_of_birth: '1993-03-23', gender: "other", email: 'alexj@email.com', country: 'Canada', street: 'Oak', number: '22B' },
+  { id: 4, name: "Emily", surname: "Williams", username: "ewilliams", role: "admin", avatarUrl: undefined, date_of_birth: '1995-05-05', gender: "female", email: 'emilyw@email.com', country: 'Australia', street: 'Pine', number: '12' },
+  { id: 5, name: "Michael", surname: "Brown", username: "mbrown", role: "user", avatarUrl: undefined, date_of_birth: '1988-07-08', gender: "male", email: 'mbrown@email.com', country: 'USA', street: 'Elm', number: '402' },
+  { id: 6, name: "Sophia", surname: "Davis", username: "sdavis", role: "moderator", avatarUrl: undefined, date_of_birth: '1996-08-19', gender: "female", email: 'sophiad@email.com', country: 'Germany', street: 'Linden', number: '5' },
+  { id: 7, name: "Liam", surname: "Martinez", username: "lmartinez", role: "user", avatarUrl: undefined, date_of_birth: '1991-11-11', gender: "male", email: 'liam@email.com', country: 'Spain', street: 'Calle Real', number: '17' },
+  { id: 8, name: "Olivia", surname: "Garcia", username: "ogarcia", role: "admin", avatarUrl: undefined, date_of_birth: '1994-12-25', gender: "female", email: 'oliviag@email.com', country: 'France', street: 'Rue de Paris', number: '8' },
+  { id: 9, name: "Noah", surname: "Lee", username: "nlee", role: "user", avatarUrl: undefined, date_of_birth: '1987-04-16', gender: "male", email: 'noahl@email.com', country: 'South Korea', street: 'Gangnam-daero', number: '110' },
+  { id: 10, name: "Emma", surname: "Gonzalez", username: "egonzalez", role: "user", avatarUrl: undefined, date_of_birth: '1998-09-10', gender: "female", email: 'emmag@email.com', country: 'Mexico', street: 'Juarez', number: '404' },
 ];
 
 export default function AdminUsersPage() {
