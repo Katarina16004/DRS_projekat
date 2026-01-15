@@ -6,6 +6,7 @@ from router.routes import routes
 from util.extensions import bcrypt
 
 app = Flask(__name__)
+app.json.sort_keys = False
 bcrypt.init_app(app)
 
 

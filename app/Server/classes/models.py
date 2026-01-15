@@ -17,6 +17,8 @@ class User(Base):
         "UserProfile",
         back_populates="user",
         uselist=False,
+        cascade="all, delete-orphan",
+        single_parent=True
     )
 
 class UserProfile(Base):

@@ -5,5 +5,5 @@ import os
 
 # Database 
 load_dotenv()
-engine = create_engine(os.getenv("DATABASE_URL"), echo=True)
+engine = create_engine(os.getenv("DATABASE_URL"))
 Session = sessionmaker(engine)
