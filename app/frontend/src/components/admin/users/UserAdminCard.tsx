@@ -1,13 +1,13 @@
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import type { UserRole } from "../../../enums/user/UserRole";
-import type { UserDTO } from "../../../models/users/UserDTO";
+import type { UserAdminDTO } from "../../../models/users/UserAdminInfoDTO";
 import { Info, capitalize } from "./UserHelpers";
 
 interface UserAdminCardProps {
-  user: UserDTO;
-  onRoleChange: (id: string | number, role: UserRole) => void;
-  onDelete: (id: string | number) => void;
+  user: UserAdminDTO;
+  onRoleChange: (id: number, role: UserRole) => void;
+  onDelete: (id: number) => void;
 }
 
 export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardProps) => {
@@ -19,21 +19,22 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardPro
           <img src={user.avatarUrl} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
         ) : (
           <span className="w-20 h-20 rounded-full flex items-center justify-center bg-gray-300 text-white font-bold text-2xl">
-            {user.name?.charAt(0)}{user.surname?.charAt(0)}
+            {(user.name ?? "").charAt(0)}
+            {(user.surname ?? "").charAt(0)}
           </span>
         )}
       </div>
       {/* User Data */}
       <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-2 w-full">
-        <Info label="Name" value={user.name} />
-        <Info label="Surname" value={user.surname} />
-        <Info label="Username" value={user.username} />
-        <Info label="E-mail" value={user.email} />
-        <Info label="Gender" value={capitalize(user.gender)} />
-        <Info label="Date of birth" value={user.date_of_birth} />
-        <Info label="Country" value={user.country} />
-        <Info label="Street" value={user.street} />
-        <Info label="Number" value={user.number} />
+        <Info label="Name" value={user.name ?? undefined} />
+        <Info label="Surname" value={user.surname ?? undefined} />
+        <Info label="Username" value={user.username ?? undefined} />
+        <Info label="E-mail" value={user.email ?? undefined} />
+        <Info label="Gender" value={capitalize(user.gender ?? undefined)} />
+        <Info label="Date of birth" value={user.dateOfBirth ?? undefined} />
+        <Info label="Country" value={user.country ?? undefined} />
+        <Info label="Street" value={user.street ?? undefined} />
+        <Info label="Number" value={user.number ?? undefined} />
         <div className="flex flex-col mb-2">
           <span className="font-medium text-xs text-gray-600 mb-1">Role</span>
           <select
@@ -41,13 +42,13 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardPro
             value={user.role}
             onChange={e => onRoleChange(user.id, e.target.value as UserRole)}
           >
-            <option value="PLAYER">Player</option>
-            <option value="MODERATOR">Moderator</option>
-            <option value="ADMIN">Admin</option>
+            <option value="user">User</option>
+            <option value="moderator">Moderator</option>
+            <option value="admin">Admin</option>
           </select>
         </div>
         {/* Dugme za kvizove samo za moderatora */}
-        {user.role === "MODERATOR" && (
+        {user.role === "moderator" && (
           <div className="flex flex-col mb-2 justify-end">
             <span className="font-medium text-xs text-gray-600 mb-1 invisible">Quizzes</span>
             <Link

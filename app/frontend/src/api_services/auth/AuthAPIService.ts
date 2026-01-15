@@ -1,15 +1,17 @@
 import axios from "axios";
 import type { AuthResponse } from "../../types/auth/AuthResponse";
-import type { IAuthAPIService, RegistrationData } from "./IAuthAPIService";
+import type { IAuthAPIService } from "./IAuthAPIService";
+import type { LoginData } from "../../models/auth/UserLoginDTO";
+import type { RegistrationData } from "../../models/auth/UserRegisterDTO";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
 export const authApi: IAuthAPIService = {
-  async login(email: string, password: string): Promise<AuthResponse> {
+  async login(data: LoginData): Promise<AuthResponse> {
     try {
       const formData = new FormData();
-      formData.append("email", email);
-      formData.append("password", password);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
 
       const res = await axios.post<AuthResponse>(`${API_URL}/login`, formData, {
         headers: { "Content-Type": "multipart/form-data" },

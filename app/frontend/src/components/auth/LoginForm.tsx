@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { jwtDecode } from "jwt-decode"; 
 import type { JwtTokenClaims } from "../../types/auth/JwtTokenClaims";
+import type { LoginData } from "../../models/auth/UserLoginDTO";
+import { validateLogin, type LoginErrorState } from "../../api_services/validators/LoginValidation";
 
 export function LoginForm({ authApi }: AuthFormProps) {
     const [email, setEmail] = useState("");
@@ -12,6 +14,7 @@ export function LoginForm({ authApi }: AuthFormProps) {
     const [err, setErr] = useState(""); 
     const [showPassword, setShowPassword] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [errors, setErrors] = useState<LoginErrorState>({});
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -19,8 +22,14 @@ export function LoginForm({ authApi }: AuthFormProps) {
         e.preventDefault();
         setSubmitted(true);
 
+        const loginData: LoginData = { email, password };
+        const validationErrors = validateLogin(loginData);
+        setErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length !== 0) return;
+
         try {
-            const res = await authApi.login(email, password);
+            const res = await authApi.login(loginData);
 
             if (res.token) {
                 login(res.token);
@@ -47,21 +56,6 @@ export function LoginForm({ authApi }: AuthFormProps) {
 
     const errorClass = "block min-h-[1.05rem] text-xs font-poppins transition-colors text-red-600";
 
-    const emailError =
-        submitted && (!email
-            ? "Email is required."
-            : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-                ? "Email format is invalid."
-                : "");
-    const passwordError =
-        submitted && (!password
-            ? "Password is required."
-            : password.length < 6
-                ? "Password must be at least 6 characters long."
-                : password.length > 20
-                    ? "Password must not be longer than 20 characters."
-                    : "");
-
     return (
         <div className="w-full max-w-md mx-auto rounded-3xl p-8 bg-white shadow-xl border border-[#FFF8C6] font-inter mt-16">
             <h2 className="text-3xl font-bold text-center mb-6 font-poppins tracking-wider text-[#4451A4]">
@@ -84,7 +78,7 @@ export function LoginForm({ authApi }: AuthFormProps) {
                         className="w-full bg-transparent px-2 py-1 border-b-2 border-[#82CAFF] outline-none font-inter"
                         autoComplete="email"
                     />
-                    {emailError && <span className={errorClass}>{emailError}</span>}
+                    {submitted && errors.email && <span className={errorClass}>{errors.email}</span>}
                 </div>
 
                 {/* Password */}
@@ -107,7 +101,7 @@ export function LoginForm({ authApi }: AuthFormProps) {
                     >
                         {showPassword ? "Hide" : "Show"}
                     </button>
-                    {passwordError && <span className={errorClass}>{passwordError}</span>}
+                    {submitted && errors.password && <span className={errorClass}>{errors.password}</span>}
                 </div>
 
                 <button
