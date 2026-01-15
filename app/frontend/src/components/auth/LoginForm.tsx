@@ -1,82 +1,62 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { useState } from "react";
+import type { AuthFormProps } from "../../types/props/auth/AuthFormProps";
+import { useAuth } from "../../hooks/auth/useAuthHook";
+import { Link } from "react-router-dom";
 
-interface LoginFormState {
-    email: string;
-    password: string;
-}
-
-interface ErrorState {
-    [key: string]: string;
-}
-
-export const LoginForm = () => {
-    const [form, setForm] = useState<LoginFormState>({
-        email: "",
-        password: "",
-    });
-
-    const [errors, setErrors] = useState<ErrorState>({});
+export function LoginForm({ authApi }: AuthFormProps) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [err, setErr] = useState(""); 
+    const [showPassword, setShowPassword] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const { login } = useAuth();
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-        setErrors({ ...errors, [e.target.name]: "" });
-    };
-
-    function validate(form: LoginFormState): ErrorState {
-        const newErrors: ErrorState = {};
-
-        if (!form.email) {
-            newErrors.email = "Email is required.";
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-            newErrors.email = "Email format is invalid.";
-        }
-
-        if (!form.password) {
-            newErrors.password = "Password is required.";
-        }
-
-        return newErrors;
-    }
-
-    const navigate = useNavigate();
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const sendForm = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitted(true);
 
-        const validationErrors = validate(form);
-        setErrors(validationErrors);
+        try {
+            const res = await authApi.login(email, password);
 
-        if (Object.keys(validationErrors).length === 0) {
-            // SIMULACIJA: Logovanje je uspešno SAMO za test@test.com / test123
-            if (
-                form.email === "test@test.com" &&
-                form.password === "test123"
-            ) {
-                toast.success("Login successful!");
-                navigate("/adminUsers");
+            if (res.token) {
+                login(res.token);
             } else {
-                //provera da li korisnik postoji
-                toast.error("User does not exist!");
+                setErr(res.error ?? res.message ?? "Login failed");
+                setEmail("");
+                setPassword("");
             }
+        } catch (error) {
+            setErr("Login failed. Please try again.");
         }
     };
 
-    const errorClass =
-        "block min-h-[1.05rem] text-xs font-poppins transition-colors";
+    const errorClass = "block min-h-[1.05rem] text-xs font-poppins transition-colors text-red-600";
+
+    const emailError =
+        submitted && (!email
+            ? "Email is required."
+            : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                ? "Email format is invalid."
+                : "");
+    const passwordError =
+        submitted && (!password
+            ? "Password is required."
+            : password.length < 6
+                ? "Password must be at least 6 characters long."
+                : password.length > 20
+                    ? "Password must not be longer than 20 characters."
+                    : "");
 
     return (
-        <div className="w-full max-w-md mx-auto rounded-3xl p-8 bg-white shadow-xl border border-[#FFF8C6] font-inter">
-            <h2 className="text-3xl font-bold text-center mb-6 font-poppins tracking-wider">
+        <div className="w-full max-w-md mx-auto rounded-3xl p-8 bg-white shadow-xl border border-[#FFF8C6] font-inter mt-16">
+            <h2 className="text-3xl font-bold text-center mb-6 font-poppins tracking-wider text-[#4451A4]">
                 Login
             </h2>
 
-            <form onSubmit={handleSubmit} noValidate>
+            {err && <p className="text-center text-red-600 mb-4">{err}</p>}
+
+            <form onSubmit={sendForm} noValidate>
+                {/* Email */}
                 <div className="mb-4">
                     <label className="block text-base font-medium text-gray-700 mb-1 font-poppins">
                         E-mail:
@@ -84,37 +64,35 @@ export const LoginForm = () => {
                     <input
                         name="email"
                         type="email"
-                        value={form.email}
-                        onChange={handleChange}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="w-full bg-transparent px-2 py-1 border-b-2 border-[#82CAFF] outline-none font-inter"
                         autoComplete="email"
                     />
-                    <span
-                        className={`${errorClass} ${submitted && errors.email ? "text-red-600" : "invisible"
-                            }`}
-                    >
-                        {submitted && errors.email ? errors.email : "•"}
-                    </span>
+                    {emailError && <span className={errorClass}>{emailError}</span>}
                 </div>
 
-                <div className="mb-6">
+                {/* Password */}
+                <div className="mb-6 relative">
                     <label className="block text-base font-medium text-gray-700 mb-1 font-poppins">
                         Password:
                     </label>
                     <input
                         name="password"
-                        type="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        className="w-full bg-transparent px-2 py-1 border-b-2 border-[#82CAFF] outline-none font-inter"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full bg-transparent px-2 py-1 border-b-2 border-[#82CAFF] outline-none font-inter pr-10"
                         autoComplete="current-password"
                     />
-                    <span
-                        className={`${errorClass} ${submitted && errors.password ? "text-red-600" : "invisible"
-                            }`}
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-[#4451A4] hover:text-[#2b2b7a]"
                     >
-                        {submitted && errors.password ? errors.password : "•"}
-                    </span>
+                        {showPassword ? "Sakrij" : "Prikaži"}
+                    </button>
+                    {passwordError && <span className={errorClass}>{passwordError}</span>}
                 </div>
 
                 <button
@@ -127,13 +105,10 @@ export const LoginForm = () => {
 
             <p className="text-center text-gray-700 text-xs mt-4 font-poppins">
                 Don’t have an account?{" "}
-                <Link
-                    to="/register"
-                    className="text-[#82CAFF] hover:underline font-poppins"
-                >
+                <Link to="/register" className="text-[#82CAFF] hover:underline font-poppins">
                     Register
                 </Link>
             </p>
         </div>
     );
-};
+}

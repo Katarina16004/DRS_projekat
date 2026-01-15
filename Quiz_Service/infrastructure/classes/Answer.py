@@ -10,7 +10,7 @@ class Answer(db.Model):
         self.Answer_Text = Answer_Text
         self.Is_Correct = Is_Correct
         
-    ID_Question = db.Column(db.Integer, primary_key=True)
+    ID_Question = db.Column(db.Integer,db.ForeignKey('Question.ID_Question'),primary_key=True)
     ID_Answer = db.Column(db.Integer, primary_key=True)
     Answer_Text = db.Column(db.String(45), nullable=False)
     Is_Correct = db.Column(db.Boolean, nullable=False)
@@ -23,6 +23,12 @@ class Answer(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        db.session.commit()
+        
     @classmethod
     def get_answer_by_id(cls, ID_Question, ID_Answer):
         return cls.query.filter(
@@ -36,12 +42,6 @@ class Answer(db.Model):
     @classmethod
     def get_all(cls):
         return cls.query.all()
-
-    def update(self, **kwargs):
-        for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
-        db.session.commit()
 
     @classmethod
     def get_answer_by_id(cls, ID_Question, ID_Answer):

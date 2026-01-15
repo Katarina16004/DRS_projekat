@@ -1,10 +1,7 @@
 from flask import Blueprint, request, jsonify
 from infrastructure.classes.Answer import Answer
 
-answer_router = Blueprint(
-    'answer_router',
-    __name__
-)
+answer_router = Blueprint('answer_router',__name__)
 
 @answer_router.route('/answers', methods=['GET'])
 def get_all_answers():
@@ -20,7 +17,7 @@ def get_all_answers():
         for a in answers
     ])
 
-@answer_router.route('/questions/<int:question_id>/answers', methods=['GET'])
+@answer_router.route('/answer/<int:question_id>/answers', methods=['GET'])
 def get_answers_from_question(question_id):
     answers = Answer.get_answers_by_question(question_id)
 
@@ -36,7 +33,7 @@ def get_answers_from_question(question_id):
 
 
 @answer_router.route(
-    '/questions/<int:question_id>/answers/<int:answer_id>',methods=['GET'])
+    '/answer/<int:question_id>/answers/<int:answer_id>',methods=['GET'])
 def get_answer(question_id, answer_id):
     answer = Answer.get_answer_by_id(question_id, answer_id)
 
@@ -50,7 +47,7 @@ def get_answer(question_id, answer_id):
         "Is_Correct": answer.Is_Correct
     })
 
-@answer_router.route('/questions/<int:question_id>/answers',methods=['POST'])
+@answer_router.route('/answer/<int:question_id>/answers',methods=['POST'])
 def create_answer(question_id):
     data = request.json
 
@@ -69,7 +66,7 @@ def create_answer(question_id):
     return jsonify({"message": "Answer created"}), 201
 
 
-@answer_router.route('/questions/<int:question_id>/answers/<int:answer_id>',methods=['PATCH'])
+@answer_router.route('/answer/<int:question_id>/answers/<int:answer_id>',methods=['PATCH'])
 def update_answer(question_id, answer_id):
     answer = Answer.get_answer_by_id(question_id, answer_id)
 
@@ -82,7 +79,7 @@ def update_answer(question_id, answer_id):
     return jsonify({"message": "Answer updated"})
 
 
-@answer_router.route('/questions/<int:question_id>/answers/<int:answer_id>', methods=['DELETE'])
+@answer_router.route('/answer/<int:question_id>/answers/<int:answer_id>', methods=['DELETE'])
 def delete_answer(question_id, answer_id):
     answer = Answer.get_answer_by_id(question_id, answer_id)
 
