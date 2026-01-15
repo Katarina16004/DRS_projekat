@@ -1,15 +1,16 @@
 import type { UserRole } from "../../enums/user/UserRole";
 
 export interface UserDTO {
-  ID_User: number;
-  First_Name: string | null;
-  Last_Name: string | null;
-  Email: string;
-  Birth_Date: string | null;
-  Gender: string | null;
-  Country: string | null;
-  Street: string | null;
-  Street_Number: string | null;
+  id: number;                 //+
+  name: string | null;        //+
+  surname: string | null;     //+
+  username: string;     
   role: UserRole;
   avatarUrl?: string;
+  dateOfBirth: string | null;   //+
+  gender: string | null;        //+
+  email: string;              //+
+  country: string | null;     //+
+  street: string | null;      //+
+  number: string | null;    //+
 }
