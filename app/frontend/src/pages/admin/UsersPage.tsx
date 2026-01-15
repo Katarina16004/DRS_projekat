@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import { UserAdminCard } from "../../components/admin/users/UserAdminCard";
-import type { UserAdminDTO } from "../../models/users/UserAdminInfoDTO";
+import type { UserDTO } from "../../models/users/UserDTO";
 import type { UserRole } from "../../enums/user/UserRole";
+import { userApi } from "../../api_services/users/UserAPIService";
 
 export interface UserAdminCardProps {
-  user: UserAdminDTO;
+  user: UserDTO;
   onRoleChange: (id: number, role: UserRole) => void;
   onDelete: (id: number) => void;
 }
@@ -15,35 +16,52 @@ const adminNavbarUser = {
   role: "ADMIN" as UserRole,
 };
 
-const initialUsers: UserAdminDTO[] = [
-  { id: 1, name: "John", surname: "Doe", username: "jdoe", role: "user", avatarUrl: undefined, dateOfBirth: '1990-01-01', gender: "male", email: 'jdoe@email.com', country: 'USA', street: 'Main', number: '101' },
-  { id: 2, name: "Jane", surname: "Smith", username: "jsmith", role: "moderator", avatarUrl: undefined, dateOfBirth: '1992-02-14', gender: "female", email: 'jsmith@email.com', country: 'UK', street: 'King', number: '33' },
-  { id: 3, name: "Alex", surname: "Johnson", username: "ajohnson", role: "user", avatarUrl: undefined, dateOfBirth: '1993-03-23', gender: "other", email: 'alexj@email.com', country: 'Canada', street: 'Oak', number: '22B' },
-  { id: 4, name: "Emily", surname: "Williams", username: "ewilliams", role: "admin", avatarUrl: undefined, dateOfBirth: '1995-05-05', gender: "female", email: 'emilyw@email.com', country: 'Australia', street: 'Pine', number: '12' },
-  { id: 5, name: "Michael", surname: "Brown", username: "mbrown", role: "user", avatarUrl: undefined, dateOfBirth: '1988-07-08', gender: "male", email: 'mbrown@email.com', country: 'USA', street: 'Elm', number: '402' },
-  { id: 6, name: "Sophia", surname: "Davis", username: "sdavis", role: "moderator", avatarUrl: undefined, dateOfBirth: '1996-08-19', gender: "female", email: 'sophiad@email.com', country: 'Germany', street: 'Linden', number: '5' },
-  { id: 7, name: "Liam", surname: "Martinez", username: "lmartinez", role: "user", avatarUrl: undefined, dateOfBirth: '1991-11-11', gender: "male", email: 'liam@email.com', country: 'Spain', street: 'Calle Real', number: '17' },
-  { id: 8, name: "Olivia", surname: "Garcia", username: "ogarcia", role: "admin", avatarUrl: undefined, dateOfBirth: '1994-12-25', gender: "female", email: 'oliviag@email.com', country: 'France', street: 'Rue de Paris', number: '8' },
-  { id: 9, name: "Noah", surname: "Lee", username: "nlee", role: "user", avatarUrl: undefined, dateOfBirth: '1987-04-16', gender: "male", email: 'noahl@email.com', country: 'South Korea', street: 'Gangnam-daero', number: '110' },
-  { id: 10, name: "Emma", surname: "Gonzalez", username: "egonzalez", role: "user", avatarUrl: undefined, dateOfBirth: '1998-09-10', gender: "female", email: 'emmag@email.com', country: 'Mexico', street: 'Juarez', number: '404' },
-];
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<UserAdminDTO[]>(initialUsers);
+  const [users, setUsers] = useState<UserDTO[]>([]);
+  const token = localStorage.getItem("token");
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const handleRoleChange = (id: number, role: UserRole) => {
-    setUsers(users.map(u => u.id === id ? { ...u, role } : u));
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchUsers = async () => {
+      const data = await userApi.getAllUsers(token);
+      setUsers(data)
+    };
+
+    fetchUsers();
+  }, [token])
+
+  const handleRoleChange = async (id: number, role: UserRole) => {
+    if (!token) return;
+
+    const updatedUser = await userApi.changeUserRole(token, id, role);
+
+    setUsers(prev =>
+      prev.map(u => u.id === id ? updatedUser : u)
+    );
   };
 
-  const handleDelete = (id: number) => {
-    setUsers(users.filter(u => u.id !== id));
+  const handleDelete = async (id: number) => {
+    if (!token) return
+
+    await userApi.deleteUser(token, id)
+    setUsers(prev => prev.filter(u => u.id !== id))
   };
 
   const handleDeleteAll = () => setUsers([]);
 
   // Primer funkcije za logout
   const handleLogout = () => {
-    alert("Logged out!");
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   };
 
   return (
@@ -60,7 +78,7 @@ export default function AdminUsersPage() {
             <h2 className="text-3xl font-bold font-poppins tracking-wider text-gray-800">Users</h2>
             <button
               className="flex items-center gap-2 text-red-500 hover:text-red-700 transition px-4 py-2 font-medium bg-red-50 border cursor-pointer border-red-200 rounded-xl"
-              onClick={handleDeleteAll}
+              onClick={() => setShowDeleteAllConfirm(true)}
             >
               <FaTrash /> Delete all
             </button>
@@ -75,6 +93,83 @@ export default function AdminUsersPage() {
           )}
         </div>
       </div>
+      {showDeleteAllConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowDeleteAllConfirm(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md font-poppins z-10">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+              Delete all users?
+            </h3>
+
+            <p className="text-gray-600 text-center mb-8">
+              Are you sure you want to permanently delete all users?
+              <br />
+              This action cannot be undone.
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                onClick={() => setShowDeleteAllConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="px-6 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition font-medium"
+                onClick={() => {
+                  handleDeleteAll();
+                  setShowDeleteAllConfirm(false);
+                }}
+              >
+                Delete all
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowLogoutConfirm(false)}
+          />
+
+          <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md z-10 font-poppins">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+              Log out?
+            </h3>
+
+            <p className="text-gray-600 text-center mb-8">
+              Are you sure you want to log out of your account?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="px-6 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition font-medium"
+                onClick={confirmLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
