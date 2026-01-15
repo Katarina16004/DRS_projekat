@@ -2,7 +2,7 @@ import axios from "axios";
 import type { AuthResponse } from "../../types/auth/AuthResponse";
 import type { IAuthAPIService, RegistrationData } from "./IAuthAPIService";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
 export const authApi: IAuthAPIService = {
   async login(email: string, password: string): Promise<AuthResponse> {
