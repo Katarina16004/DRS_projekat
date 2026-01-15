@@ -4,10 +4,19 @@ from classes.database import Session
 from classes.models import User, UserProfile
 from util.extensions import bcrypt  
 from functools import wraps
+from collections import defaultdict
 import jwt
 import datetime
 
 routes = Blueprint("routes", __name__)
+
+FAILED_LOGINS = defaultdict(lambda: {
+    "count": 0,
+    "locked_until": None
+})
+
+MAX_ATTEMPTS = 3
+LOCK_TIME = datetime.timedelta(minutes=1)
 
 @routes.route("/register", methods=['POST'])
 def register():
@@ -77,8 +86,28 @@ def login():
             if not existing_user:
                 return jsonify({"error": "No such user!"}), 409
 
+            now = datetime.datetime.utcnow()
+            user_state = FAILED_LOGINS[existing_user.email]
+
+            # Check if user is locked
+            if user_state["locked_until"] and user_state["locked_until"] > now:
+                return jsonify({
+                    "error": "Account locked. Try again later.",
+                    "locked_until": user_state["locked_until"].isoformat()
+                }), 403
+
             # Da li je lozinka tacna?
             if not bcrypt.check_password_hash(existing_user.password, data["password"]):
+                user_state["count"] += 1
+
+                if user_state["count"] >= MAX_ATTEMPTS:
+                    user_state["locked_until"] = now + LOCK_TIME
+                    user_state["count"] = 0
+
+                    return jsonify({
+                        "error": "Account locked due to multiple failed attempts. Try again in 1 minute."
+                    }), 403
+
                 return jsonify({"error": "Wrong password!"}), 409
 
             # JWT token
