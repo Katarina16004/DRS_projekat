@@ -5,10 +5,10 @@ import type { IAuthAPIService, RegistrationData } from "./IAuthAPIService";
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 export const authApi: IAuthAPIService = {
-  async login(username: string, password: string): Promise<AuthResponse> {
+  async login(email: string, password: string): Promise<AuthResponse> {
     try {
       const formData = new FormData();
-      formData.append("username", username);
+      formData.append("email", email);
       formData.append("password", password);
 
       const res = await axios.post<AuthResponse>(`${API_URL}/login`, formData, {
