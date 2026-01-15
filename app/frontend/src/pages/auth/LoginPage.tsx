@@ -1,5 +1,7 @@
+import { authApi } from "../../api_services/auth/AuthAPIService";
 import { LoginForm } from "../../components/auth/LoginForm";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
+
 
 export default function LoginPage() {
     return (
@@ -14,7 +16,7 @@ export default function LoginPage() {
                     background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
                 }}
             >
-                <LoginForm />
+                <LoginForm authApi={authApi} />
             </div>
         </div>
     );
