@@ -75,14 +75,12 @@ def login():
     if request.method == "POST":
         with Session.begin() as session:
             data = request.form
-            print(request.form.get("email"))
             existing_user = (
                 session.query(User)
                 .filter(User.email == data["email"])
                 .first()
             )
 
-            # Da li korisnik postoji?
             if not existing_user:
                 return jsonify({"error": "No such user!"}), 409
 
@@ -110,22 +108,15 @@ def login():
 
                 return jsonify({"error": "Wrong password!"}), 409
 
-            # JWT token
+            # JWT token (nova polja!)
             payload = {
-                "user": existing_user.ID_User,
+                "id": existing_user.ID_User,
+                "username": existing_user.username,
+                "role": existing_user.role,
                 "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
             }
-
-            token = jwt.encode(
-                payload,
-                "temporary_secret_key",
-                algorithm="HS256" 
-            )
-
-
+            token = jwt.encode(payload, "temporary_secret_key", algorithm="HS256")
             return jsonify({ "token": token, "message": "User exists!"}), 201
-
-    # Invalid request
     return jsonify({"error": "Invalid request"}), 400
 
 @routes.route("/check", methods=['POST'])

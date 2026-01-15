@@ -1,7 +1,12 @@
+import type { IAuthAPIService } from "../../api_services/auth/IAuthAPIService";
 import { LoginForm } from "../../components/auth/LoginForm";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 
-export default function LoginPage() {
+interface LoginPageProps {
+  authApi: IAuthAPIService;
+}
+
+export default function LoginPage({ authApi }: LoginPageProps) {
     return (
         <div className="min-h-screen font-poppins flex flex-col">
             {/* NAVBAR – fixed ili sticky */}
@@ -14,7 +19,7 @@ export default function LoginPage() {
                     background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
                 }}
             >
-                <LoginForm />
+                <LoginForm authApi={authApi} />
             </div>
         </div>
     );

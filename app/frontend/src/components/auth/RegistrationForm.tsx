@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import type { AuthFormProps } from "../../types/props/auth/AuthFormProps";
-import { useAuth } from "../../hooks/auth/useAuthHook";
+//import { useAuth } from "../../hooks/auth/useAuthHook";
 
 interface FormState {
-  username: string;
   email: string;
+  username: string;
   password: string;
-  name: string;
-  surname: string;
-  date_of_birth: string;
+  first_name: string;
+  last_name: string;
+  birth_date: string;
   gender: string;
   country: string;
   street: string;
-  number: string;
+  street_number: string;
 }
 
 interface ErrorState {
@@ -26,20 +26,19 @@ export const RegistrationForm = ({ authApi }: AuthFormProps) => {
     username: "",
     email: "",
     password: "",
-    name: "",
-    surname: "",
-    date_of_birth: "",
+    first_name: "",
+    last_name: "",
+    birth_date: "",
     gender: "",
     country: "",
     street: "",
-    number: "",
+    street_number: "",
   });
 
   const navigate = useNavigate();
   const [errors, setErrors] = useState<ErrorState>({});
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState("");
-  const { login } = useAuth();
 
 
   const handleChange = (
@@ -66,16 +65,16 @@ export const RegistrationForm = ({ authApi }: AuthFormProps) => {
       newErrors.password = "Password must be at least 6 characters.";
     }
 
-    if (!form.name.trim()) {
-      newErrors.name = "Name is required.";
+    if (!form.first_name.trim()) {
+      newErrors.first_name = "First name is required.";
     }
 
-    if (!form.surname.trim()) {
-      newErrors.surname = "Surname is required.";
+    if (!form.last_name.trim()) {
+      newErrors.last_name = "Last name is required.";
     }
 
-    if (!form.date_of_birth) {
-      newErrors.date_of_birth = "Date of birth is required.";
+    if (!form.birth_date) {
+      newErrors.birth_date = "Date of birth is required.";
     }
 
     if (!form.gender) {
@@ -98,10 +97,10 @@ export const RegistrationForm = ({ authApi }: AuthFormProps) => {
       newErrors.street = "Street is required.";
     }
 
-    if (!form.number.trim()) {
-      newErrors.number = "Number is required.";
-    } else if (isNaN(Number(form.number))) {
-      newErrors.number = "Number must be a valid number.";
+    if (!form.street_number.trim()) {
+      newErrors.street_number = "Street number is required.";
+    } else if (isNaN(Number(form.street_number))) {
+      newErrors.street_number = "Street number must be a valid number.";
     }
 
     return newErrors;
@@ -118,20 +117,19 @@ export const RegistrationForm = ({ authApi }: AuthFormProps) => {
     if (Object.keys(validationErrors).length !== 0) return;
 
     try {
-      const res = await authApi.register(form);
+        const res = await authApi.register(form);
 
-      // backend mora vratiti token (kao kod login-a)
-      if (res.token) {
-        toast.success("Welcome 🎉");
-        login(res.token);     // ✅ auto-login
-        navigate("/");        // dashboard / home
-      } else {
-        setServerError(res.message ?? res.error ?? "Registration failed");
+        const message = (res.message ?? res.error ?? "").toLowerCase();
+        if (message.includes("success")) {
+          toast.success("Registration successful! Please log in.");
+          navigate("/login");
+        } else {
+          setServerError(res.message ?? res.error ?? "Registration failed");
+        }
+      } catch (err) {
+        console.error(err);
+        setServerError("Server error. Please try again.");
       }
-    } catch (err) {
-      console.error(err);
-      setServerError("Server error. Please try again.");
-    }
   };
 
 
@@ -182,40 +180,40 @@ export const RegistrationForm = ({ authApi }: AuthFormProps) => {
         <div>
           <label className="block text-base font-medium text-gray-700 mb-1 font-poppins">Name:</label>
           <input
-            name="name"
+            name="first_name"
             type="text"
-            value={form.name}
+            value={form.first_name}
             onChange={handleChange}
             className="w-full bg-transparent px-2 py-1 border-b-2 border-[#81cbf5] outline-none font-inter"
           />
-          <span className={`${errorClass} ${submitted && errors.name ? "text-red-600" : "invisible"}`}>
-            {submitted && errors.name ? errors.name : "•"}
+          <span className={`${errorClass} ${submitted && errors.first_name ? "text-red-600" : "invisible"}`}>
+            {submitted && errors.first_name ? errors.first_name : "•"}
           </span>
         </div>
         <div>
           <label className="block text-base font-medium text-gray-700 mb-1 font-poppins">Surname:</label>
           <input
-            name="surname"
+            name="last_name"
             type="text"
-            value={form.surname}
+            value={form.last_name}
             onChange={handleChange}
             className="w-full bg-transparent px-2 py-1 border-b-2 border-[#81cbf5] outline-none font-inter"
           />
-          <span className={`${errorClass} ${submitted && errors.surname ? "text-red-600" : "invisible"}`}>
-            {submitted && errors.surname ? errors.surname : "•"}
+          <span className={`${errorClass} ${submitted && errors.last_name ? "text-red-600" : "invisible"}`}>
+            {submitted && errors.last_name ? errors.last_name : "•"}
           </span>
         </div>
         <div>
           <label className="block text-base font-medium text-gray-700 mb-1 font-poppins">Date of birth:</label>
           <input
-            name="date_of_birth"
+            name="birth_date"
             type="date"
-            value={form.date_of_birth}
+            value={form.birth_date}
             onChange={handleChange}
             className="w-full bg-transparent px-2 py-1 border-b-2 border-[#54C571] outline-none font-inter cursor-pointer"
           />
-          <span className={`${errorClass} ${submitted && errors.date_of_birth ? "text-red-600" : "invisible"}`}>
-            {submitted && errors.date_of_birth ? errors.date_of_birth : "•"}
+          <span className={`${errorClass} ${submitted && errors.birth_date ? "text-red-600" : "invisible"}`}>
+            {submitted && errors.birth_date ? errors.birth_date : "•"}
           </span>
         </div>
         <div>
@@ -278,14 +276,14 @@ export const RegistrationForm = ({ authApi }: AuthFormProps) => {
         <div>
           <label className="block text-base font-medium text-gray-700 mb-1 font-poppins">Number:</label>
           <input
-            name="number"
+            name="street_number"
             type="text"
-            value={form.number}
+            value={form.street_number}
             onChange={handleChange}
             className="w-full bg-transparent px-2 py-1 border-b-2 border-[#D462FF] outline-none font-inter"
           />
-          <span className={`${errorClass} ${submitted && errors.number ? "text-red-600" : "invisible"}`}>
-            {submitted && errors.number ? errors.number : "•"}
+          <span className={`${errorClass} ${submitted && errors.street_number ? "text-red-600" : "invisible"}`}>
+            {submitted && errors.street_number ? errors.street_number : "•"}
           </span>
         </div>
         <div className="col-span-2 mt-4">

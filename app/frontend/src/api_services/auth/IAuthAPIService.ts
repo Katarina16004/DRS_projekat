@@ -1,19 +1,19 @@
 import type { AuthResponse } from "../../types/auth/AuthResponse";
 
 export interface RegistrationData {
+  email: string;
   username: string;
   password: string;
-  email: string;
-  name: string;
-  surname: string;
-  date_of_birth: string;
+  first_name: string;
+  last_name: string;
+  birth_date: string;
   gender: string;
   country: string;
   street: string;
-  number: string;
+  street_number: string;
 }
 
 export interface IAuthAPIService {
-  login(username: string, password: string): Promise<AuthResponse>;
+  login(email: string, password: string): Promise<AuthResponse>;
   register(data: RegistrationData): Promise<AuthResponse>;
 }

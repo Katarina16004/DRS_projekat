@@ -1,3 +1,4 @@
+import { authApi } from "../../api_services/auth/AuthAPIService";
 import { RegistrationForm } from "../../components/auth/RegistrationForm";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 
@@ -15,7 +16,7 @@ export default function RegisterPage() {
           background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
         }}
       >
-        <RegistrationForm />
+        <RegistrationForm authApi={authApi} />
       </div>
     </div>
   )
