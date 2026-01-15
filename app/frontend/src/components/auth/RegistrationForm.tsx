@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import type { AuthFormProps } from "../../types/props/auth/AuthFormProps";
+import { useAuth } from "../../hooks/auth/useAuthHook";
 
 interface FormState {
   username: string;
@@ -19,7 +21,7 @@ interface ErrorState {
   [key: string]: string;
 }
 
-export const RegistrationForm = () => {
+export const RegistrationForm = ({ authApi }: AuthFormProps) => {
   const [form, setForm] = useState<FormState>({
     username: "",
     email: "",
@@ -36,6 +38,9 @@ export const RegistrationForm = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<ErrorState>({});
   const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const { login } = useAuth();
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -52,7 +57,7 @@ export const RegistrationForm = () => {
     } else if (form.username.length < 3) {
       newErrors.username = "Username must have at least 3 characters.";
     } //else {
-      //newErrors.username = "Username uniqueness is not checked yet.";
+    //newErrors.username = "Username uniqueness is not checked yet.";
     //}
 
     if (!form.password) {
@@ -102,17 +107,34 @@ export const RegistrationForm = () => {
     return newErrors;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    setServerError("");
+
     const validationErrors = validate(form);
     setErrors(validationErrors);
 
-    if (Object.keys(validationErrors).length === 0) {
-      toast.success("Registration successful!");
-      navigate("/adminUsers");
+    if (Object.keys(validationErrors).length !== 0) return;
+
+    try {
+      const res = await authApi.register(form);
+
+      // backend mora vratiti token (kao kod login-a)
+      if (res.token) {
+        toast.success("Welcome 🎉");
+        login(res.token);     // ✅ auto-login
+        navigate("/");        // dashboard / home
+      } else {
+        setServerError(res.message ?? res.error ?? "Registration failed");
+      }
+    } catch (err) {
+      console.error(err);
+      setServerError("Server error. Please try again.");
     }
   };
+
+
 
   const errorClass = "block min-h-[1.05rem] text-xs font-poppins transition-colors";
 
@@ -121,6 +143,13 @@ export const RegistrationForm = () => {
       <h2 className="text-3xl font-bold text-center mb-4 font-poppins tracking-wider">
         Register
       </h2>
+
+      {serverError && (
+        <p className="text-center text-red-600 mb-4 font-poppins">
+          {serverError}
+        </p>
+      )}
+
       <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit} noValidate>
         <div>
           <label className="block text-base font-medium text-gray-700 mb-1 font-poppins">Username:</label>
@@ -275,3 +304,5 @@ export const RegistrationForm = () => {
     </div>
   );
 };
+
+
