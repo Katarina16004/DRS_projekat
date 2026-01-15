@@ -11,7 +11,7 @@
 ### **GET** `/all_users`
 Vraca json sa SAMO UserProfile podacima
 
-### **DELETE** `/detelete/{id}`
+### **DELETE** `/delete/{id}`
 Brise user ID
 
 ### **PUT** `/role/{id}`
