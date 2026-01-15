@@ -1,11 +1,11 @@
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import type { UserRole } from "../../../enums/user/UserRole";
-import type { UserAdminDTO } from "../../../models/users/UserAdminInfoDTO";
+import type { UserDTO } from "../../../models/users/UserDTO";
 import { Info, capitalize } from "./UserHelpers";
 
 interface UserAdminCardProps {
-  user: UserAdminDTO;
+  user: UserDTO;
   onRoleChange: (id: number, role: UserRole) => void;
   onDelete: (id: number) => void;
 }
@@ -44,7 +44,6 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardPro
           >
             <option value="user">User</option>
             <option value="moderator">Moderator</option>
-            <option value="admin">Admin</option>
           </select>
         </div>
         {/* Dugme za kvizove samo za moderatora */}
