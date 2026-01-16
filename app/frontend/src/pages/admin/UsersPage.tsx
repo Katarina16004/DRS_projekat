@@ -5,6 +5,7 @@ import { UserAdminCard } from "../../components/admin/users/UserAdminCard";
 import type { UserDTO } from "../../models/users/UserDTO";
 import type { UserRole } from "../../enums/user/UserRole";
 import { userApi } from "../../api_services/users/UserAPIService";
+import { jwtDecode} from "jwt-decode";
 
 const adminNavbarUser = {
   username: "admin",
@@ -14,6 +15,7 @@ const adminNavbarUser = {
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserDTO[]>([]);
   const token = localStorage.getItem("token");
+  const [loggedInUserId, setLoggedInUserId] = useState<number | undefined>(undefined);
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -21,9 +23,15 @@ export default function AdminUsersPage() {
   console.log("TOKEN:", token);
   if (!token) return;
 
+  try {
+    const decoded: any = jwtDecode(token);
+    setLoggedInUserId(Number(decoded.id));
+  } catch (err) {
+    setLoggedInUserId(undefined);
+  }
+
   const fetchUsers = async () => {
     const data = await userApi.getAllUsers(token);
-    console.log("Fetched users:", data);
     setUsers(data);
   };
 
@@ -82,6 +90,7 @@ export default function AdminUsersPage() {
               user={user}
               onRoleChange={handleRoleChange}
               onDelete={handleDelete}
+              loggedInUserId={loggedInUserId}
             />
           )}
         </div>

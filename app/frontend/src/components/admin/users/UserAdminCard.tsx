@@ -8,9 +8,11 @@ interface UserAdminCardProps {
   user: UserDTO;
   onRoleChange: (id: number, role: UserRole) => void;
   onDelete: (id: number) => void;
+  loggedInUserId?: number;
 }
 
-export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardProps) => {
+export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId  }: UserAdminCardProps) => {
+  const isMe = user.ID_User === loggedInUserId;
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 bg-white border border-[#FFF8C6] shadow-xl rounded-2xl px-10 py-8 mb-8 transition hover:shadow-2xl">
       {/* Avatar */}
@@ -25,7 +27,7 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardPro
         )}
       </div>
       {/* User Data */}
-      <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-2 w-full">
+      <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-x-20 gap-y-4 w-full ">
         <Info label="Name" value={user.First_Name ?? undefined} />
         <Info label="Surname" value={user.Last_Name ?? undefined} />
         <Info label="E-mail" value={user.Email ?? undefined} />
@@ -33,18 +35,20 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardPro
         <Info label="Date of birth" value={user.Birth_Date ?? undefined} />
         <Info label="Country" value={user.Country ?? undefined} />
         <Info label="Street" value={user.Street ?? undefined} />
-        <Info label="Number" value={user.Street_Number ?? undefined} />
+        <Info label="Street Number" value={user.Street_Number ?? undefined} />
       </div>
-      
+
       {/* Delete */}
-      <button
-        className="ml-0 md:ml-4 mt-8 md:mt-0 text-2xl text-red-400 hover:text-red-600 p-2 cursor-pointer rounded-full transition"
-        onClick={() => onDelete(user.ID_User)}
-        aria-label="Delete user"
-        title="Delete user"
-      >
-        <FaTrash />
-      </button>
+      {!isMe && (
+        <button
+          className="ml-0 md:ml-4 mt-8 md:mt-0 text-2xl text-red-400 hover:text-red-600 p-2 cursor-pointer rounded-full transition"
+          onClick={() => onDelete(user.ID_User)}
+          aria-label="Delete user"
+          title="Delete user"
+        >
+          <FaTrash />
+        </button>
+      )}
     </div>
   );
 };
