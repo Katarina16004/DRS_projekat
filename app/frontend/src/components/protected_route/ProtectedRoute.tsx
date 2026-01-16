@@ -37,20 +37,52 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     const rolesAllowed = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     if (!rolesAllowed.includes(user?.role ?? "")) {
       return (
-        <main className="min-h-screen bg-gradient-to-tr from-slate-600/75 to-orange-800/70 flex items-center justify-center">
-          <div className="bg-white/90 backdrop-blur-md shadow-2xl border border-orange-300 rounded-2xl p-10 w-full max-w-lg text-center">
-            <h2 className="text-3xl font-bold text-orange-600 mb-4">
-              You do not have permission
+        <main
+          className="min-h-screen flex items-center justify-center font-inter"
+          style={{
+            background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
+          }}
+        >
+          <div
+            className="shadow-2xl rounded-2xl px-10 py-14 text-center max-w-md w-full"
+            style={{
+              background: "rgba(255, 255, 255, 0.90)",
+              border: "1px solid #54C571",
+            }}
+          >
+            <h1
+              className="text-5xl font-extrabold mb-4 font-poppins"
+              style={{ color: "#54C571" }}
+            >
+              No Access
+            </h1>
+            <h2
+              className="text-2xl font-bold mb-6 font-poppins"
+              style={{ color: "#82CAFF" }}
+            >
+              Permission Denied
             </h2>
-            <p className="text-gray-800 text-lg mb-6">
+            <p className="mb-6 font-poppins" style={{ color: "#555" }}>
+              You do not have permission to view this page.<br />
               Required role:{" "}
-              <span className="font-semibold text-orange-500">
+              <span className="font-semibold" style={{ color: "#D462FF" }}>
                 {rolesAllowed.join(", ")}
               </span>
             </p>
             <button
               onClick={handleLogout}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-xl transition font-semibold"
+              className="inline-block px-6 py-3 rounded-xl transition font-semibold font-poppins shadow-md"
+              style={{
+                background: "#54C571",
+                color: "#fff",
+                border: "1px solid #54C571",
+              }}
+              onMouseOver={e =>
+                (e.currentTarget.style.background = "#D462FF")
+              }
+              onMouseOut={e =>
+                (e.currentTarget.style.background = "#54C571")
+              }
             >
               Log out
             </button>
