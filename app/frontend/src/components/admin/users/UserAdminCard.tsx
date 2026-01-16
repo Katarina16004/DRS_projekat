@@ -19,50 +19,27 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete }: UserAdminCardPro
           <img src={user.avatarUrl} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
         ) : (
           <span className="w-20 h-20 rounded-full flex items-center justify-center bg-gray-300 text-white font-bold text-2xl">
-            {(user.name ?? "").charAt(0)}
-            {(user.surname ?? "").charAt(0)}
+            {(user.First_Name ?? "").charAt(0)}
+            {(user.Last_Name ?? "").charAt(0)}
           </span>
         )}
       </div>
       {/* User Data */}
       <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-2 w-full">
-        <Info label="Name" value={user.name ?? undefined} />
-        <Info label="Surname" value={user.surname ?? undefined} />
-        <Info label="Username" value={user.username ?? undefined} />
-        <Info label="E-mail" value={user.email ?? undefined} />
-        <Info label="Gender" value={capitalize(user.gender ?? undefined)} />
-        <Info label="Date of birth" value={user.dateOfBirth ?? undefined} />
-        <Info label="Country" value={user.country ?? undefined} />
-        <Info label="Street" value={user.street ?? undefined} />
-        <Info label="Number" value={user.number ?? undefined} />
-        <div className="flex flex-col mb-2">
-          <span className="font-medium text-xs text-gray-600 mb-1">Role</span>
-          <select
-            className="py-1 px-2 rounded-lg border border-gray-300 font-medium cursor-pointer bg-[#f9f9f9] focus:bg-white shadow-sm transition"
-            value={user.role}
-            onChange={e => onRoleChange(user.id, e.target.value as UserRole)}
-          >
-            <option value="user">User</option>
-            <option value="moderator">Moderator</option>
-          </select>
-        </div>
-        {/* Dugme za kvizove samo za moderatora */}
-        {user.role === "moderator" && (
-          <div className="flex flex-col mb-2 justify-end">
-            <span className="font-medium text-xs text-gray-600 mb-1 invisible">Quizzes</span>
-            <Link
-              to={`/users/${user.id}/quizzes`}
-              className="inline-block px-4 py-2 bg-[#82CAFF] hover:bg-[#54C571] text-white font-semibold rounded-lg shadow text-center transition"
-            >
-              Quizzes
-            </Link>
-          </div>
-        )}
+        <Info label="Name" value={user.First_Name ?? undefined} />
+        <Info label="Surname" value={user.Last_Name ?? undefined} />
+        <Info label="E-mail" value={user.Email ?? undefined} />
+        <Info label="Gender" value={capitalize(user.Gender ?? undefined)} />
+        <Info label="Date of birth" value={user.Birth_Date ?? undefined} />
+        <Info label="Country" value={user.Country ?? undefined} />
+        <Info label="Street" value={user.Street ?? undefined} />
+        <Info label="Number" value={user.Street_Number ?? undefined} />
       </div>
+      
       {/* Delete */}
       <button
         className="ml-0 md:ml-4 mt-8 md:mt-0 text-2xl text-red-400 hover:text-red-600 p-2 cursor-pointer rounded-full transition"
-        onClick={() => onDelete(user.id)}
+        onClick={() => onDelete(user.ID_User)}
         aria-label="Delete user"
         title="Delete user"
       >

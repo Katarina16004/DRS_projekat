@@ -1,66 +1,61 @@
 import type { UserDTO } from "../../models/users/UserDTO";
-import type { IUserAPIService } from "./IUserAPIService";
-import axios from "axios"
+import axios from "axios";
 
+const API_URL = `http://localhost:5000/`;
 
-const API_URL_ADMIN: string = `http://localhost:5000/admin`
-const API_URL: string = `http://localhost:5000/`
-
-export const userApi: IUserAPIService = {
+export const userApi = {
     async getAllUsers(token: string): Promise<UserDTO[]> {
         try {
-            const res = await axios.get<{ success: boolean, message: string, data: UserDTO[] }>(
-                `${API_URL_ADMIN}/all_users`, { headers: { Authorization: `Bearer ${token}` } }
-            )
-
-            return res.data.data || []
+            const res = await axios.get<UserDTO[]>(
+                `${API_URL}all_users`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            return res.data;
         } catch (error) {
-            console.error("Error while fetching all users: ", error)
-            return []
+            console.error("Error while fetching all users: ", error);
+            return [];
         }
     },
 
-    async deleteUser(token: string, id: number): Promise<UserDTO> {
+    async deleteUser(token: string, id: number): Promise<void> {
         try {
-            const res = await axios.delete<{ success: boolean, message: string, data: UserDTO }>(
-                `${API_URL_ADMIN}/delete/${id}`,
+            await axios.delete(
+                `${API_URL}delete/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
-            )
-
-            return res.data.data
+            );
         } catch (error) {
-            console.error(`Error while deleting user with ${id}: `, error)
-            throw error
+            console.error(`Error while deleting user with id ${id}: `, error);
+            throw error;
         }
     },
 
     async changeUserRole(token: string, id: number, role: string): Promise<UserDTO> {
         try {
-            const res = await axios.patch<{ success: boolean, message: string, data: UserDTO }>(
-                `${API_URL_ADMIN}/role/${id}`,
-                { role },
+            const formData = new FormData();
+            formData.append("role", role);
+            const res = await axios.put<UserDTO>(
+                `${API_URL}role/${id}`,
+                formData,
                 { headers: { Authorization: `Bearer ${token}` } }
-            )
-
-            return res.data.data
+            );
+            return res.data;
         } catch (error) {
-            console.error(`Error while changing the user role at id: ${id}: `, error)
-            throw error
+            console.error(`Error while changing user role at id: ${id}: `, error);
+            throw error;
         }
     },
 
     async updateProfile(token: string, id: number, user: UserDTO): Promise<UserDTO> {
         try {
-            const res = await axios.patch<{ success: boolean, message: string, data: UserDTO }>(
-                `${API_URL}/update_profile/${id}`,
+            const res = await axios.put<UserDTO>(
+                `${API_URL}update_profile`,
                 user,
                 { headers: { Authorization: `Bearer ${token}` } }
-            )
-
-            return res.data.data
+            );
+            return res.data;
         } catch (error) {
-            console.error(`Error while changing the user role at id: ${id}: `, error)
-            throw error
+            console.error(`Error while updating the user profile at id: ${id}: `, error);
+            throw error;
         }
     }
-}
+};

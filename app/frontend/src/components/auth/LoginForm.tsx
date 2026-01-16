@@ -33,6 +33,7 @@ export function LoginForm({ authApi }: AuthFormProps) {
 
             if (res.token) {
                 login(res.token);
+                localStorage.setItem("token", res.token);
                 toast.success("Login successful!");
 
                 const claims = jwtDecode<JwtTokenClaims>(res.token);

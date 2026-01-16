@@ -6,16 +6,10 @@ import type { UserDTO } from "../../models/users/UserDTO";
 import type { UserRole } from "../../enums/user/UserRole";
 import { userApi } from "../../api_services/users/UserAPIService";
 
-export interface UserAdminCardProps {
-  user: UserDTO;
-  onRoleChange: (id: number, role: UserRole) => void;
-  onDelete: (id: number) => void;
-}
 const adminNavbarUser = {
   username: "admin",
   role: "ADMIN" as UserRole,
 };
-
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserDTO[]>([]);
@@ -23,17 +17,18 @@ export default function AdminUsersPage() {
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-
   useEffect(() => {
-    if (!token) return;
+  console.log("TOKEN:", token);
+  if (!token) return;
 
-    const fetchUsers = async () => {
-      const data = await userApi.getAllUsers(token);
-      setUsers(data)
-    };
+  const fetchUsers = async () => {
+    const data = await userApi.getAllUsers(token);
+    console.log("Fetched users:", data);
+    setUsers(data);
+  };
 
-    fetchUsers();
-  }, [token])
+  fetchUsers();
+}, [token]);
 
   const handleRoleChange = async (id: number, role: UserRole) => {
     if (!token) return;
@@ -41,20 +36,18 @@ export default function AdminUsersPage() {
     const updatedUser = await userApi.changeUserRole(token, id, role);
 
     setUsers(prev =>
-      prev.map(u => u.id === id ? updatedUser : u)
+      prev.map(u => u.ID_User === id ? updatedUser : u)
     );
   };
 
   const handleDelete = async (id: number) => {
-    if (!token) return
-
-    await userApi.deleteUser(token, id)
-    setUsers(prev => prev.filter(u => u.id !== id))
+    if (!token) return;
+    await userApi.deleteUser(token, id);
+    setUsers(prev => prev.filter(u => u.ID_User !== id));
   };
 
   const handleDeleteAll = () => setUsers([]);
 
-  // Primer funkcije za logout
   const handleLogout = () => {
     setShowLogoutConfirm(true);
   };
@@ -85,7 +78,7 @@ export default function AdminUsersPage() {
           </div>
           {users.map(user =>
             <UserAdminCard
-              key={user.id}
+              key={user.ID_User}
               user={user}
               onRoleChange={handleRoleChange}
               onDelete={handleDelete}
@@ -100,19 +93,15 @@ export default function AdminUsersPage() {
             className="absolute inset-0 bg-black/30 backdrop-blur-sm"
             onClick={() => setShowDeleteAllConfirm(false)}
           />
-
-          {/* Modal */}
           <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md font-poppins z-10">
             <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
               Delete all users?
             </h3>
-
             <p className="text-gray-600 text-center mb-8">
               Are you sure you want to permanently delete all users?
               <br />
               This action cannot be undone.
             </p>
-
             <div className="flex justify-center gap-4">
               <button
                 className="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
@@ -120,11 +109,10 @@ export default function AdminUsersPage() {
               >
                 Cancel
               </button>
-
               <button
                 className="px-6 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition font-medium"
                 onClick={() => {
-                  handleDeleteAll();
+                  handleDeleteAll(); //odradicemo posle KT
                   setShowDeleteAllConfirm(false);
                 }}
               >
@@ -146,11 +134,9 @@ export default function AdminUsersPage() {
             <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
               Log out?
             </h3>
-
             <p className="text-gray-600 text-center mb-8">
               Are you sure you want to log out of your account?
             </p>
-
             <div className="flex justify-center gap-4">
               <button
                 className="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
@@ -158,7 +144,6 @@ export default function AdminUsersPage() {
               >
                 Cancel
               </button>
-
               <button
                 className="px-6 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition font-medium"
                 onClick={confirmLogout}
@@ -169,7 +154,6 @@ export default function AdminUsersPage() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

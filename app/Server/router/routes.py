@@ -28,11 +28,8 @@ def register():
                 .filter(User.username == data["username"] or User.email == data["email"])
                 .first()
             )
-
-            # Da li korisnik vec postoji?
             if existing_user:
                 return jsonify({"error": "Username or email already exists!"}), 409
-
 
             try:
                 session.add(User(
@@ -65,9 +62,7 @@ def register():
             except Exception as e:
                 session.rollback()
                 return jsonify({"error": "Registration failed", "details": str(e)}), 400
-            
 
-    # Invalid request
     return jsonify({"error": "Invalid request"}), 400
 
 @routes.route("/login", methods=['POST'])
@@ -97,7 +92,6 @@ def login():
             # Da li je lozinka tacna?
             if not bcrypt.check_password_hash(existing_user.password, data["password"]):
                 user_state["count"] += 1
-
                 if user_state["count"] >= MAX_ATTEMPTS:
                     user_state["locked_until"] = now + LOCK_TIME
                     user_state["count"] = 0
@@ -105,7 +99,6 @@ def login():
                     return jsonify({
                         "error": "Account locked due to multiple failed attempts. Try again in 1 minute."
                     }), 403
-
                 return jsonify({"error": "Wrong password!"}), 409
 
             # JWT token (nova polja!)
@@ -126,43 +119,35 @@ def check():
             token = request.headers.get("Authorization").split(" ")[1]
             print(token)
             decoded = jwt.decode(token, "temporary_secret_key", algorithms=["HS256"])
-            return jsonify({"message": "Token is valid", "user": decoded["user"]}), 200
-
+            # ceo decoded payload
+            return jsonify({"message": "Token is valid", "user": decoded}), 200
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Token has expired"}), 401
-
         except jwt.InvalidTokenError:
             return jsonify({"error": "Invalid token"}), 401
-
     return jsonify({"error": "Invalid request"}), 400
 
-# Protection
 def protected(required_role=None):
     def decorator(f):
         @wraps(f)
         def decorated(*args, **kwargs):
             token = None
-
-            # Get token from header
             if 'Authorization' in request.headers:
                 auth_header = request.headers['Authorization']
                 if auth_header.startswith("Bearer "):
                     token = auth_header.split(" ")[1]
-
             if not token:
                 return jsonify({"msg": "Token is missing!"}), 401
-
             try:
                 data = jwt.decode(token, "temporary_secret_key", algorithms=["HS256"])
-                current_user = data["user"]
-                if (required_role):
+                current_user = data["id"] #koristimo id
+                if required_role:
                     allowed_roles = (
                         [required_role] if isinstance(required_role, str) else list(required_role)
                     )
-                    
                     with Session.begin() as session:
                         user = session.query(User).filter(User.ID_User == current_user).first()
-                        if user.role not in allowed_roles:
+                        if not user or user.role not in allowed_roles:
                             return jsonify({"msg": "Insufficient permissions!"}), 403
             except jwt.ExpiredSignatureError:
                 return jsonify({"msg": "Token has expired!"}), 401
@@ -179,14 +164,13 @@ def protected(required_role=None):
 def admin(current_user):  
     return jsonify({"message": "Welcome, admin!"}), 200
 
-# Admin ruta za sve usere
 @routes.route("/all_users", methods=['GET'])
 @protected(required_role=['admin'])
-def all_users():
+def all_users(current_user):
     with Session.begin() as session:
         users = session.query(UserProfile).all()
         users_list = [
-            {   #fali username, avatarURL za sliku i role user-a
+            {
                 "ID_User": user.ID_User,
                 "First_Name": user.First_Name,
                 "Last_Name": user.Last_Name,
@@ -201,20 +185,20 @@ def all_users():
         ]
         return jsonify(users_list), 200
 
-# Admin delete 
 @routes.route("/delete/<int:user_id>", methods=['DELETE'])
 @protected(required_role=['admin'])
-def delete(user_id):
+def delete(current_user, user_id):
     with Session.begin() as session:
+        profile = session.query(UserProfile).filter(UserProfile.ID_User == user_id).first()
+        if profile:
+            session.delete(profile)
         user = session.query(User).filter(User.ID_User == user_id).first()
         if not user:
             return jsonify({"error": "User not found"}), 404
-
         session.delete(user)
         session.commit()
         return jsonify({"message": "User deleted successfully"}), 200
 
-# Admin change role
 @routes.route("/role/<int:user_id>", methods=['PUT'])
 @protected(required_role=['admin'])
 def change_role(user_id):
@@ -232,7 +216,6 @@ def change_role(user_id):
         session.commit()
         return jsonify({"message": "User role updated successfully"}), 200
 
-# User change self
 @routes.route("/update_profile", methods=['PUT'])
 @protected()
 def update_profile(current_user):
@@ -245,25 +228,18 @@ def update_profile(current_user):
 
         if "first_name" in data:
             profile.First_Name = data["first_name"]
-
         if "last_name" in data:
             profile.Last_Name = data["last_name"]
-
         if "email" in data:
             profile.Email = data["email"]
-
         if "birth_date" in data:
             profile.Birth_Date = data["birth_date"]
-
         if "gender" in data:
             profile.Gender = data["gender"]
-
         if "country" in data:
             profile.Country = data["country"]
-
         if "street" in data:
             profile.Street = data["street"]
-
         if "street_number" in data:
             profile.Street_Number = data["street_number"]
 
