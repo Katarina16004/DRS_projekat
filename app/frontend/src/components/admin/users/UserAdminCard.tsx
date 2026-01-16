@@ -11,7 +11,7 @@ interface UserAdminCardProps {
   loggedInUserId?: number;
 }
 
-export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId  }: UserAdminCardProps) => {
+export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: UserAdminCardProps) => {
   const isMe = user.ID_User === loggedInUserId;
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 bg-white border border-[#FFF8C6] shadow-xl rounded-2xl px-10 py-8 mb-8 transition hover:shadow-2xl">
@@ -38,17 +38,37 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId  }:
         <Info label="Street Number" value={user.Street_Number ?? undefined} />
       </div>
 
-      {/* Delete */}
-      {!isMe && (
-        <button
-          className="ml-0 md:ml-4 mt-8 md:mt-0 text-2xl text-red-400 hover:text-red-600 p-2 cursor-pointer rounded-full transition"
-          onClick={() => onDelete(user.ID_User)}
-          aria-label="Delete user"
-          title="Delete user"
+      {/* Actions */}
+      <div className="flex flex-col items-center gap-4 ml-0 md:ml-4">
+        {/* Role selector */}
+        <select
+          //value={user.Role} //kad se doda sa backend-a samo otkomentarisati
+          disabled={isMe}
+          onChange={(e) =>
+            onRoleChange(user.ID_User, e.target.value as UserRole)
+          }
+          className={`px-3 py-1 rounded-lg border text-sm font-medium
+            ${isMe
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-white border-[#82CAFF] text-[#4451A4] hover:border-[#4451A4] cursor-pointer"
+            }`}
         >
-          <FaTrash />
-        </button>
-      )}
+          <option value="PLAYER">Player</option>
+          <option value="MODERATOR">Moderator</option>
+        </select>
+
+        {/* Delete */}
+        {!isMe && (
+          <button
+            className="text-2xl text-red-400 hover:text-red-600 p-2 cursor-pointer rounded-full transition"
+            onClick={() => onDelete(user.ID_User)}
+            aria-label="Delete user"
+            title="Delete user"
+          >
+            <FaTrash />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
