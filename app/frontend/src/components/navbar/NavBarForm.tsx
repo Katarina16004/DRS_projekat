@@ -69,7 +69,7 @@ export const NavbarForm = ({ user, onLogout }: any) => {
                         </div>
 
                         {/* Avatar */}
-                        <NavLink to="/update_profile" className="outline-none">
+                        <NavLink to="/profileInfo" className="outline-none">
                             {user.avatarUrl ? (
                                 <img
                                     src={user.avatarUrl}
