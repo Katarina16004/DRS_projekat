@@ -5,12 +5,8 @@ import { UserAdminCard } from "../../components/admin/users/UserAdminCard";
 import type { UserDTO } from "../../models/users/UserDTO";
 import type { UserRole } from "../../enums/user/UserRole";
 import { userApi } from "../../api_services/users/UserAPIService";
-import { jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
-const adminNavbarUser = {
-  username: "admin",
-  role: "ADMIN" as UserRole,
-};
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserDTO[]>([]);
@@ -18,25 +14,35 @@ export default function AdminUsersPage() {
   const [loggedInUserId, setLoggedInUserId] = useState<number | undefined>(undefined);
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [navBarUser, setNavBarUser] = useState<{
+    username: string;
+    role: UserRole
+  } | null>(null)
 
   useEffect(() => {
-  console.log("TOKEN:", token);
-  if (!token) return;
+    console.log("TOKEN:", token);
+    if (!token) return;
 
-  try {
-    const decoded: any = jwtDecode(token);
-    setLoggedInUserId(Number(decoded.id));
-  } catch (err) {
-    setLoggedInUserId(undefined);
-  }
+    try {
+      const decoded: any = jwtDecode(token);
+      setLoggedInUserId(Number(decoded.id));
 
-  const fetchUsers = async () => {
-    const data = await userApi.getAllUsers(token);
-    setUsers(data);
-  };
+      setNavBarUser({
+        username: decoded.username,
+        role: decoded.role as UserRole
+      })
+    } catch (err) {
+      setLoggedInUserId(undefined);
+      setNavBarUser(null)
+    }
 
-  fetchUsers();
-}, [token]);
+    const fetchUsers = async () => {
+      const data = await userApi.getAllUsers(token);
+      setUsers(data);
+    };
+
+    fetchUsers();
+  }, [token]);
 
   const handleRoleChange = async (id: number, role: UserRole) => {
     if (!token) return;
@@ -67,7 +73,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="min-h-screen font-poppins flex flex-col">
-      <NavbarForm user={adminNavbarUser} onLogout={handleLogout} />
+      <NavbarForm user={navBarUser} onLogout={handleLogout} />
       <div
         className="flex-1 w-full pb-16"
         style={{
