@@ -186,7 +186,7 @@ def all_users():
     with Session.begin() as session:
         users = session.query(UserProfile).all()
         users_list = [
-            {
+            {   #fali username, avatarURL za sliku i role user-a
                 "ID_User": user.ID_User,
                 "First_Name": user.First_Name,
                 "Last_Name": user.Last_Name,
