@@ -37,7 +37,7 @@ def register():
                     email=data["email"],
                     username=data["username"],
                     password=bcrypt.generate_password_hash(data["password"]),
-                    role="admin"
+                    role="user"
                 ))
 
                 new_user = (
