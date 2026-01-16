@@ -52,7 +52,7 @@ export const userApi: IUserAPIService = {
     async updateProfile(token: string, id: number, user: UserDTO): Promise<UserDTO> {
         try {
             const res = await axios.patch<{ success: boolean, message: string, data: UserDTO }>(
-                `${API_URL}/role/${id}`,
+                `${API_URL}/update_profile/${id}`,
                 user,
                 { headers: { Authorization: `Bearer ${token}` } }
             )

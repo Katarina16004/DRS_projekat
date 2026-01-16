@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import { ProfileInfoForm } from "../../components/profile/ProfileInfoForm";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
     // Primer korisnika koji je ulogovan
@@ -9,10 +11,20 @@ export default function ProfilePage() {
         avatarUrl: "", // može biti link ka slici ili prazan string za default avatar
     };
 
+    const navigate = useNavigate()
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
     const handleLogout = () => {
-        console.log("Logout clicked");
-        // ovde ide tvoja logika za logout
+        setShowLogoutModal(true);
     };
+
+    // Pravi logout
+    const confirmLogout = () => {
+        localStorage.removeItem("token");
+        setShowLogoutModal(false);
+        navigate("/login");
+    };
+
 
     return (
         <div className="min-h-screen font-poppins flex flex-col">
@@ -28,6 +40,44 @@ export default function ProfilePage() {
             >
                 <ProfileInfoForm />
             </div>
+
+            {/* LOGOUT MODAL */}
+            {showLogoutModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Blur pozadine */}
+                    <div
+                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        onClick={() => setShowLogoutModal(false)}
+                    />
+
+                    {/* Modal */}
+                    <div className="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm text-center">
+                        <h2 className="text-xl font-bold text-gray-800 mb-4">
+                            Log out
+                        </h2>
+
+                        <p className="text-gray-600 mb-6">
+                            Are you sure you want to log out?
+                        </p>
+
+                        <div className="flex justify-center gap-4">
+                            <button
+                                onClick={() => setShowLogoutModal(false)}
+                                className="px-5 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                onClick={confirmLogout}
+                                className="px-5 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
