@@ -16,8 +16,8 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: 
     <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 bg-white border border-[#FFF8C6] shadow-xl rounded-2xl px-10 py-8 mb-8 transition hover:shadow-2xl">
       {/* Avatar */}
       <div className="flex items-center justify-center w-24 h-24 rounded-full bg-[#f3f3f3] border border-gray-300 mb-4 md:mb-0">
-        {user.avatarUrl ? (
-          <img src={user.avatarUrl} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
+        {user.Image ? (
+          <img src={user.Image} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
         ) : (
           <span className="w-20 h-20 rounded-full flex items-center justify-center bg-gray-300 text-white font-bold text-2xl">
             {(user.First_Name ?? "").charAt(0)}
@@ -35,15 +35,25 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: 
         <Info label="Country" value={user.Country ?? undefined} />
         <Info label="Street" value={user.Street ?? undefined} />
         <Info label="Street Number" value={user.Street_Number ?? undefined} />
+        <Info
+          label="Role"
+          value={
+            user.role === "user" ? "User" :
+            user.role === "moderator" ? "Moderator" :
+            user.role === "admin" ? "Admin" :
+            user.role
+          }
+        />
       </div>
 
       {/* Actions */}
       <div className="flex flex-col items-center gap-4 ml-0 md:ml-4">
         {/* Role selector */}
+        {user.role !== "admin" && (
         <select
-          value={user.Role} //kad se doda sa backend-a samo otkomentarisati
+          value={user.role}
           disabled={isMe}
-          onChange={(e) =>
+          onChange={e =>
             onRoleChange(user.ID_User, e.target.value as UserRole)
           }
           className={`px-3 py-1 rounded-lg border text-sm font-medium
@@ -55,6 +65,7 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: 
           <option value="user">Player</option>
           <option value="moderator">Moderator</option>
         </select>
+      )}
 
         {/* Delete */}
         {!isMe && (

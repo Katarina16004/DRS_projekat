@@ -6,6 +6,7 @@ import type { UserDTO } from "../../models/users/UserDTO";
 import type { UserRole } from "../../enums/user/UserRole";
 import { userApi } from "../../api_services/users/UserAPIService";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
 
 
 export default function AdminUsersPage() {
@@ -52,6 +53,7 @@ export default function AdminUsersPage() {
     setUsers(prev =>
       prev.map(u => u.ID_User === id ? updatedUser : u)
     );
+    toast.success("User role updated successfully");
   };
 
   const handleDelete = async (id: number) => {

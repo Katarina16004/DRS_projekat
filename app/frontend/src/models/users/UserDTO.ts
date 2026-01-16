@@ -10,8 +10,8 @@ export interface UserDTO {
   Country: string | null;
   Street: string | null;
   Street_Number: string | null;
-  Role: UserRole; 
-  avatarUrl?: string;
+  role: string; 
+  Image?: string;
 
   // username: string;
 }

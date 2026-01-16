@@ -219,19 +219,33 @@ def change_role(current_user, user_id):
 
         user.role = new_role
 
+        profile = session.query(UserProfile).filter(UserProfile.ID_User == user_id).first()
+
+        response_data = {
+            "ID_User": user.ID_User,
+            "First_Name": profile.First_Name if profile else None,
+            "Last_Name": profile.Last_Name if profile else None,
+            "Email": user.email,
+            "Birth_Date": profile.Birth_Date.isoformat() if profile and profile.Birth_Date else None,
+            "Gender": profile.Gender if profile else None,
+            "Country": profile.Country if profile else None,
+            "Street": profile.Street if profile else None,
+            "Street_Number": profile.Street_Number if profile else None,
+            "role": user.role,
+            "Image": profile.Image if profile else ""
+        }
 
         user_email = user.email
         user_username = user.username
-
 
     send_email(
         user_email,
         user_username,
         "Role Update",
         f"Your role has been changed to {new_role}",
-   )
+    )
 
-    return jsonify({"message": "User role updated successfully"}), 200
+    return jsonify(response_data), 200
 
 @routes.route("/update_profile", methods=['PUT'])
 @protected()
