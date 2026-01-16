@@ -20,7 +20,7 @@ export default function AdminUsersPage() {
   } | null>(null)
 
   useEffect(() => {
-    console.log("TOKEN:", token);
+    //console.log("TOKEN:", token);
     if (!token) return;
 
     try {
