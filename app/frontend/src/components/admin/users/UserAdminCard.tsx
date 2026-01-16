@@ -1,5 +1,4 @@
 import { FaTrash } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import type { UserRole } from "../../../enums/user/UserRole";
 import type { UserDTO } from "../../../models/users/UserDTO";
 import { Info, capitalize } from "./UserHelpers";
@@ -42,7 +41,7 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: 
       <div className="flex flex-col items-center gap-4 ml-0 md:ml-4">
         {/* Role selector */}
         <select
-        // value={user.Role} //kad se doda sa backend-a samo otkomentarisati
+          value={user.Role} //kad se doda sa backend-a samo otkomentarisati
           disabled={isMe}
           onChange={(e) =>
             onRoleChange(user.ID_User, e.target.value as UserRole)

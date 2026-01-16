@@ -1,3 +1,5 @@
+import type { UserRole } from "../../enums/user/UserRole";
+
 export interface UserDTO {
   ID_User: number;
   First_Name: string | null;
@@ -8,7 +10,8 @@ export interface UserDTO {
   Country: string | null;
   Street: string | null;
   Street_Number: string | null;
-  // username: string;
-  // role: UserRole; //poslace sa backenda, ubaci Bojana!
+  Role: UserRole; 
   avatarUrl?: string;
+
+  // username: string;
 }

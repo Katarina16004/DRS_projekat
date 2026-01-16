@@ -37,7 +37,7 @@ def register():
                     email=data["email"],
                     username=data["username"],
                     password=bcrypt.generate_password_hash(data["password"]),
-                    role="user"
+                    role="admin"
                 ))
 
                 new_user = (
@@ -55,7 +55,8 @@ def register():
                     Gender=data["gender"],
                     Country=data["country"],
                     Street=data["street"],
-                    Street_Number=data["street_number"]
+                    Street_Number=data["street_number"],
+                    Image = data.get("image","")
                 ))
                 session.commit()
                 return jsonify({"message": "User registered successfully"}), 201
@@ -180,7 +181,9 @@ def all_users(current_user):
                 "Gender": user.Gender,
                 "Country": user.Country,
                 "Street": user.Street,
-                "Street_Number": user.Street_Number
+                "Street_Number": user.Street_Number,
+                "role": user.user.role,
+                "Image":user.Image
             }
             for user in users
         ]
@@ -256,6 +259,10 @@ def update_profile(current_user):
             profile.Street = data["street"]
         if "street_number" in data:
             profile.Street_Number = data["street_number"]
+        if "image" in data:
+            profile.Image = data["image"]
+        if "role" in data:
+            profile.user.role = data["role"]
 
         session.commit()
         return jsonify({"message": "Profile updated successfully"}), 200

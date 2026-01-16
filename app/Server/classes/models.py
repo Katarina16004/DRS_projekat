@@ -37,5 +37,6 @@ class UserProfile(Base):
     Country = Column(String(45))
     Street = Column(String(45))
     Street_Number = Column(String(10))
+    Image = Column(String(255))
 
     user = relationship("User", back_populates="profile")
