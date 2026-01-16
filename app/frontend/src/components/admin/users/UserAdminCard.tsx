@@ -42,7 +42,7 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: 
       <div className="flex flex-col items-center gap-4 ml-0 md:ml-4">
         {/* Role selector */}
         <select
-          //value={user.Role} //kad se doda sa backend-a samo otkomentarisati
+        // value={user.Role} //kad se doda sa backend-a samo otkomentarisati
           disabled={isMe}
           onChange={(e) =>
             onRoleChange(user.ID_User, e.target.value as UserRole)
@@ -53,8 +53,8 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: 
               : "bg-white border-[#82CAFF] text-[#4451A4] hover:border-[#4451A4] cursor-pointer"
             }`}
         >
-          <option value="PLAYER">Player</option>
-          <option value="MODERATOR">Moderator</option>
+          <option value="user">Player</option>
+          <option value="moderator">Moderator</option>
         </select>
 
         {/* Delete */}

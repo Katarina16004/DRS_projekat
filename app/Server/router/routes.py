@@ -5,6 +5,7 @@ from classes.models import User, UserProfile
 from util.extensions import bcrypt  
 from functools import wraps
 from collections import defaultdict
+from services.mail_service import send_email
 import jwt
 import datetime
 
@@ -201,9 +202,10 @@ def delete(current_user, user_id):
 
 @routes.route("/role/<int:user_id>", methods=['PUT'])
 @protected(required_role=['admin'])
-def change_role(user_id):
+def change_role(current_user, user_id):
     data = request.form
     new_role = data.get("role")
+
     if new_role not in ["user", "moderator", "admin"]:
         return jsonify({"error": "Invalid role"}), 400
 
@@ -213,8 +215,20 @@ def change_role(user_id):
             return jsonify({"error": "User not found"}), 404
 
         user.role = new_role
-        session.commit()
-        return jsonify({"message": "User role updated successfully"}), 200
+
+
+        user_email = user.email
+        user_username = user.username
+
+
+    send_email(
+        user_email,
+        user_username,
+        "Role Update",
+        f"Your role has been changed to {new_role}",
+   )
+
+    return jsonify({"message": "User role updated successfully"}), 200
 
 @routes.route("/update_profile", methods=['PUT'])
 @protected()
