@@ -46,15 +46,39 @@ export const userApi = {
     },
 
     async updateProfile(token: string, id: number, user: UserDTO): Promise<UserDTO> {
+    try {
+        const formData = new FormData();
+        formData.append("first_name", user.First_Name ?? "");
+        formData.append("last_name", user.Last_Name ?? "");
+        formData.append("email", user.Email ?? "");
+        formData.append("birth_date", user.Birth_Date ?? "");
+        formData.append("gender", user.Gender ?? "");
+        formData.append("country", user.Country ?? "");
+        formData.append("street", user.Street ?? "");
+        formData.append("street_number", user.Street_Number ?? "");
+        formData.append("image", user.Image ?? "");
+
+        const res = await axios.put<UserDTO>(
+            `${API_URL}update_profile`,
+            formData,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return res.data;
+    } catch (error) {
+        console.error(`Error while updating the user profile at id: ${id}: `, error);
+        throw error;
+    }
+},
+
+    async getProfile(token: string, userId: number): Promise<UserDTO> {
         try {
-            const res = await axios.put<UserDTO>(
-                `${API_URL}update_profile`,
-                user,
+            const res = await axios.get<UserDTO>(
+                `http://localhost:5000/profile/${userId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             return res.data;
         } catch (error) {
-            console.error(`Error while updating the user profile at id: ${id}: `, error);
+            console.error(`Error while fetching profile for user ${userId}:`, error);
             throw error;
         }
     }

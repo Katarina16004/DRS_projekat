@@ -280,3 +280,35 @@ def update_profile(current_user):
 
         session.commit()
         return jsonify({"message": "Profile updated successfully"}), 200
+    
+@routes.route("/profile/<int:user_id>", methods=['GET'])
+@protected()
+def get_profile(current_user, user_id):
+    with Session.begin() as session:
+        result = (
+            session.query(UserProfile, User)
+            .join(User, User.ID_User == UserProfile.ID_User)
+            .filter(UserProfile.ID_User == user_id)
+            .first()
+        )
+
+        if not result:
+            return jsonify({"error": "Profile not found"}), 404
+
+        profile, user = result
+
+        profile_data = {
+            "ID_User": user.ID_User,
+            "First_Name": profile.First_Name if profile else None,
+            "Last_Name": profile.Last_Name if profile else None,
+            "Email": user.email,
+            "Birth_Date": profile.Birth_Date.isoformat() if profile and profile.Birth_Date else None,
+            "Gender": profile.Gender if profile else None,
+            "Country": profile.Country if profile else None,
+            "Street": profile.Street if profile else None,
+            "Street_Number": profile.Street_Number if profile else None,
+            "role": user.role,
+            "Image": profile.Image if profile else ""
+        }
+
+        return jsonify(profile_data), 200

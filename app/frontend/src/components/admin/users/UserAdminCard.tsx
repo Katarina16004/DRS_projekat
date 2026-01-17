@@ -29,7 +29,7 @@ export const UserAdminCard = ({ user, onRoleChange, onDelete, loggedInUserId }: 
       <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-x-20 gap-y-4 w-full ">
         <Info label="Name" value={user.First_Name ?? undefined} />
         <Info label="Surname" value={user.Last_Name ?? undefined} />
-        <Info label="E-mail" value={user.Email ?? undefined} />
+        <Info label="E-mail" value={user.Email ?? undefined} className="break-all max-w-[180px]" />
         <Info label="Gender" value={capitalize(user.Gender ?? undefined)} />
         <Info label="Date of birth" value={user.Birth_Date ?? undefined} />
         <Info label="Country" value={user.Country ?? undefined} />

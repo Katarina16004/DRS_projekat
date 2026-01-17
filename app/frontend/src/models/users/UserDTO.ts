@@ -1,5 +1,3 @@
-import type { UserRole } from "../../enums/user/UserRole";
-
 export interface UserDTO {
   ID_User: number;
   First_Name: string | null;
@@ -12,6 +10,4 @@ export interface UserDTO {
   Street_Number: string | null;
   role: string; 
   Image?: string;
-
-  // username: string;
 }
