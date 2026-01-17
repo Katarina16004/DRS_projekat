@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode} from "jwt-decode";
 import { userApi } from "../../api_services/users/UserAPIService";
 import type { UserDTO } from "../../models/users/UserDTO";
+import toast from "react-hot-toast";
 
 interface ProfileFieldProps {
   label: string;
@@ -82,9 +83,11 @@ export const ProfileInfoForm: React.FC = () => {
     try {
       await userApi.updateProfile(token, formUser.ID_User, formUser); 
       setIsEditing(false);
-      setDto(formUser); // local update prikaza
+      setDto(formUser); 
+      toast.success("Profile data saved successfully.");
     } catch (err: any) {
-      setErrorMsg("Greška prilikom snimanja profilnih podataka!");
+      setErrorMsg("Error saving profile data!");
+      toast.error("Failed to save profile data.");
     }
     setIsSaving(false);
   };
@@ -97,7 +100,7 @@ export const ProfileInfoForm: React.FC = () => {
   if (!formUser || !dto) {
     return (
       <div className="min-h-screen flex justify-center items-center text-lg">
-        Učitavanje profila...
+        Loading profile...
       </div>
     );
   }
@@ -213,7 +216,6 @@ export const ProfileInfoForm: React.FC = () => {
             </div>
         </div>
 
-        {/* Poruka o grešci */}
         {errorMsg && (
           <div className="text-red-500 text-sm text-center mt-4">{errorMsg}</div>
         )}
