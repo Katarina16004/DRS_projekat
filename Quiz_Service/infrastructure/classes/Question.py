@@ -41,6 +41,10 @@ class Question(db.Model):
     def get_random_questions_from_category(cls, Question_Category, n=5):
         return (cls.query.filter(cls.Question_Category == Question_Category)
             .order_by(func.rand()).limit(n).all())
+    
+    @classmethod
+    def get_n_random_questions(cls, n=10):
+        return (cls.query.order_by(func.rand()).limit(n).all())
 
     @classmethod
     def get_question_by_ID(cls, ID_Question):

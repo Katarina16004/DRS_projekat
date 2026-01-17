@@ -47,6 +47,32 @@ def get_answer(question_id, answer_id):
         "Is_Correct": answer.Is_Correct
     })
 
+
+@answer_router.route('/answer/selected_questions', methods=['POST'])
+def get_answers_for_selected_questions():
+    data = request.get_json()
+
+    question_ids = data.get("question_ids", [])
+
+    if not question_ids:
+        return jsonify({"error": "No question IDs provided"}), 400
+
+    all_answers = []
+
+    for q_id in question_ids:
+        answers = Answer.get_answers_by_question(q_id)
+        all_answers.extend(answers)
+
+    return jsonify([
+        {
+            "ID_Question": a.ID_Question,
+            "ID_Answer": a.ID_Answer,
+            "Answer_Text": a.Answer_Text,
+            "Is_Correct": a.Is_Correct
+        }
+        for a in all_answers
+    ])
+
 @answer_router.route('/answer/<int:question_id>/answers',methods=['POST'])
 def create_answer(question_id):
     data = request.json

@@ -4,6 +4,5 @@ from dotenv import load_dotenv
 import os
 
 # Database 
-load_dotenv()
 engine = create_engine(os.getenv("DATABASE_URL"))
 Session = sessionmaker(engine)
