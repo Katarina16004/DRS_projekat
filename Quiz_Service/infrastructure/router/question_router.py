@@ -134,7 +134,7 @@ def delete_question(ID_Question):
         "ID_Question": ID_Question
     })
 
-@question_router.route('/questions', methods=['POST'])
+@question_router.route('/question', methods=['POST'])
 def create_question():
 
     data = request.get_json() or {}
