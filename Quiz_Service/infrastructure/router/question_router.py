@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from infrastructure.classes.Question import Question
+from infrastructure.classes.QuestionQuiz import QuestionQuiz
 
 question_router = Blueprint('question_router',__name__)
 
@@ -95,6 +96,25 @@ def get_question_by_ID(ID_Question):
         "Question_Points": q.Question_Points,
         "Question_Category": q.Question_Category
     })
+
+
+@question_router.route('/questions/<int:ID_Question>/quizzes', methods=['GET'])
+def get_quizzes_with_question(ID_Question):
+    rows = QuestionQuiz.get_quizzes_with_question(ID_Question)
+
+    if not rows:
+        return jsonify({
+            "ID_Question": ID_Question,
+            "Quizzes": []
+        }), 200
+
+    quiz_ids = [row.ID_Quiz for row in rows]
+
+    return jsonify({
+        "ID_Question": ID_Question,
+        "Quizzes": quiz_ids
+    }), 200
+
 
 @question_router.route('/question/<int:ID_Question>', methods=['PATCH'])
 def update_question(ID_Question):

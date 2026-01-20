@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from infrastructure.classes.Quiz import Quiz
-from infrastructure.classes.QuestionQuiz import QeustionQuiz
+from infrastructure.classes.QuestionQuiz import QuestionQuiz
 
 quiz_router = Blueprint('quiz_router',__name__)
 
@@ -16,6 +16,63 @@ def get_all_quizzes():
         }
         for q in  quizzes
     ])
+
+@quiz_router.route('/quizzes/random', methods=['GET'])
+def get_all_quizzes():
+    q = Quiz.get_random()
+
+    return jsonify(
+        {
+            "ID_Quiz": q.ID_Quiz,
+            "Quiz_length": q.Quiz_length,
+            "ID_User": q.ID_User,
+        }
+    )
+
+
+@quiz_router.route('/quizzes/<int:ID_Quiz>/length', methods=['GET'])
+def get_quiz_length(quiz_id):
+    length = Quiz.get_length(quiz_id)
+
+    return jsonify({
+        "ID_Quiz": quiz_id,
+        "Quiz_length": length
+    }), 200
+
+
+@quiz_router.route('/quizzes/<int:ID_Quiz>/questions', methods=['GET'])
+def get_quiz_questions(ID_Quiz):
+    rows = QuestionQuiz.get_questions_for_quiz(ID_Quiz)
+
+    if not rows:
+        return jsonify({
+            "ID_Quiz": ID_Quiz,
+            "Questions": []
+        }), 200
+
+    question_ids = [row.ID_Question for row in rows]
+
+    return jsonify({
+        "ID_Quiz": ID_Quiz,
+        "Questions": question_ids
+    }), 200
+
+@quiz_router.route('/quizzes/<int:ID_Author>', methods=['GET'])
+def get_all_quizzes(ID_Author):
+    quizzes = Quiz.get_all_from_author(ID_Author)
+
+    if len(quizzes) == 0:
+        return jsonify({"error": "Quiz not found"}), 404
+
+    return jsonify([
+        {
+            "ID_Quiz": q.ID_Quiz,
+            "Quiz_length": q.Quiz_length,
+            "ID_User": q.ID_User,
+        }
+        for q in  quizzes
+    ])
+
 
 
 @quiz_router.route("/quizzes/add",methods=['PUT'])

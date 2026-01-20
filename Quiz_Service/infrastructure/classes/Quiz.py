@@ -36,7 +36,7 @@ class Quiz(db.Model):
         return cls.query.filter(cls.ID_Quiz == id).all()
     
     @classmethod
-    def get_all_from_authon(cls,author_id):
+    def get_all_from_author(cls,author_id):
         return cls.query.filter(cls.ID_User == author_id).all()
     
     @classmethod
