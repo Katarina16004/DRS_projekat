@@ -42,4 +42,16 @@ body
 
 DELETE /answer/<question_id>/answers/<answer_id>
 
+PARTIJE / GAMES
 
+GET /games/all --> vraca sve odigrane partije
+GET /games/<int:ID_Game> --> vraca partiju sa zadatim ID-em
+GET /games/<int:ID_Player> --> vraca sve partije odredjenog igraca
+PUT /games/add --> dodavanje nove igre cita iz json-a!
+PATCH /games/<int:ID_Game> --> azurira podatke o igri
+DELETE /games/<int:ID_Game> --> brise igru
+
+
+KVIZ / QUIZ
+
+GET /quizzes/all --> vraca sve kvizove
