@@ -11,8 +11,7 @@ def get_all_answers():
         {
             "ID_Question": a.ID_Question,
             "ID_Answer": a.ID_Answer,
-            "Answer_Text": a.Answer_Text,
-            "Is_Correct": a.Is_Correct
+            "Answer_Text": a.Answer_Text
         }
         for a in answers
     ])
@@ -25,27 +24,46 @@ def get_answers_from_question(question_id):
         {
             "ID_Question": a.ID_Question,
             "ID_Answer": a.ID_Answer,
-            "Answer_Text": a.Answer_Text,
-            "Is_Correct": a.Is_Correct
+            "Answer_Text": a.Answer_Text
         }
         for a in answers
     ])
 
 
-@answer_router.route(
-    '/answer/<int:question_id>/answers/<int:answer_id>',methods=['GET'])
-def get_answer(question_id, answer_id):
-    answer = Answer.get_answer_by_id(question_id, answer_id)
+@answer_router.route('/quizzes/answer', methods=['POST'])
+def submit_answer():
+    user_id = get_current_user_id() #IGOR
+    data = request.json
 
+    session_id = data.get("session_id")
+    question_id = data.get("question_id")
+    answer_id = data.get("answer_id")
+
+    session = get_session(session_id)
+    if not session:
+        return jsonify({"error": "Session expired"}), 404
+
+    if session.user_id != user_id:
+        return jsonify({"error": "Forbidden"}), 403
+
+    answer = Answer.get_answer_by_id(question_id, answer_id)
     if not answer:
-        return jsonify({"message": "Answer not found"}), 404
+        return jsonify({"error": "Answer not found"}), 404
+
+    if answer.Is_Correct:
+        answer_correct(session)
+        result = "correct"
+    else:
+        answer_wrong(session)
+        result = "wrong"
 
     return jsonify({
-        "ID_Question": answer.ID_Question,
-        "ID_Answer": answer.ID_Answer,
-        "Answer_Text": answer.Answer_Text,
-        "Is_Correct": answer.Is_Correct
-    })
+        "result": result,
+        "current_question_index": session.current_question_index,
+        "score": session.score,
+        "correct_count": session.correct_count,
+        "wrong_count": session.wrong_count
+    }), 200
 
 
 @answer_router.route('/answer/selected_questions', methods=['POST'])
@@ -67,8 +85,7 @@ def get_answers_for_selected_questions():
         {
             "ID_Question": a.ID_Question,
             "ID_Answer": a.ID_Answer,
-            "Answer_Text": a.Answer_Text,
-            "Is_Correct": a.Is_Correct
+            "Answer_Text": a.Answer_Text
         }
         for a in all_answers
     ])

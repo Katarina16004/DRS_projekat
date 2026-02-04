@@ -26,7 +26,16 @@ class QuestionQuiz(db.Model):
     def get_questions_for_quiz(cls,ID_Quiz):
         return cls.query.filter(cls.ID_Quiz == ID_Quiz).all()
     
-    
+    @classmethod
+    def get_question_by_offset(cls, quiz_id: int, offset: int):
+        return (
+            cls.query
+            .filter(cls.ID_Quiz == quiz_id)
+            .order_by(cls.ID_Question)
+            .offset(offset)
+            .limit(1)
+            .first()
+        )
 
     @classmethod
     def get_quizzes_with_question(cls,ID_Question): 
