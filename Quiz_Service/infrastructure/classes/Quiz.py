@@ -1,4 +1,4 @@
-from Quiz_Service.infrastructure.classes import QuestionQuiz
+from infrastructure.classes import QuestionQuiz
 from infrastructure.Database.database_connect import db
 from sqlalchemy import func
 

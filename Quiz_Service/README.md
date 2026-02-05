@@ -1,5 +1,32 @@
 Sve rute na jednom mestu
 
+Tok partije:
+1. Na pocetku se poziva
+POST /quizzes/<int:quiz_id>/start
+VRACA:
+{"session_id": session.pk,"quiz_id": quiz_id} --> session_id je STRING!!! vazan je zbog vise partija istovremeno
+
+2. Azuriranje score-a pitanja ITD
+GET /quizzes/get_session/<string:session_id> --> vraca sve podatke bitne za sisiju!
+
+3. Ucitavanje sledeceg pitanja!
+GET /questions/get_next 
+Vraca sledece pitanje i odgovore
+
+4. Provera da li je tacan odgovor
+POST /quizzes/answer 
+POTREBNA SU OVA 3 podatka da se salju!
+    session_id = data.get("session_id")
+    question_id = data.get("question_id")
+    answer_id = data.get("answer_id")
+
+Kao rezultat vraca sve neophodne podatke za sesiju
+
+5. Kraj partije:
+POST /quizzes/<string:session_id>/finish
+OVO JE NOPHODNO POZVATI
+Ukoliko vrati 200, partija je sacuvana!
+
 PITANJA - QUESTIONS
 
 GET /questions/all --> Vraca sva pitanja

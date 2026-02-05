@@ -1,3 +1,4 @@
+from __future__ import annotations
 from redis_om import HashModel
 
 QUIZ_SESSION_TTL = 30 * 60
@@ -15,34 +16,37 @@ class QuizSession(HashModel):
         super().save()
         self.expire(QUIZ_SESSION_TTL)
 
-
-    def create_session(user_id: int, quiz_id: int) -> QuizSession:
-        session = QuizSession(
+    @classmethod
+    def create_session(cls, user_id: int, quiz_id: int) -> QuizSession:
+        session = cls(
             user_id=user_id,
             quiz_id=quiz_id
         )
         session.save_with_ttl()
         return session
 
-    def get_session(session_id: str) -> QuizSession | None:
+    @classmethod
+    def get_session(cls, session_id: str) -> QuizSession | None:
         try:
-            return QuizSession.get(session_id)
+            return cls.get(session_id)
         except KeyError:
             return None
-        
-    def session_exists(session_id: str) -> bool:
-        return QuizSession.db().exists(f"QuizSession:{session_id}") == 1
 
-    def answer_correct(session: QuizSession):
-        session.score += 1
-        session.correct_count += 1
-        session.current_question_index += 1
-        session.save_with_ttl()
+    @classmethod
+    def session_exists(cls, session_id: str) -> bool:
+        return cls.db().exists(f"QuizSession:{session_id}") == 1
 
-    def answer_wrong(session: QuizSession):
-        session.wrong_count += 1
-        session.current_question_index += 1
-        session.save_with_ttl()
+    @classmethod
+    def delete_session_by_id(cls, session_id: str):
+        cls.delete(session_id)
 
-    def delete_session_by_id(session_id: str):
-        QuizSession.delete(session_id)
+    def answer_correct(self):
+        self.score += 1
+        self.correct_count += 1
+        self.current_question_index += 1
+        self.save_with_ttl()
+
+    def answer_wrong(self):
+        self.wrong_count += 1
+        self.current_question_index += 1
+        self.save_with_ttl()

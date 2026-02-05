@@ -1,11 +1,13 @@
 from flask import Blueprint, request, jsonify
 from infrastructure.classes.Quiz import Quiz
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
+from infrastructure.classes.QuizSession import QuizSession
+from infrastructure.classes.Game import Game
 
 quiz_router = Blueprint('quiz_router',__name__)
 
 @quiz_router.route('/quizzes/all', methods=['GET'])
-def get_all_quizzes():
+def get_all():
     quizzes = Quiz.get_all()
 
     return jsonify([
@@ -18,7 +20,7 @@ def get_all_quizzes():
     ])
 
 @quiz_router.route('/quizzes/random', methods=['GET'])
-def get_all_quizzes():
+def get_random_quiz():
     q = Quiz.get_random()
 
     return jsonify(
@@ -76,14 +78,14 @@ def get_all_quizzes(ID_Author):
 @quiz_router.route('/quizzes/<int:quiz_id>/start', methods=['POST'])
 def start_quiz(quiz_id):
     user_id = get_current_user_id() #IGOR
-    session = create_session(user_id,quiz_id)
+    session = QuizSession.create_session(user_id,quiz_id)
     return jsonify({"session_id": session.pk,"quiz_id": quiz_id}), 201
 
 @quiz_router.route('/quizzes/get_session/<string:session_id>',methods=['GET'])
 def get_session(session_id):
     user_id = get_current_user_id() #IGOR
 
-    session = get_session(session_id)
+    session = QuizSession.get_session(session_id)
     if not session:
         return jsonify({"error": "Session not found or expired"}), 404
 
@@ -99,6 +101,28 @@ def get_session(session_id):
         "correct_count": session.correct_count,
         "wrong_count": session.wrong_count
     }), 200
+
+@quiz_router.route('/quizzes/<string:session_id>/finish', methods=['POST'])
+def finish_quiz(session_id):
+    user_id = get_current_user_id() #IGOR
+
+    session = QuizSession.get_session(session_id)
+    if not session:
+        return jsonify({"error": "Session expired"}), 404
+
+    if session.user_id != user_id:
+        return jsonify({"error": "Forbidden"}), 403
+
+    game = Game.create_game(player_id=user_id,score=session.score,quiz_id=session.quiz_id)
+
+    QuizSession.delete_session_by_id(session_id)
+
+    return jsonify({
+        "message": "Game saved successfully",
+        "score": session.score,
+        "quiz_id": session.quiz_id
+    }), 200
+
 
 @quiz_router.route("/quizzes/add",methods=['PUT'])
 def add_quiz():

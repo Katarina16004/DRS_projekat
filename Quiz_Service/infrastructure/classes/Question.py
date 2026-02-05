@@ -48,4 +48,4 @@ class Question(db.Model):
 
     @classmethod
     def get_question_by_ID(cls, ID_Question):
-        return cls.query.filter(cls.ID_Question == ID_Question).all()
+        return cls.query.filter(cls.ID_Question == ID_Question).first()

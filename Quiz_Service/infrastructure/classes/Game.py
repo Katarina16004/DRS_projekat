@@ -3,13 +3,12 @@ from infrastructure.Database.database_connect import db
 class Game(db.Model):
     __tablename__='Game'
 
-    def __init__(self,ID_Game,ID_Player,Score,ID_Quiz):
-        self.ID_Game=ID_Game
+    def __init__(self,ID_Player,Score,ID_Quiz):
         self.ID_Player=ID_Player
         self.Score=Score
         self.ID_Quiz=ID_Quiz
 
-    ID_Game = db.Column(db.Integer,primary_key=True)
+    ID_Game = db.Column(db.Integer,primary_key=True,autoincrement=True)
     ID_Player = db.Column(db.Integer,nullable=False)
     Score = db.Column(db.Integer,nullable=False)
     ID_Quiz = db.Column(db.Integer,db.ForeignKey('Quiz.ID_Quiz'),nullable=False)
@@ -43,3 +42,10 @@ class Game(db.Model):
     @classmethod
     def get_games_from_player(cls,ID_Player):
         return cls.query.filter(cls.ID_Player == ID_Player)
+    
+    @classmethod
+    def create_game(cls, player_id, score, quiz_id):
+        game = cls(ID_Player=player_id, Score=score, ID_Quiz=quiz_id)
+        db.session.add(game)
+        db.session.commit()
+        return game

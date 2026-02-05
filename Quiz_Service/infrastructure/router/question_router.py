@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from Quiz_Service.infrastructure.classes import Answer
-from Quiz_Service.infrastructure.router.quiz_routher import get_session
+from infrastructure.classes import Answer, QuizSession
+from infrastructure.router.quiz_routher import get_session
 from infrastructure.classes.Question import Question
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
 
@@ -101,45 +101,28 @@ def get_question_by_ID(ID_Question):
 
 @question_router.route('/questions/get_next', methods=['GET'])
 def get_next_question():
-    user_id = get_current_user_id() #IGOR
+    user_id = get_current_user_id()
 
     session_id = request.args.get("session_id")
     if not session_id:
         return jsonify({"error": "session_id is required"}), 400
 
-    session = get_session(session_id)
+    session = QuizSession.get_session(session_id)
     if not session:
         return jsonify({"error": "Session expired"}), 404
 
     if session.user_id != user_id:
         return jsonify({"error": "Forbidden"}), 403
 
-    question_quiz = QuestionQuiz.get_question_by_offset(
-        quiz_id=session.quiz_id,
-        offset=session.current_question_index
-    )
+    question_quiz = QuestionQuiz.get_question_by_offset(quiz_id=session.quiz_id, offset=session.current_question_index)
 
     if not question_quiz:
         return jsonify({"message": "Quiz finished"}), 200
 
-    question = Question.query.get(question_quiz.ID_Question)
+    question_data = Question.get_question_with_answers(question_quiz.ID_Question)
 
-    answers = Answer.query.filter(
-        Answer.ID_Question == question.ID_Question
-    ).all()
+    return jsonify({"question_index": session.current_question_index,**question_data}), 200
 
-    return jsonify({
-        "question_index": session.current_question_index,
-        "question_id": question.ID_Question,
-        "question_text": question.Question_Text,
-        "answers": [
-            {
-                "answer_id": a.ID_Answer,
-                "answer_text": a.Answer_Text
-            }
-            for a in answers
-        ]
-    }), 200
 
 @question_router.route('/questions/<int:ID_Question>/quizzes', methods=['GET'])
 def get_quizzes_with_question(ID_Question):

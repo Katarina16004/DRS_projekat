@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from infrastructure.classes.Answer import Answer
+from infrastructure.classes.QuizSession import QuizSession
 
 answer_router = Blueprint('answer_router',__name__)
 
@@ -39,7 +40,7 @@ def submit_answer():
     question_id = data.get("question_id")
     answer_id = data.get("answer_id")
 
-    session = get_session(session_id)
+    session = QuizSession.get_session(session_id)
     if not session:
         return jsonify({"error": "Session expired"}), 404
 
@@ -51,10 +52,10 @@ def submit_answer():
         return jsonify({"error": "Answer not found"}), 404
 
     if answer.Is_Correct:
-        answer_correct(session)
+        QuizSession.answer_correct(session)
         result = "correct"
     else:
-        answer_wrong(session)
+        QuizSession.answer_wrong(session)
         result = "wrong"
 
     return jsonify({
