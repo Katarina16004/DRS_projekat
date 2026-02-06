@@ -77,7 +77,6 @@ def get_all_quizzes(ID_Author):
 
 @quiz_router.route('/quizzes/<int:quiz_id>/start', methods=['POST'])
 def start_quiz(quiz_id):
-    # Igor
     data = request.json
     user_id = data.get("user_id")
 
@@ -102,7 +101,6 @@ def get_session(session_id):
 
 @quiz_router.route('/quizzes/<string:session_id>/finish', methods=['POST'])
 def finish_quiz(session_id):
-    # Igor
     data = request.json
     user_id = data.get("user_id")
 

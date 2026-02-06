@@ -207,3 +207,39 @@ def create_question():
         "Question_Points": question.Question_Points,
         "Question_Category": question.Question_Category
     }), 201
+
+
+@question_router.route("/quizzes/<int:quiz_id>/questions/<int:question_id>", methods=["POST"])
+def assign_question_to_quiz(quiz_id, question_id):
+    existing = QuestionQuiz.query.filter_by(
+        ID_Quiz=quiz_id,
+        ID_Question=question_id
+    ).first()
+
+    if existing:
+        return jsonify({"message": "Question already assigned to quiz"}), 400
+
+    relation = QuestionQuiz(
+        ID_Quiz=quiz_id,
+        ID_Question=question_id
+    )
+    relation.save()
+
+    return jsonify({
+        "message": "Question assigned to quiz successfully",
+        "quiz_id": quiz_id,
+        "question_id": question_id
+    }), 201
+
+@question_router.route("/quizzes/<int:quiz_id>/questions/<int:question_id>", methods=["DELETE"])
+def remove_question_from_quiz(quiz_id, question_id):
+    relation = QuestionQuiz.query.filter_by(
+        ID_Quiz=quiz_id,
+        ID_Question=question_id
+    ).first()
+
+    if not relation:
+        return jsonify({"message": "Relation not found"}), 404
+
+    relation.delete()
+    return jsonify({"message": "Question removed from quiz"})
