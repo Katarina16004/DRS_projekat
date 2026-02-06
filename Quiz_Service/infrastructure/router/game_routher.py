@@ -63,20 +63,40 @@ def get_highest_scores(n):
     for g in games
     ])
 
-@game_router.route("/games/add",methods=['PUT'])
+@game_router.route("/games", methods=['POST'])
 def add_game():
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "No input data provided"}), 400
 
+    required_fields = ["ID_Player", "Score", "ID_Quiz"]
+
+    missing = [f for f in required_fields if f not in data]
+    if missing:
+        return jsonify({
+            "error": "Missing required fields",
+            "missing": missing
+        }), 400
+
     try:
-        game = Game(**data)
-        game.save()
-        return jsonify({"message": "Game created successfully"}), 201
+        game = Game.create_game(
+            player_id=data["ID_Player"],
+            score=data["Score"],
+            quiz_id=data["ID_Quiz"]
+        )
+
+        return jsonify({
+            "message": "Game created successfully",
+            "ID_Game": game.ID_Game,
+            "ID_Player": game.ID_Player,
+            "Score": game.Score,
+            "ID_Quiz": game.ID_Quiz
+        }), 201
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 @game_router.route("/games/<int:ID_Game>", methods=['PATCH'])
