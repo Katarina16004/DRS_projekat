@@ -8,6 +8,7 @@ from collections import defaultdict
 from services.mail_service import send_email
 import jwt
 import datetime
+import requests
 
 routes = Blueprint("routes", __name__)
 
@@ -312,3 +313,48 @@ def get_profile(current_user, user_id):
         }
 
         return jsonify(profile_data), 200
+
+# Quiz Service
+@protected(required_role=['moderator'])
+@routes.route('/answers', methods=['GET'])
+def get_all_answers(current_user):
+    response = requests.get("http://localhost:5123/answers")
+    return jsonify(response.json(), response.status_code)
+
+@protected(required_role=['moderator'])
+@routes.route('/answer/<int:question_id>/answers', methods=['GET'])
+def get_all_answers(current_user, question_id):
+    response = requests.get("http://localhost:5123/answer/" + question_id + "/answers")
+    return jsonify(response.json(), response.status_code)
+
+@protected()
+@routes.route('/quizzes/answer', methods=['POST'])
+def submit_answer(current_user):
+    if current_user != data["user_id"]:
+        return jsonify({"msg": "User ID mismatch!"}), 401
+
+    data = request.form
+    toSend = {
+        'session_id': data["session_id"],
+        'question_id': data["question_id"],
+        'answer_id': data["answer_id"],
+        'user_id': data["user_id"]
+    }
+    response = requests.post("http://localhost:5123/quizzes/answer", json = toSend)
+    return jsonify(response.json(), response.status_code)
+
+@protected()
+@routes.route('/answer/<int:question_id>/answers', methods=['POST'])
+def submit_answer(current_user):
+    if current_user != data["user_id"]:
+        return jsonify({"msg": "User ID mismatch!"}), 401
+
+    data = request.form
+    toSend = {
+        'session_id': data["session_id"],
+        'question_id': data["question_id"],
+        'answer_id': data["answer_id"],
+        'user_id': data["user_id"]
+    }
+    response = requests.post("http://localhost:5123/quizzes/answer", json = toSend)
+    return jsonify(response.json(), response.status_code)
