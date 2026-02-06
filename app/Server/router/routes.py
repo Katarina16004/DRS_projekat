@@ -401,17 +401,43 @@ def get_player_games(current_user, ID_Player):
 
 @protected()
 @routes.route('/games/<int:n>', methods=['GET'])
-def get_player_games(current_user, n):
+def get_highscore(current_user, n):
     response = requests.get("http://localhost:5123/games/highest/" + n)
     return jsonify(response.json(), response.status_code)
 
 @protected()
 @routes.route('/games/add', methods=['PUT'])
-def get_player_games(current_user):
+def add_game(current_user):
     data = request.form
     toSend = {
-        'Answer_Text': data["Answer_Text"],
-        'Is_Correct': data["Is_Correct"],
+        'ID_Player': data["ID_Player"],
+        'Score': data["Score"],
+        'ID_Quiz': data["ID_Quiz"],
     }
     response = requests.get("http://localhost:5123/games/add", json = toSend)
+    return jsonify(response.json(), response.status_code)
+
+@protected()
+@routes.route('/games/<int:ID_Game>', methods=['PATCH'])
+def update_game(current_user, ID_Game):
+    data = request.form
+    toSend = {
+        'ID_Player': data["ID_Player"],
+        'Score': data["Score"],
+        'ID_Quiz': data["ID_Quiz"],
+    }
+    response = requests.get("http://localhost:5123/games/" + ID_Game, json = toSend)
+    return jsonify(response.json(), response.status_code)
+
+@protected()
+@routes.route('/games/<int:ID_Game>', methods=['DELETE'])
+def delete_game(current_user, ID_Game):
+    data = request.form
+    data = request.form
+    toSend = {
+        'ID_Player': data["ID_Player"],
+        'Score': data["Score"],
+        'ID_Quiz': data["ID_Quiz"],
+    }
+    response = requests.get("http://localhost:5123/games/" + ID_Game, json = toSend)
     return jsonify(response.json(), response.status_code)
