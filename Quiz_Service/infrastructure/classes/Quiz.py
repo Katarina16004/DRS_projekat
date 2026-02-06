@@ -4,12 +4,11 @@ from sqlalchemy import func
 
 class Quiz(db.Model):
     __tablename__='Quiz'
-    def __init__(self,ID_Quiz,Quiz_length,ID_User):
-        self.ID_Quiz = ID_Quiz
+    def __init__(self,Quiz_length,ID_User):
         self.Quiz_length = Quiz_length  #u broju pitanja!
         self.ID_User = ID_User
         
-    ID_Quiz = db.Column(db.Integer,primary_key=True)
+    ID_Quiz = db.Column(db.Integer,primary_key=True,autoincrement=True)
     Quiz_length = db.Column(db.Integer, nullable=False,default = 0)
     ID_User = db.Column(db.Integer, nullable=False)
 
@@ -33,7 +32,7 @@ class Quiz(db.Model):
     
     @classmethod
     def get_by_ID(cls,id):
-        return cls.query.filter(cls.ID_Quiz == id).all()
+        return cls.query.filter(cls.ID_Quiz == id).first()
     
     @classmethod
     def get_all_from_author(cls,author_id):

@@ -124,17 +124,36 @@ def finish_quiz(session_id):
     }), 200
 
 
-@quiz_router.route("/quizzes/add",methods=['PUT'])
+@quiz_router.route("/quizzes", methods=['POST'])
 def add_quiz():
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "No input data provided"}), 400
 
+    required_fields = ["Quiz_length", "ID_User"]
+
+    missing = [f for f in required_fields if f not in data]
+    if missing:
+        return jsonify({
+            "error": "Missing required fields",
+            "missing": missing
+        }), 400
+
     try:
-        quiz = Quiz(**data)
+        quiz = Quiz(
+            Quiz_length=data["Quiz_length"],
+            ID_User=data["ID_User"]
+        )
+
         quiz.save()
-        return jsonify({"message": "Quiz created successfully"}), 201
+
+        return jsonify({
+            "message": "Quiz created successfully",
+            "ID_Quiz": quiz.ID_Quiz,
+            "Quiz_length": quiz.Quiz_length,
+            "ID_User": quiz.ID_User
+        }), 201
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
