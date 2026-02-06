@@ -4,14 +4,14 @@ from sqlalchemy import and_
 class Answer(db.Model):
     __tablename__ = 'Answers'
 
-    def __init__(self, ID_Question, ID_Answer, Answer_Text, Is_Correct):
+    def __init__(self, ID_Question, Answer_Text, Is_Correct):
         self.ID_Question = ID_Question
-        self.ID_Answer = ID_Answer
         self.Answer_Text = Answer_Text
         self.Is_Correct = Is_Correct
-        
-    ID_Question = db.Column(db.Integer,db.ForeignKey('Question.ID_Question'),primary_key=True)
-    ID_Answer = db.Column(db.Integer, primary_key=True)
+    
+    
+    ID_Answer = db.Column(db.Integer,autoincrement=True ,primary_key=True)
+    ID_Question = db.Column(db.Integer,db.ForeignKey('Question.ID_Question'))
     Answer_Text = db.Column(db.String(45), nullable=False)
     Is_Correct = db.Column(db.Boolean, nullable=False)
 
@@ -30,10 +30,8 @@ class Answer(db.Model):
         db.session.commit()
         
     @classmethod
-    def get_answer_by_id(cls, ID_Question, ID_Answer):
-        return cls.query.filter(
-            and_(cls.ID_Question == ID_Question, cls.ID_Answer == ID_Answer)
-        ).first()
+    def get_answer_by_id(cls, ID_Answer):
+        return cls.query.get(ID_Answer)
 
     @classmethod
     def get_answers_by_question(cls, ID_Question):

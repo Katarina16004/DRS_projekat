@@ -92,45 +92,79 @@ def get_answers_for_selected_questions():
         for a in all_answers
     ])
 
-@answer_router.route('/answer/<int:question_id>/answers',methods=['POST'])
+@answer_router.route('/answer/<int:question_id>/answers', methods=['POST'])
 def create_answer(question_id):
-    data = request.json
+    data = request.get_json()
 
-    if not data or not all(k in data for k in ['ID_Answer', 'Answer_Text', 'Is_Correct']):
+    if not data:
         return jsonify({"error": "Invalid request body"}), 400
-    #TODO dodati validaciju
+
+    required_fields = ['Answer_Text', 'Is_Correct']
+
+    missing = [f for f in required_fields if f not in data]
+    if missing:
+        return jsonify({
+            "error": "Missing required fields",
+            "missing": missing
+        }), 400
+
     answer = Answer(
         ID_Question=question_id,
-        ID_Answer=data['ID_Answer'],
         Answer_Text=data['Answer_Text'],
         Is_Correct=data['Is_Correct']
     )
 
     answer.save()
 
-    return jsonify({"message": "Answer created"}), 201
+    return jsonify({
+        "message": "Answer created",
+        "ID_Answer": answer.ID_Answer,
+        "ID_Question": question_id,
+        "Answer_Text": answer.Answer_Text,
+        "Is_Correct": answer.Is_Correct
+    }), 201
 
 
-@answer_router.route('/answer/<int:question_id>/answers/<int:answer_id>',methods=['PATCH'])
-def update_answer(question_id, answer_id):
-    answer = Answer.get_answer_by_id(question_id, answer_id)
+@answer_router.route('/answers/<int:answer_id>', methods=['PATCH'])
+def update_answer(answer_id):
+    answer = Answer.get_answer_by_id(answer_id)
 
     if not answer:
         return jsonify({"message": "Answer not found"}), 404
-    #TODO dodati validaciju
-    data = request.json
-    answer.update(**data)
 
-    return jsonify({"message": "Answer updated"})
+    data = request.get_json() or {}
+
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    allowed_fields = {"Answer_Text", "Is_Correct"}
+
+    filtered_data = {k: v for k, v in data.items() if k in allowed_fields}
+
+    if not filtered_data:
+        return jsonify({"error": "No valid fields to update"}), 400
+
+    answer.update(**filtered_data)
+
+    return jsonify({
+        "message": "Answer updated",
+        "ID_Answer": answer.ID_Answer,
+        "ID_Question": answer.ID_Question,
+        "Answer_Text": answer.Answer_Text,
+        "Is_Correct": answer.Is_Correct
+    }), 200
 
 
-@answer_router.route('/answer/<int:question_id>/answers/<int:answer_id>', methods=['DELETE'])
-def delete_answer(question_id, answer_id):
-    answer = Answer.get_answer_by_id(question_id, answer_id)
+@answer_router.route('/answers/<int:answer_id>', methods=['DELETE'])
+def delete_answer(answer_id):
+    answer = Answer.get_answer_by_id(answer_id)
 
     if not answer:
         return jsonify({"message": "Answer not found"}), 404
 
     answer.delete()
 
-    return jsonify({"message": "Answer deleted"})
+    return jsonify({
+        "message": "Answer deleted",
+        "ID_Answer": answer_id
+    }), 200
