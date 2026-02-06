@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import type { UserRole } from "../../enums/user/UserRole";
 
 const UserPage: React.FC = () => {
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
   const [navBarUser, setNavBarUser] = useState<{ username: string; role: UserRole } | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 

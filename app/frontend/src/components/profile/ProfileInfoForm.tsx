@@ -57,6 +57,7 @@ export const ProfileInfoForm: React.FC = () => {
     }
     if (!userId) return;
     userApi.getProfile(token, userId).then((profile) => {
+      console.log(profile)
       setDto(profile);
       setFormUser(profile);
     });

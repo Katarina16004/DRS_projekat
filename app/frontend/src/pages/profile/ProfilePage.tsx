@@ -2,14 +2,22 @@ import { useState } from "react";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import { ProfileInfoForm } from "../../components/profile/ProfileInfoForm";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export default function ProfilePage() {
-    // Primer korisnika koji je ulogovan
-    const user = {
-        username: "admin",
-        role: "admin" as const,
-        avatarUrl: "", // može biti link ka slici ili prazan string za default avatar
-    };
+    const token = localStorage.getItem("token")
+    
+    const user = token
+  ? (() => {
+      const decoded: any = jwtDecode(token);
+      return {
+        id: decoded.id,
+        username: decoded.username,
+        role: decoded.role,
+        avatarUrl: decoded.avatarUrl ?? "",
+      };
+    })()
+  : undefined;
 
     const navigate = useNavigate()
     const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -24,7 +32,6 @@ export default function ProfilePage() {
         setShowLogoutModal(false);
         navigate("/login");
     };
-
 
     return (
         <div className="min-h-screen font-poppins flex flex-col">
