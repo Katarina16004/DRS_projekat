@@ -77,20 +77,18 @@ def get_all_quizzes(ID_Author):
 
 @quiz_router.route('/quizzes/<int:quiz_id>/start', methods=['POST'])
 def start_quiz(quiz_id):
-    user_id = get_current_user_id() #IGOR
+    # Igor
+    data = request.json
+    user_id = data.get("user_id")
+
     session = QuizSession.create_session(user_id,quiz_id)
     return jsonify({"session_id": session.pk,"quiz_id": quiz_id}), 201
 
 @quiz_router.route('/quizzes/get_session/<string:session_id>',methods=['GET'])
 def get_session(session_id):
-    user_id = get_current_user_id() #IGOR
-
     session = QuizSession.get_session(session_id)
     if not session:
         return jsonify({"error": "Session not found or expired"}), 404
-
-    if session.user_id != user_id:
-        return jsonify({"error": "Forbidden"}), 403
 
     return jsonify({
         "session_id": session.pk,
@@ -104,7 +102,9 @@ def get_session(session_id):
 
 @quiz_router.route('/quizzes/<string:session_id>/finish', methods=['POST'])
 def finish_quiz(session_id):
-    user_id = get_current_user_id() #IGOR
+    # Igor
+    data = request.json
+    user_id = data.get("user_id")
 
     session = QuizSession.get_session(session_id)
     if not session:

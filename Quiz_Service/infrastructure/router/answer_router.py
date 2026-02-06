@@ -33,12 +33,13 @@ def get_answers_from_question(question_id):
 
 @answer_router.route('/quizzes/answer', methods=['POST'])
 def submit_answer():
-    user_id = get_current_user_id() #IGOR
+    # Igor
     data = request.json
 
     session_id = data.get("session_id")
     question_id = data.get("question_id")
     answer_id = data.get("answer_id")
+    user_id = data.get("user_id")
 
     session = QuizSession.get_session(session_id)
     if not session:
