@@ -497,6 +497,20 @@ def create_question(current_user):
     response = requests.post("http://localhost:5123/question/", json = toSend)
     return jsonify(response.json(), response.status_code)
 
+@protected(required_role=['moderator'])
+@routes.route('/quizzes/<int:quiz_id>/questions/<int:question_id>', methods=['POST'])
+def assign_question_to_quiz(current_user, quiz_id, question_id):
+
+    response = requests.post("http://localhost:5123/quizzes/" + quiz_id + "/questions/" + question_id , json = toSend)
+    return jsonify(response.json(), response.status_code)
+
+@protected(required_role=['moderator'])
+@routes.route('/quizzes/<int:quiz_id>/questions/<int:question_id>', methods=['DELETE'])
+def remove_question_from_quiz(current_user, quiz_id, question_id):
+
+    response = requests.delete("http://localhost:5123/quizzes/" + quiz_id + "/questions/" + question_id , json = toSend)
+    return jsonify(response.json(), response.status_code)
+
 # Quiz
 @protected(required_role=['moderator'])
 @routes.route('/quizzes/all', methods=['GET'])
