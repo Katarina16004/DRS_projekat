@@ -99,20 +99,15 @@ def get_question_by_ID(ID_Question):
         "Question_Category": q.Question_Category
     })
 
-@question_router.route('/questions/get_next', methods=['GET'])
-def get_next_question():
-    user_id = get_current_user_id()
-
-    session_id = request.args.get("session_id")
+@question_router.route('/questions/get_next/<string:ID_Session>', methods=['GET'])
+def get_next_question(ID_Session):
+    session_id = ID_Session
     if not session_id:
         return jsonify({"error": "session_id is required"}), 400
 
     session = QuizSession.get_session(session_id)
     if not session:
         return jsonify({"error": "Session expired"}), 404
-
-    if session.user_id != user_id:
-        return jsonify({"error": "Forbidden"}), 403
 
     question_quiz = QuestionQuiz.get_question_by_offset(quiz_id=session.quiz_id, offset=session.current_question_index)
 
