@@ -1,27 +1,85 @@
-import React, { useState, useEffect } from "react";
-//import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useEffect, useMemo, useState } from "react";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
+import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 import type { UserRole } from "../../enums/user/UserRole";
+import { jwtDecode } from "jwt-decode";
+import { UserQuizCard } from "../../components/user/UserQuizzesCard";
 
-const UserPage: React.FC = () => {
- // const navigate = useNavigate();
-  const [navBarUser, setNavBarUser] = useState<{ username: string; role: UserRole } | null>(null);
+export default function UserQuizzesPage() {
+  const [quizzes, setQuizzes] = useState<QuizDTO[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const token = localStorage.getItem("token");
+
+  const [navBarUser, setNavBarUser] = useState<{
+    username: string;
+    role: UserRole;
+  } | null>({
+    username: "",
+    role: 'user'
+  });
+
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (!token) return;
+
     try {
       const decoded: any = jwtDecode(token);
       setNavBarUser({
         username: decoded.username,
         role: decoded.role as UserRole,
       });
-    } catch (err) {
-      setNavBarUser(null);
+    } catch {
+      setNavBarUser({
+        username: "",
+        role: "user",
+      });
     }
-  }, []);
+
+    // Mock podaci za prikaz
+    const mockQuizzes: QuizDTO[] = [
+      {
+        id: 1,
+        name: "General Knowledge",
+        author: "Admin",
+        category: "Trivia",
+        duration: 5,
+        numOfQuestions: 10
+      },
+      {
+        id: 2,
+        name: "Science Quiz",
+        author: "Moderator1",
+        category: "Science",
+        duration: 7,
+        numOfQuestions: 12
+      },
+      {
+        id: 3,
+        name: "History Challenge",
+        author: "Admin",
+        category: "History",
+        duration: 6,
+        numOfQuestions: 8
+      }
+    ];
+
+    setQuizzes(mockQuizzes);
+  }, [token]);
+
+  const categories = useMemo(() => {
+    const unique = new Set(quizzes.map(q => q.category));
+    return Array.from(unique);
+  }, [quizzes]);
+
+  const filteredQuizzes = useMemo(() => {
+    if (selectedCategory === "all") return quizzes;
+    return quizzes.filter(q => q.category === selectedCategory);
+  }, [quizzes, selectedCategory]);
+
+  const handlePlay = (quizId: number) => {
+    console.log("Play quiz:", quizId);
+  };
 
   const handleLogout = () => {
     setShowLogoutConfirm(true);
@@ -33,27 +91,61 @@ const UserPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col font-poppins">
+    <div className="min-h-screen font-poppins flex flex-col">
       <NavbarForm user={navBarUser} onLogout={handleLogout} />
+
       <div
-        className="flex-1 flex flex-col items-center justify-center"
+        className="flex-1 w-full pb-16"
         style={{
           background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
         }}
       >
-        <h1 className="text-4xl font-bold text-gray-800 mb-6">Hello, {navBarUser?.username || "user"}!</h1>
-        <p className="text-lg text-gray-600 mb-10">
-          Role: <span className="font-semibold">{navBarUser?.role}</span>
-        </p>
+        <div className="flex flex-col items-center pt-20 pb-2 w-full">
+
+          {/* Header + filter */}
+          <div className="flex w-full max-w-6xl justify-between items-center mb-8 px-4">
+            <h2 className="text-3xl font-bold tracking-wider text-gray-800">
+              Quizzes
+            </h2>
+
+            <select
+              value={selectedCategory}
+              onChange={e => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 rounded-xl border border-[#82CAFF] text-[#4451A4] font-medium bg-white cursor-pointer"
+            >
+              <option value="all">All categories</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Cards */}
+          {filteredQuizzes.length === 0 ? (
+            <p className="text-gray-500 mt-20">No quizzes available.</p>
+          ) : (
+            filteredQuizzes.map(q => (
+              <UserQuizCard
+                key={q.id}
+                quiz={q}
+                onPlay={handlePlay}
+              />
+            ))
+          )}
+        </div>
       </div>
 
+      {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="absolute inset-0 bg-black/30 backdrop-blur-sm"
             onClick={() => setShowLogoutConfirm(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md font-poppins z-10">
+
+          <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md z-10 font-poppins">
             <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
               Log out?
             </h3>
@@ -79,6 +171,4 @@ const UserPage: React.FC = () => {
       )}
     </div>
   );
-};
-
-export default UserPage;
+}
