@@ -1,8 +1,19 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import type { UserDTO } from "../../models/users/UserDTO";
+import type { UserRole } from "../../enums/user/UserRole";
 
 export const NavbarForm = ({ user, onLogout }: any) => {
     const location = useLocation();
+    const token = localStorage.getItem("token")
+    const [navBarUser, setNavBarUser] = useState<{
+        username: string
+        role: UserRole
+        Image: string
+    } | null>(null)
+
 
     const isAuthPage =
         location.pathname === "/login" ||
@@ -14,6 +25,31 @@ export const NavbarForm = ({ user, onLogout }: any) => {
             : "hover:underline"
         }`;
 
+    useEffect(() => {
+        if (!token) return;
+
+        try {
+            const decoded: any = jwtDecode(token);
+            const userId = decoded.id;
+
+            fetch(`http://localhost:5000/users/${userId}`)
+                .then(res => res.json())
+                .then((user: UserDTO) => {
+                    setNavBarUser({
+                        username: `${user.First_Name ?? ""} ${user.Last_Name ?? ""}`,
+                        role: user.role as UserRole,
+                        Image: user.Image || "",
+                    });
+                });
+        } catch {
+            setNavBarUser({
+                username: "",
+                role: "user",
+                Image: "",
+            });
+        }
+    }, [token]);
+
     return (
         <nav className="fixed top-0 left-0 w-full h-16 bg-white shadow-md px-8 flex items-center justify-between z-50">
             {/* LEVO */}
@@ -24,7 +60,7 @@ export const NavbarForm = ({ user, onLogout }: any) => {
             {/* SREDINA */}
             {!isAuthPage && user && (
                 <div className="flex gap-6 text-gray-700">
-                    {user.role === "ADMIN" && (
+                    {user.role === "admin" && (
                         <>
                             <NavLink to="/adminUsers" className={navLinkClass}>
                                 Users
@@ -35,7 +71,7 @@ export const NavbarForm = ({ user, onLogout }: any) => {
                         </>
                     )}
 
-                    {user.role === "MODERATOR" && (
+                    {user.role === "moderator" && (
                         <>
                             <NavLink to="/quizzes" className={navLinkClass}>
                                 Quizzes
@@ -46,8 +82,8 @@ export const NavbarForm = ({ user, onLogout }: any) => {
                         </>
                     )}
 
-                    {user.role === "PLAYER" && (
-                        <NavLink to="/quizzes" className={navLinkClass}>
+                    {user.role === "user" && (
+                        <NavLink to="/user" className={navLinkClass}>
                             Quizzes
                         </NavLink>
                     )}
@@ -70,17 +106,15 @@ export const NavbarForm = ({ user, onLogout }: any) => {
 
                         {/* Avatar */}
                         <NavLink to="/profileInfo" className="outline-none">
-                            {user.avatarUrl ? (
+                            {navBarUser?.Image ? (
                                 <img
-                                    src={user.avatarUrl}
+                                    key={navBarUser.Image}
+                                    src={navBarUser.Image}
                                     alt="avatar"
                                     className="w-10 h-10 rounded-full object-cover border border-gray-300"
                                 />
                             ) : (
-                                <FaUserCircle
-                                    size={36}
-                                    className="text-gray-400"
-                                />
+                                <FaUserCircle size={36} className="text-gray-400" />
                             )}
                         </NavLink>
 
