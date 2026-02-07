@@ -65,7 +65,7 @@ export const NavbarForm = ({ user, onLogout }: any) => {
                             <NavLink to="/adminUsers" className={navLinkClass}>
                                 Users
                             </NavLink>
-                            <NavLink to="/quizzes" className={navLinkClass}>
+                            <NavLink to="/admin/quizzes" className={navLinkClass}>
                                 Quizzes
                             </NavLink>
                         </>

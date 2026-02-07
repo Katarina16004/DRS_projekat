@@ -44,6 +44,7 @@ export default function UserQuizzesPage() {
         author: "Admin",
         category: "Trivia",
         duration: 5,
+        status: "approved",
         numOfQuestions: 10
       },
       {
@@ -52,6 +53,7 @@ export default function UserQuizzesPage() {
         author: "Moderator1",
         category: "Science",
         duration: 7,
+        status: "approved",
         numOfQuestions: 12
       },
       {
@@ -60,6 +62,7 @@ export default function UserQuizzesPage() {
         author: "Admin",
         category: "History",
         duration: 6,
+        status: "approved",
         numOfQuestions: 8
       }
     ];

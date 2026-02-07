@@ -13,6 +13,7 @@ import AdminUsersPage from "./pages/admin/UsersPage";
 import { ProtectedRoute } from "./components/protected_route/ProtectedRoute";
 import UserPage from "./pages/user/UserQuizzesPage";
 import { authApi } from "./api_services/auth/AuthAPIService";
+import AdminQuizzesPage from "./pages/admin/AdminQuizzesPage";
 
 function App() {
   return (
@@ -65,6 +66,14 @@ function App() {
           }
         />
 
+        <Route
+          path="/admin/quizzes"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminQuizzesPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/404" element={<NotFoundStranica />} />
