@@ -315,9 +315,6 @@ def get_profile(current_user, user_id):
         return jsonify(profile_data), 200
 
 
-
-
-
 # Answer Service
 @protected(required_role=['moderator'])
 @routes.route('/answers', methods=['GET'])
@@ -526,7 +523,7 @@ def get_random_quiz(current_user):
 
 @protected()
 @routes.route('/quizzes/<int:ID_Quiz>/length', methods=['GET'])
-def get_random_quiz(current_user, ID_Quiz):
+def get_quiz_length(current_user, ID_Quiz):
     response = requests.get("http://localhost:5123/quizzes/" + ID_Quiz +"/length")
     return jsonify(response.json(), response.status_code)
 
@@ -545,7 +542,7 @@ def get_all_author_quizes(current_user, ID_Author):
 
 @protected()
 @routes.route('/quizzes/<int:quiz_id>/start', methods=['POST'])
-def get_all_author_quizes(current_user, quiz_id):
+def start_quiz(current_user, quiz_id):
     toSend = {
         'user_id': current_user,
     }
@@ -582,7 +579,7 @@ def add_quiz(current_user):
 
 @protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:ID_Quiz>', methods=['PATCH'])
-def update_quiz(current_user, ID_Quiz):
+def patch_quiz(current_user, ID_Quiz):
     data = request.form
     toSend = {
         'Quiz_length': data['Quiz_length'],
@@ -593,7 +590,7 @@ def update_quiz(current_user, ID_Quiz):
 
 @protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:ID_Quiz>', methods=['DELETE'])
-def update_quiz(current_user, ID_Quiz):
+def delete_quiz(current_user, ID_Quiz):
     response = requests.delete("http://localhost:5123/quizzes/" + ID_Quiz)
     return jsonify(response.json(), response.status_code)
 

@@ -15,6 +15,7 @@ def get_all():
             "ID_Quiz": q.ID_Quiz,
             "Quiz_length": q.Quiz_length,
             "ID_User": q.ID_User,
+            "Number_of_Questions": len(QuestionQuiz.get_questions_for_quiz(q.ID_Quiz))
         }
         for q in  quizzes
     ])
@@ -184,3 +185,21 @@ def delete_quiz(ID_Quiz):
     quiz.delete()
 
     return jsonify({"message": "Quiz deleted successfully"}), 200
+
+#ruta za dobijanje kviza samo po id-ju
+@quiz_router.route("/quizzes/<int:ID_Quiz>", methods=['GET'])
+def get_quiz_by_id(ID_Quiz):
+    quiz = Quiz.get_by_ID(ID_Quiz)
+    if not quiz:
+        return jsonify({"error": "Quiz not found"}), 404
+
+    questions = QuestionQuiz.get_questions_for_quiz(ID_Quiz)
+    question_ids = [q.ID_Question for q in questions]
+
+    return jsonify({
+        "ID_Quiz": quiz.ID_Quiz,
+        "ID_User": quiz.ID_User,
+        "Quiz_length": quiz.Quiz_length,
+        "Number_of_Questions": len(question_ids),
+        "Questions": question_ids,
+    }), 200
