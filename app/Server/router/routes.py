@@ -316,20 +316,20 @@ def get_profile(current_user, user_id):
 
 
 # Answer Service
-@protected(required_role=['moderator'])
 @routes.route('/answers', methods=['GET'])
+@protected(required_role=['moderator'])
 def get_all_answers(current_user):
     response = requests.get("http://localhost:5123/answers")
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/answer/<int:question_id>/answers', methods=['GET'])
+@protected(required_role=['moderator'])
 def get_all_answers_from_question(current_user, question_id):
     response = requests.get("http://localhost:5123/answer/" + question_id + "/answers")
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/quizzes/answer', methods=['POST'])
+@protected()
 def submit_answer(current_user):
     if current_user != data["user_id"]:
         return jsonify({"msg": "User ID mismatch!"}), 401
@@ -344,8 +344,8 @@ def submit_answer(current_user):
     response = requests.post("http://localhost:5123/quizzes/answer", json = toSend)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/answer/<int:question_id>/answers', methods=['POST'])
+@protected(required_role=['moderator'])
 def create_answer(current_user, question_id):
     data = request.form
     toSend = {
@@ -355,8 +355,8 @@ def create_answer(current_user, question_id):
     response = requests.post("http://localhost:5123/answer/" + question_id + "/answers", json = toSend)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/answers/<int:answer_id>', methods=['PATCH'])
+@protected(required_role=['moderator'])
 def update_answer(current_user, answer_id):
     data = request.form
     toSend = {
@@ -366,39 +366,39 @@ def update_answer(current_user, answer_id):
     response = requests.patch("http://localhost:5123/answers/" + answer_id, json = toSend)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/answers/<int:answer_id>', methods=['DELETE'])
+@protected(required_role=['moderator'])
 def delete_answer(current_user, answer_id):
     response = requests.delete("http://localhost:5123/answers/" + answer_id)
     return jsonify(response.json(), response.status_code)
 
 # Game Service
-@protected(required_role=['moderator'])
 @routes.route('/games/all', methods=['GET'])
+@protected(required_role=['moderator'])
 def get_all_games(current_user):
     response = requests.get("http://localhost:5123/games/all")
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/games/<int:ID_Game>', methods=['GET'])
+@protected()
 def get_game(current_user, ID_Game):
     response = requests.get("http://localhost:5123/games/" + ID_Game)
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/games/<int:ID_Player>', methods=['GET'])
+@protected()
 def get_player_games(current_user, ID_Player):
     response = requests.get("http://localhost:5123/games/" + ID_Player)
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/games/<int:n>', methods=['GET'])
+@protected()
 def get_highscore(current_user, n):
     response = requests.get("http://localhost:5123/games/highest/" + n)
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/games/add', methods=['POST'])
+@protected()
 def add_game(current_user):
     data = request.form
     toSend = {
@@ -409,8 +409,8 @@ def add_game(current_user):
     response = requests.post("http://localhost:5123/games/add", json = toSend)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/games/<int:ID_Game>', methods=['PATCH'])
+@protected(required_role=['moderator'])
 def update_game(current_user, ID_Game):
     data = request.form
     toSend = {
@@ -421,51 +421,51 @@ def update_game(current_user, ID_Game):
     response = requests.patch("http://localhost:5123/games/" + ID_Game, json = toSend)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/games/<int:ID_Game>', methods=['DELETE'])
+@protected(required_role=['moderator'])
 def delete_game(current_user, ID_Game):
     response = requests.get("http://localhost:5123/games/" + ID_Game)
     return jsonify(response.json(), response.status_code)
 
 # Question Service
-@protected(required_role=['moderator'])
 @routes.route('/questions/all', methods=['GET'])
+@protected(required_role=['moderator'])
 def get_all_questions(current_user):
     response = requests.get("http://localhost:5123/questions/all")
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/questions/category/<string:category>', methods=['GET'])
+@protected()
 def get_question_by_category(current_user, category):
     response = requests.get("http://localhost:5123/questions/category/" + category)
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/questions/<string:category>/<int:number_of_questions>', methods=['GET'])
+@protected()
 def get_n_questions_by_category(current_user, category, number_of_questions):
     response = requests.get("http://localhost:5123/questions/" + category + "/" + number_of_questions)
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/questions/<int:ID_Question>', methods=['GET'])
+@protected()
 def get_question(current_user, ID_Question):
     response = requests.get("http://localhost:5123/questions/" + ID_Question)
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/questions/get_next/<string:ID_Session>', methods=['GET'])
+@protected()
 def get_next_question(current_user, ID_Session):
     response = requests.get("http://localhost:5123/questions/get_next/"+ID_Session)
     return jsonify(response.json(), response.status_code)
 
-@protected()
 @routes.route('/questions/<int:ID_Question>/quizzes', methods=['GET'])
+@protected()
 def get_quiz_with_question(current_user, ID_Question):
     response = requests.get("http://localhost:5123/questions/" + ID_Question + "/quizzes")
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/question/<int:ID_Question>', methods=['PATCH'])
+@protected(required_role=['moderator'])
 def update_question(current_user, ID_Question):
     data = request.form
     toSend = {
@@ -476,14 +476,14 @@ def update_question(current_user, ID_Question):
     response = requests.patch("http://localhost:5123/question/" + ID_Question, json = toSend)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/question/<int:ID_Question>', methods=['DELETE'])
+@protected(required_role=['moderator'])
 def delete_question(current_user, ID_Question):
     response = requests.delete("http://localhost:5123/question/<int:ID_Question>" + ID_Question)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/question', methods=['POST'])
+@protected(required_role=['moderator'])
 def create_question(current_user):
     data = request.form
     toSend = {
@@ -494,15 +494,15 @@ def create_question(current_user):
     response = requests.post("http://localhost:5123/question/", json = toSend)
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:quiz_id>/questions/<int:question_id>', methods=['POST'])
+@protected(required_role=['moderator'])
 def assign_question_to_quiz(current_user, quiz_id, question_id):
 
     response = requests.post("http://localhost:5123/quizzes/" + quiz_id + "/questions/" + question_id )
     return jsonify(response.json(), response.status_code)
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:quiz_id>/questions/<int:question_id>', methods=['DELETE'])
+@protected(required_role=['moderator'])
 def remove_question_from_quiz(current_user, quiz_id, question_id):
 
     response = requests.delete("http://localhost:5123/quizzes/" + quiz_id + "/questions/" + question_id )
@@ -510,43 +510,43 @@ def remove_question_from_quiz(current_user, quiz_id, question_id):
 
 # Quiz
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes/all', methods=['GET'])
+@protected(required_role=['moderator'])
 def get_all_quiz(current_user):
     response = requests.get("http://localhost:5123/quizzes/all")
     return jsonify(response.json()), response.status_code
 
 
-@protected()
 @routes.route('/quizzes/random', methods=['GET'])
+@protected()
 def get_random_quiz(current_user):
     response = requests.get("http://localhost:5123/quizzes/random")
     return jsonify(response.json()), response.status_code
 
 
-@protected()
 @routes.route('/quizzes/<int:quiz_id>/length', methods=['GET'])
+@protected()
 def get_quiz_length(current_user, quiz_id):
     response = requests.get(f"http://localhost:5123/quizzes/{quiz_id}/length")
     return jsonify(response.json()), response.status_code
 
 
-@protected()
 @routes.route('/quizzes/<int:quiz_id>/questions', methods=['GET'])
+@protected()
 def get_quiz_question(current_user, quiz_id):
     response = requests.get(f"http://localhost:5123/quizzes/{quiz_id}/questions")
     return jsonify(response.json()), response.status_code
 
 
-@protected()
 @routes.route('/quizzes/author/<int:author_id>', methods=['GET'])
+@protected()
 def get_all_author_quizes(current_user, author_id):
     response = requests.get(f"http://localhost:5123/quizzes/author/{author_id}")
     return jsonify(response.json()), response.status_code
 
 
-@protected()
 @routes.route('/quizzes/<int:quiz_id>/start', methods=['POST'])
+@protected()
 def start_quiz(current_user, quiz_id):
     toSend = {
         'user_id': current_user
@@ -560,8 +560,8 @@ def start_quiz(current_user, quiz_id):
     return jsonify(response.json()), response.status_code
 
 
-@protected()
 @routes.route('/quizzes/get_session/<string:session_id>', methods=['GET'])
+@protected()
 def get_session(current_user, session_id):
     response = requests.get(
         f"http://localhost:5123/quizzes/get_session/{session_id}"
@@ -569,8 +569,8 @@ def get_session(current_user, session_id):
     return jsonify(response.json()), response.status_code
 
 
-@protected()
 @routes.route('/quizzes/<string:session_id>/finish', methods=['POST'])
+@protected()
 def finish_session(current_user, session_id):
     toSend = {
         'user_id': current_user
@@ -584,8 +584,8 @@ def finish_session(current_user, session_id):
     return jsonify(response.json()), response.status_code
 
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes', methods=['POST'])
+@protected(required_role=['moderator'])
 def add_quiz(current_user):
     data = request.get_json()
 
@@ -602,8 +602,8 @@ def add_quiz(current_user):
     return jsonify(response.json()), response.status_code
 
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:quiz_id>', methods=['PATCH'])
+@protected(required_role=['moderator'])
 def patch_quiz(current_user, quiz_id):
     data = request.get_json()
 
@@ -619,8 +619,8 @@ def patch_quiz(current_user, quiz_id):
     return jsonify(response.json()), response.status_code
 
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:quiz_id>', methods=['DELETE'])
+@protected(required_role=['moderator'])
 def delete_quiz(current_user, quiz_id):
     response = requests.delete(
         f"http://localhost:5123/quizzes/{quiz_id}"
@@ -628,8 +628,8 @@ def delete_quiz(current_user, quiz_id):
     return jsonify(response.json()), response.status_code
 
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:quiz_id>/accept', methods=['POST'])
+@protected(required_role=['admin'])
 def accept_quiz(current_user, quiz_id):
     response = requests.post(
         f"http://localhost:5123/quizzes/{quiz_id}/accept"
@@ -637,8 +637,8 @@ def accept_quiz(current_user, quiz_id):
     return jsonify(response.json()), response.status_code
 
 
-@protected(required_role=['moderator'])
 @routes.route('/quizzes/<int:quiz_id>/reject', methods=['POST'])
+@protected(required_role=['admin'])
 def reject_quiz(current_user, quiz_id):
     data = request.get_json()
 
