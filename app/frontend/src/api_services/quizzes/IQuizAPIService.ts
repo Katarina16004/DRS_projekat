@@ -12,5 +12,7 @@ export interface IQuizService {
 
     startQuiz(token: string, quiz_id : number ):Promise<CreateQuizDTO>;
     finishQuiz(token: string, session_id : string):Promise<GameDTO>;
+
+    createQuiz(token: string, name :string, category :string , duration: number) :Promise<number>
     //getQuizByStatu(token: string, status: string): Promise<QuizDTO[]>             //filteri kod admina
 }
