@@ -17,7 +17,7 @@ def get_all_games():
         for g in games
     ])
 
-@game_router.route('/games/<int:ID_Game>', methods=['GET'])
+@game_router.route('/games/<int:ID_Game>/game', methods=['GET'])
 def get_game_by_ID(ID_Game):
 
     g = Game.get_by_id(ID_Game)

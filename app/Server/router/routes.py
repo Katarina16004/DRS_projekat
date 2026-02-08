@@ -379,7 +379,7 @@ def get_all_games(current_user):
     response = requests.get("http://localhost:5123/games/all")
     return jsonify(response.json(), response.status_code)
 
-@routes.route('/games/<int:ID_Game>', methods=['GET'])
+@routes.route('/games/<int:ID_Game>/game', methods=['GET'])
 @protected()
 def get_game(current_user, ID_Game):
     response = requests.get("http://localhost:5123/games/" + ID_Game)
@@ -391,7 +391,7 @@ def get_player_games(current_user, ID_Player):
     response = requests.get("http://localhost:5123/games/" + ID_Player)
     return jsonify(response.json(), response.status_code)
 
-@routes.route('/games/<int:n>', methods=['GET'])
+@routes.route('/games/highest/<int:n>', methods=['GET'])
 @protected()
 def get_highscore(current_user, n):
     response = requests.get("http://localhost:5123/games/highest/" + n)
