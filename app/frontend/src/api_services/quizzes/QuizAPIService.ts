@@ -100,4 +100,32 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
+
+    async createQuiz(token: string, name: string, category: string, duration: number): Promise<number> {
+        try {
+            const res = await axios.post<number>(
+                `${API_URL}quizzes`,
+                {
+                    Quiz_length: duration,
+                    Name: name,
+                    Category: category
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            )
+
+            return res.data   
+        }
+        catch (error) {
+            console.error("Error while creating Quiz", error)
+            throw error
+        }
+    },
+    //async acceptQuiz(token:string,ID_Quiz:number):Promise<string>{
+
+    //},
+    //async rejectQuiz(token:string,ID_Quiz:number):Promise<string>{
+
+    //},
 }
