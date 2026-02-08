@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from infrastructure.reports.report import generate_game_report
 from infrastructure.classes.Quiz import Quiz
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
 from infrastructure.classes.QuizSession import QuizSession
@@ -121,11 +122,10 @@ def finish_quiz(session_id):
     if session.user_id != user_id:
         return jsonify({"error": "Forbidden"}), 403
 
-    Game.create_game(
-        player_id=user_id,
-        score=session.score,
-        quiz_id=session.quiz_id
-    )
+    game = Game.create_game(player_id=user_id,score=session.score,quiz_id=session.quiz_id)
+
+    report = generate_game_report(game)
+    print(report)
 
     QuizSession.delete_session_by_id(session_id)
 

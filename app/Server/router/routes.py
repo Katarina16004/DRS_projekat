@@ -557,8 +557,13 @@ def start_quiz(current_user, quiz_id):
         json=toSend
     )
 
-    return jsonify(response.json()), response.status_code
+    print("STATUS:", response.status_code)
+    print("BODY:", response.text)
 
+    try:
+        return jsonify(response.json()), response.status_code
+    except:
+        return response.text, response.status_code
 
 @routes.route('/quizzes/get_session/<string:session_id>', methods=['GET'])
 @protected()

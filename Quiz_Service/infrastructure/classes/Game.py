@@ -33,7 +33,7 @@ class Game(db.Model):
     
     @classmethod 
     def get_by_id(cls,ID_Game):
-        return cls.query.filter(cls.ID_Game == ID_Game)
+        return cls.query.filter(cls.ID_Game == ID_Game).first()
     
     @classmethod
     def get_n_highest_scores(cls, n=10):
