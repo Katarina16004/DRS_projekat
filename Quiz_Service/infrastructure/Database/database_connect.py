@@ -2,7 +2,10 @@ from flask import Flask
 from sqlalchemy import text
 from flask_sqlalchemy import SQLAlchemy
 from redis_om import get_redis_connection
+from dotenv import load_dotenv
 import os
+
+load_dotenv() 
 
 app = Flask(__name__)
 

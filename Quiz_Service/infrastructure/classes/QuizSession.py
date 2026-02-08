@@ -4,13 +4,17 @@ from redis_om import HashModel
 QUIZ_SESSION_TTL = 30 * 60
 
 
-class QuizSession(HashModel, index = True):
+class QuizSession(HashModel):
     user_id: int
     quiz_id: int
     current_question_index: int = 0
     score: int = 0
     correct_count: int = 0
     wrong_count: int = 0
+
+    class Meta:
+        global_key_prefix = "quiz"
+        model_key_prefix = "session"
 
     def save_with_ttl(self):
         super().save()
