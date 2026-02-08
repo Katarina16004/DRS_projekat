@@ -6,6 +6,7 @@ from util.extensions import bcrypt
 from functools import wraps
 from collections import defaultdict
 from services.mail_service import send_email
+from reports.report import generate_game_report
 import jwt
 import datetime
 import requests
@@ -585,6 +586,22 @@ def finish_session(current_user, session_id):
         f"http://localhost:5123/quizzes/{session_id}/finish",
         json=toSend
     )
+
+    with Session.begin() as session:
+        profile = session.query(UserProfile).filter(UserProfile.ID_User == current_user).first()
+        if not profile:
+            return jsonify({"error": "Profile not found"}), 404
+        
+        path = generate_game_report(response.json())
+        send_email(
+            profile.email,
+            profile.First_Name,
+            "Report",
+            f"Your last game report",
+            path
+        )
+
+
 
     return jsonify(response.json()), response.status_code
 
