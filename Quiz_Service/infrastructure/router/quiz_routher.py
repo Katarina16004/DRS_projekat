@@ -129,7 +129,8 @@ def finish_quiz(session_id):
         {
             "ID_Player": game.ID_Player,
             "Score":game.Score,
-            "ID_Quiz":game.ID_Quiz
+            "ID_Quiz":game.ID_Quiz,
+            "ID_Game":game.ID_Game
         }
     ),200
 
