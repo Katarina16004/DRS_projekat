@@ -125,7 +125,13 @@ def finish_quiz(session_id):
 
     QuizSession.delete_session_by_id(session_id)
 
-    return jsonify(game)
+    return jsonify(
+        {
+            "ID_Player": game.ID_Player,
+            "Score":game.Score,
+            "ID_Quiz":game.ID_Quiz
+        }
+    ),200
 
 
 @quiz_router.route("/quizzes", methods=['POST'])
