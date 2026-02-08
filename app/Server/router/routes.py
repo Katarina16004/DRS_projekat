@@ -594,7 +594,7 @@ def finish_session(current_user, session_id):
         
         path = generate_game_report(response.json())
         send_email(
-            profile.email,
+            profile.Email,
             profile.First_Name,
             "Report",
             f"Your last game report",
