@@ -100,7 +100,7 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
-    
+
     async createQuiz(token: string, name: string, category: string, duration: number): Promise<number> {
         try {
             const res = await axios.post<number>(
@@ -121,5 +121,11 @@ export const quizApi: IQuizService = {
             console.error("Error while creating Quiz", error)
             throw error
         }
-    }
+    },
+    //async acceptQuiz(token:string,ID_Quiz:number):Promise<string>{
+
+    //},
+    //async rejectQuiz(token:string,ID_Quiz:number):Promise<string>{
+
+    //},
 }

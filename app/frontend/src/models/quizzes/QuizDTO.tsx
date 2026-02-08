@@ -1,9 +1,7 @@
 export interface QuizDTO {
-    id: number
-    name: string
-    author: string
-    duration: number
-    category: string
-    status: string
-    numOfQuestions: number
+    ID_Quiz: number
+    Quiz_length: number
+    ID_User: number
+    Is_Accepted: boolean
+    Rejection_Reason: string | null
 }
