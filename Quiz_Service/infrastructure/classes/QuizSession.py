@@ -4,7 +4,7 @@ from redis_om import HashModel
 QUIZ_SESSION_TTL = 30 * 60
 
 
-class QuizSession(HashModel, index = True):
+class QuizSession(HashModel):
     user_id: int
     quiz_id: int
     current_question_index: int = 0
