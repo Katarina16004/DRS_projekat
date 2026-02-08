@@ -1,6 +1,8 @@
 import axios from "axios";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 import type { IQuizService } from "./IQuizAPIService";
+import type { CreateQuizDTO } from "../../models/quizzes/CreateQuizDTO";
+import type { GameDTO } from "../../models/games/GameDTO";
 
 const API_URL = `http://localhost:5000/`
 
@@ -60,5 +62,42 @@ export const quizApi: IQuizService = {
             console.error(`Error deleting the quiz with given id: ${id}: `, error)
             throw error
         }
-    }
+    },
+
+    async startQuiz(token: string, quiz_id: number): Promise<CreateQuizDTO> {
+        try {
+            const res = await axios.post<CreateQuizDTO>(
+                `${API_URL}quizzes/${quiz_id}/start`,
+                {},
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            )
+
+            return res.data
+        }
+        catch (error) {
+            console.error("Error while trying to start Quiz", error)
+            throw error
+        }
+    },
+
+
+    async finishQuiz(token: string, session_id: string): Promise<GameDTO> {
+        try {
+            const res = await axios.post<GameDTO>(
+                `${API_URL}quizzes/${session_id}/finish`,
+                {},
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            )
+
+            return res.data
+        }
+        catch (error) {
+            console.error("Error while trying to finish Quiz", error)
+            throw error
+        }
+    },
 }

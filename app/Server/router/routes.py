@@ -329,18 +329,17 @@ def get_all_answers_from_question(current_user, question_id):
     response = requests.get("http://localhost:5123/answer/" + question_id + "/answers")
     return jsonify(response.json(), response.status_code)
 
-@routes.route('/quizzes/answer', methods=['POST'])
+@routes.route('/quizzes/answer/<string:session_id>', methods=['POST'])
 @protected()
-def submit_answer(current_user):
+def submit_answer(current_user,session_id):
     if current_user != data["user_id"]:
         return jsonify({"msg": "User ID mismatch!"}), 401
 
     data = request.form
     toSend = {
-        'session_id': data["session_id"],
-        'question_id': data["question_id"],
+        'session_id': session_id,
         'answer_id': data["answer_id"],
-        'user_id': data["user_id"]
+        'user_id': current_user
     }
     response = requests.post("http://localhost:5123/quizzes/answer", json = toSend)
     return jsonify(response.json(), response.status_code)
@@ -557,9 +556,6 @@ def start_quiz(current_user, quiz_id):
         f"http://localhost:5123/quizzes/{quiz_id}/start",
         json=toSend
     )
-
-    print("STATUS:", response.status_code)
-    print("BODY:", response.text)
 
     try:
         return jsonify(response.json()), response.status_code

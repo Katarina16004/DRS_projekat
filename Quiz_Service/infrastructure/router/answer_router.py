@@ -31,13 +31,10 @@ def get_answers_from_question(question_id):
     ])
 
 
-@answer_router.route('/quizzes/answer', methods=['POST'])
-def submit_answer():
-    # Igor
-    data = request.json
+@answer_router.route('/quizzes/answer/<string:session_id>', methods=['POST'])
+def submit_answer(session_id):
 
-    session_id = data.get("session_id")
-    question_id = data.get("question_id")
+    data = request.json
     answer_id = data.get("answer_id")
     user_id = data.get("user_id")
 
@@ -48,7 +45,7 @@ def submit_answer():
     if session.user_id != user_id:
         return jsonify({"error": "Forbidden"}), 403
 
-    answer = Answer.get_answer_by_id(question_id, answer_id)
+    answer = Answer.get_answer_by_id(answer_id)
     if not answer:
         return jsonify({"error": "Answer not found"}), 404
 
