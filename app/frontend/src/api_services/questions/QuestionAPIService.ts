@@ -9,9 +9,8 @@ export const questionApi: IQuestionAPIService = {
 
     async getNextQuestion(token: string, session_id: string): Promise<QuestionDTO> {
         try {
-            const res = await axios.post<QuestionDTO>(
+            const res = await axios.get<QuestionDTO>(
                 `${API_URL}questions/get_next/${session_id}`,
-                {},
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }

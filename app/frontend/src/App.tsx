@@ -15,6 +15,7 @@ import { ProtectedRoute } from "./components/protected_route/ProtectedRoute";
 import UserPage from "./pages/user/UserQuizzesPage";
 import { authApi } from "./api_services/auth/AuthAPIService";
 import AdminQuizzesPage from "./pages/admin/AdminQuizzesPage";
+import GameQuestionsPage from "./pages/game/GameQuestionsPage";
 
 function App() {
   return (
@@ -67,10 +68,10 @@ function App() {
           }
         /> 
         <Route
-          path="/quizzes"
+          path="/quizzes/:quizId/start"
           element={
             <ProtectedRoute requiredRole={["user", "moderator"]}>
-              <GameQuestionPage />
+              <GameQuestionsPage/>
             </ProtectedRoute>
           }
         />

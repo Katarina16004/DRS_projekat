@@ -1,10 +1,12 @@
 from __future__ import annotations
 from redis_om import HashModel
+from typing import Optional
+import uuid
 
 QUIZ_SESSION_TTL = 30 * 60
 
 
-class QuizSession(HashModel):
+class QuizSession(HashModel, index=True):
     user_id: int
     quiz_id: int
     current_question_index: int = 0
@@ -21,7 +23,7 @@ class QuizSession(HashModel):
         self.expire(QUIZ_SESSION_TTL)
 
     @classmethod
-    def create_session(cls, user_id: int, quiz_id: int) -> QuizSession:
+    def create_session(cls, user_id: int, quiz_id: int) -> "QuizSession":
         session = cls(
             user_id=user_id,
             quiz_id=quiz_id
@@ -30,15 +32,8 @@ class QuizSession(HashModel):
         return session
 
     @classmethod
-    def get_session(cls, session_id: str) -> QuizSession | None:
-        try:
-            return cls.get(session_id)
-        except KeyError:
-            return None
-
-    @classmethod
-    def session_exists(cls, session_id: str) -> bool:
-        return cls.db().exists(f"QuizSession:{session_id}") == 1
+    def get_session(cls, session_id: str) -> Optional["QuizSession"]:
+        return cls.get(session_id)
 
     @classmethod
     def delete_session_by_id(cls, session_id: str):

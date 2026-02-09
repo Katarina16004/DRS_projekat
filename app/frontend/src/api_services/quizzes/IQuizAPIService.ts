@@ -1,6 +1,7 @@
 import type { GameDTO } from "../../models/games/GameDTO";
 import type { CreateQuizDTO } from "../../models/quizzes/CreateQuizDTO";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
+import type { SessionDTO } from "../../models/session/SessionDTO";
 
 
 export interface IQuizService {
@@ -12,6 +13,7 @@ export interface IQuizService {
 
     startQuiz(token: string, quiz_id : number ):Promise<CreateQuizDTO>;
     finishQuiz(token: string, session_id : string):Promise<GameDTO>;
+    getSession(token:string, session_id:string):Promise<SessionDTO>;
 
     createQuiz(token: string, name :string, category :string , duration: number) :Promise<number>
     acceptQuiz(token:string,ID_Quiz:number):Promise<string>

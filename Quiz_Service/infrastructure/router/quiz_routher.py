@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from infrastructure.classes.Quiz import Quiz
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
-from infrastructure.classes.QuizSession import QuizSession
+from infrastructure.classes.QuizSession import QuizSession 
 from infrastructure.classes.Game import Game
 
 quiz_router = Blueprint('quiz_router', __name__)
@@ -105,7 +105,7 @@ def get_session(session_id):
         return jsonify({"error": "Session not found or expired"}), 404
 
     return jsonify({
-        "session_id": session.pk,
+        "session_id": session_id,
         "user_id": session.user_id,
         "quiz_id": session.quiz_id,
         "current_question_index": session.current_question_index,

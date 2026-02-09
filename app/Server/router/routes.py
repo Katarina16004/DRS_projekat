@@ -460,7 +460,10 @@ def get_question(current_user, ID_Question):
 @routes.route('/questions/get_next/<string:ID_Session>', methods=['GET'])
 @protected()
 def get_next_question(current_user, ID_Session):
+    
     response = requests.get(SERVICE_API + "/questions/get_next/"+ID_Session)
+    print("STATUS:", response.status_code)
+    print("TEXT:", response.text)
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/questions/<int:ID_Question>/quizzes', methods=['GET'])
@@ -558,7 +561,7 @@ def start_quiz(current_user, quiz_id):
     }
 
     response = requests.post(
-        SERVICE_API + "/quizzes/{quiz_id}/start",
+        SERVICE_API + f"/quizzes/{quiz_id}/start",
         json=toSend
     )
 
@@ -654,6 +657,13 @@ def patch_quiz(current_user, quiz_id):
 
     return jsonify(response.json()), response.status_code
 
+@routes.route('/quizzes/<int:quiz_id>', methods=['GET'])
+@protected()
+def get_quiz_by_id(current_user, quiz_id):
+    response = requests.get(
+        SERVICE_API + f"/quizzes/{quiz_id}"
+    )
+    return jsonify(response.json()), response.status_code
 
 @routes.route('/quizzes/<int:quiz_id>', methods=['DELETE'])
 @protected(required_role=['moderator'])

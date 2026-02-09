@@ -4,7 +4,7 @@ import type { IAsnwerAPIService } from "./IAnswerAPIService"
 
 const API_URL = import.meta.env.VITE_SERVER;
 
-export const questionApi: IAsnwerAPIService = {
+export const answerApi: IAsnwerAPIService = {
 
     async sumbitAnswer(token: string, session_id: string, answerID: number): Promise<AnswerResponseDTO> {
         try {

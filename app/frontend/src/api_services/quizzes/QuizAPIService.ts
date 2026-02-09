@@ -3,6 +3,7 @@ import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 import type { IQuizService } from "./IQuizAPIService";
 import type { CreateQuizDTO } from "../../models/quizzes/CreateQuizDTO";
 import type { GameDTO } from "../../models/games/GameDTO";
+import type { SessionDTO } from "../../models/session/SessionDTO";
 
 const API_URL = import.meta.env.VITE_SERVER;
 
@@ -24,7 +25,7 @@ export const quizApi: IQuizService = {
     async getQuizById(token: string, id: number): Promise<QuizDTO> {
         try {
             const res = await axios.get<QuizDTO>(
-                `${API_URL}quiz/${id}`,
+                `${API_URL}quizzes/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -93,6 +94,23 @@ export const quizApi: IQuizService = {
                 }
             )
 
+            return res.data
+        }
+        catch (error) {
+            console.error("Error while trying to finish Quiz", error)
+            throw error
+        }
+    },
+
+    async getSession(token:string, session_id:string):Promise<SessionDTO>{
+        try {
+            const res = await axios.post<SessionDTO>(
+                `${API_URL}quizzes/get_session/${session_id}`,
+                {},
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            )
             return res.data
         }
         catch (error) {
