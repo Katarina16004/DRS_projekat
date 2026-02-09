@@ -128,9 +128,17 @@ def delete_game(ID_Game):
 
     return jsonify({"message": "Game deleted successfully"}), 200
 
+@game_router.route('/games/quiz/<int:quiz_id>', methods=['GET'])
+def get_games_by_quiz_id(quiz_id):
+    games = Game.get_games_by_quiz_id(quiz_id)
 
-@routes.route('/games/quiz/<int:quiz_id>', methods=['GET'])
-@protected()
-def get_games_for_quiz(current_user, quiz_id):
-    response = requests.get(SERVICE_API + f"/games/quiz/{quiz_id}")
-    return jsonify(response.json()), response.status_code
+    return jsonify([
+        {
+            "ID_Game": g.ID_Game,
+            "ID_Player": g.ID_Player,
+            "Score": g.Score,
+            "ID_Quiz": g.ID_Quiz
+        }
+        for g in games
+    ])
+

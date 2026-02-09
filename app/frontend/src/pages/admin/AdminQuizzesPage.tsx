@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import type { UserRole } from "../../enums/user/UserRole";
 import { AdminQuizzesForm } from "../../components/admin/quizzes/AdminQuizzesForm";
 import type { QuizStatus } from "../../enums/quiz/QuizStatus";
+import { quizApi } from "../../api_services/quizzes/QuizAPIService";
+import { GameAPIService } from "../../api_services/games/GameAPIService";
 
 
 interface AdminQuiz {
@@ -46,7 +48,6 @@ export default function AdminQuizzesPage() {
             });
         }
 
-        // 🔧 MOCK PODACI
         const mockQuizzes: AdminQuiz[] = [
             {
                 id: 1,
@@ -80,13 +81,11 @@ export default function AdminQuizzesPage() {
         setQuizzes(mockQuizzes);
     }, [token]);
 
-    /* ================= ACTION HANDLERS ================= */
-
-    const handleDelete = (id: number) => {
+    const handleDelete = async (id: number) => {
         setQuizzes(prev => prev.filter(q => q.id !== id));
     };
 
-    const handleApprove = (id: number) => {
+    const handleApprove = async (id: number) => {
         setQuizzes(prev =>
             prev.map(q =>
                 q.id === id ? { ...q, status: "approved" } : q
@@ -94,7 +93,7 @@ export default function AdminQuizzesPage() {
         );
     };
 
-    const handleReject = (id: number) => {
+    const handleReject = async (id: number) => {
         setQuizzes(prev =>
             prev.map(q =>
                 q.id === id ? { ...q, status: "rejected" } : q
@@ -102,9 +101,13 @@ export default function AdminQuizzesPage() {
         );
     };
 
-    const handleDownloadPdf = (id: number) => {
-        console.log("Generate PDF for quiz:", id);
-        // kasnije: fetch /admin/quizzes/{id}/report
+    const handleDownloadPdf = async (id: number) => {
+        try{
+        await GameAPIService.get_games_from_quiz(token!,id)
+        }
+        catch(error){
+            alert(error)
+        }
     };
 
     const handleLogout = () => {
