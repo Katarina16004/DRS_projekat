@@ -115,17 +115,47 @@ export const quizApi: IQuizService = {
                 }
             )
 
-            return res.data   
+            return res.data
         }
         catch (error) {
             console.error("Error while creating Quiz", error)
             throw error
         }
     },
-    //async acceptQuiz(token:string,ID_Quiz:number):Promise<string>{
+    async acceptQuiz(token: string, ID_Quiz: number): Promise<string> {
+        try {
+            const res = await axios.post<string>(
+                `${API_URL}quizzes/${ID_Quiz}}/accept`,
+                {},
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            )
 
-    //},
-    //async rejectQuiz(token:string,ID_Quiz:number):Promise<string>{
+            return res.data
+        }
+        catch (error) {
+            console.error("Error while creating Quiz", error)
+            throw error
+        }
+    },
+    async rejectQuiz(token: string, ID_Quiz: number,reason:string): Promise<string> {
+        try {
+            const res = await axios.post<string>(
+                `${API_URL}quizzes/${ID_Quiz}}/reject`,
+                {
+                    reason:reason
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            )
 
-    //},
+            return res.data
+        }
+        catch (error) {
+            console.error("Error while creating Quiz", error)
+            throw error
+        }
+    },
 }
