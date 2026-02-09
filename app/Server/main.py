@@ -15,6 +15,7 @@ app = Flask(__name__)
 app.config["BCRYPT_LOG_ROUNDS"] = int(os.getenv("BCRYPT_LOG_ROUNDS"))
 app.json.sort_keys = False
 bcrypt.init_app(app)
+CORS_ORIGIN = os.getenv("CORS_ORIGIN")
 
 
 Base.metadata.create_all(engine)
@@ -22,10 +23,10 @@ app.register_blueprint(routes)
 
 CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:5173"}},
+    resources={r"/*": {"origins": CORS_ORIGIN}},
     supports_credentials=True
 )
 
 # Boot up
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=False)

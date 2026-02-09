@@ -38,6 +38,7 @@ export const authApi: IAuthAPIService = {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+
       return res.data;
     } catch (error: any) {
       let err: AuthResponse = {};
