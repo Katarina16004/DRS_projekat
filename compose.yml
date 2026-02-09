@@ -5,8 +5,11 @@ services:
     container_name: react_frontend
     ports:
       - "5173:5173"
+    environment:
+      VITE_SERVER: http://api:5000
     depends_on:
-      - api
+      api: 
+        condition: service_started
 
     restart: unless-stopped
   api:
@@ -18,7 +21,10 @@ services:
       DATABASE_URL: mysql+pymysql://myuser:mypassword@db:3306/myapp
       BCRYPT_LOG_ROUNDS: "3"
       SERVICE_API: http://quiz_service:5123
-      REDIS_URL: redis://redis:6379/0
+      MAILJET_API_KEY: c368c58eb1aa199c57ce26b7fc032fdb
+      MAILJET_API_SECRET: 6f71f09e58932de6f23fa71140a78a65
+      MAILJET_SENDER_EMAIL: ludigamer013@gmail.com
+      MAILJET_SENDER_NAME: DRS - PROJECT TEAM
     depends_on:
       db:
         condition: service_healthy
