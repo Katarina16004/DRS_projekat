@@ -14,7 +14,7 @@ class Quiz(db.Model):
     Quiz_length = db.Column(db.Integer, nullable=False, default=0)
     ID_User = db.Column(db.Integer, nullable=False)
 
-    Is_Accepted = db.Column(db.Boolean, nullable=False, default=False)
+    Is_Accepted = db.Column(db.Integer, nullable=False, default=0)
     Rejection_Reason = db.Column(db.String(45), nullable=True)
 
     def __init__(self, Name, Category, Quiz_length, ID_User):
@@ -22,7 +22,7 @@ class Quiz(db.Model):
         self.Category = Category
         self.Quiz_length = Quiz_length
         self.ID_User = ID_User
-        self.Is_Accepted = False
+        self.Is_Accepted = 0
         self.Rejection_Reason = None
 
     def save(self):
@@ -40,12 +40,12 @@ class Quiz(db.Model):
         db.session.commit()
 
     def accept(self):
-        self.Is_Accepted = True
+        self.Is_Accepted = 1   
         self.Rejection_Reason = None
         db.session.commit()
 
     def reject(self, reason):
-        self.Is_Accepted = False
+        self.Is_Accepted = 2   
         self.Rejection_Reason = reason
         db.session.commit()
 
@@ -63,15 +63,17 @@ class Quiz(db.Model):
 
     @classmethod
     def get_accepted(cls):
-        return cls.query.filter(cls.Is_Accepted == True).all()
+        return cls.query.filter(cls.Is_Accepted == 1).all()
+
 
     @classmethod
-    def get_pending(cls):
-        return cls.query.filter(cls.Is_Accepted == False).all()
+    def get_unreviewed(cls):
+        return cls.query.filter(cls.Is_Accepted == 0).all()
+
 
     @classmethod
     def get_random(cls):
-        return cls.query.filter(cls.Is_Accepted == True).order_by(func.rand()).first()
+        return cls.query.filter(cls.Is_Accepted == 1).order_by(func.rand()).first()
 
     @classmethod
     def get_length(cls, quiz_id):

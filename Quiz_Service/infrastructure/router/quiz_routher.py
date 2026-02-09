@@ -240,3 +240,21 @@ def reject_quiz(quiz_id):
 
     quiz.reject(reason)
     return jsonify({"message": "Quiz rejected"})
+
+@quiz_router.route('/quizzes/pending', methods=['GET'])
+def get_pending_quizzes():
+    quizzes = Quiz.get_pending()
+
+    return jsonify([
+        {
+            "ID_Quiz": q.ID_Quiz,
+            "Name": q.Name,
+            "Category": q.Category,
+            "Quiz_length": q.Quiz_length,
+            "ID_User": q.ID_User,
+            "Is_Accepted": q.Is_Accepted,
+            "Rejection_Reason": q.Rejection_Reason,
+            "Number_of_Questions": len(QuestionQuiz.get_questions_for_quiz(q.ID_Quiz))
+        }
+        for q in quizzes
+    ])

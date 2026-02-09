@@ -286,6 +286,8 @@ def update_profile(current_user):
         session.commit()
         return jsonify({"message": "Profile updated successfully"}), 200
     
+
+
 @routes.route("/profile/<int:user_id>", methods=['GET'])
 @protected()
 def get_profile(current_user, user_id):
@@ -530,21 +532,21 @@ def get_random_quiz(current_user):
 @routes.route('/quizzes/<int:quiz_id>/length', methods=['GET'])
 @protected()
 def get_quiz_length(current_user, quiz_id):
-    response = requests.get(fSERVICE_API + "/quizzes/{quiz_id}/length")
+    response = requests.get(SERVICE_API + "/quizzes/{quiz_id}/length")
     return jsonify(response.json()), response.status_code
 
 
 @routes.route('/quizzes/<int:quiz_id>/questions', methods=['GET'])
 @protected()
 def get_quiz_question(current_user, quiz_id):
-    response = requests.get(fSERVICE_API + "/quizzes/{quiz_id}/questions")
+    response = requests.get(SERVICE_API + "/quizzes/{quiz_id}/questions")
     return jsonify(response.json()), response.status_code
 
 
 @routes.route('/quizzes/author/<int:author_id>', methods=['GET'])
 @protected()
 def get_all_author_quizes(current_user, author_id):
-    response = requests.get(fSERVICE_API + "/quizzes/author/{author_id}")
+    response = requests.get(SERVICE_API + "/quizzes/author/{author_id}")
     return jsonify(response.json()), response.status_code
 
 
@@ -556,7 +558,7 @@ def start_quiz(current_user, quiz_id):
     }
 
     response = requests.post(
-        fSERVICE_API + "/quizzes/{quiz_id}/start",
+        SERVICE_API + "/quizzes/{quiz_id}/start",
         json=toSend
     )
 
@@ -569,7 +571,7 @@ def start_quiz(current_user, quiz_id):
 @protected()
 def get_session(current_user, session_id):
     response = requests.get(
-        fSERVICE_API + "/quizzes/get_session/{session_id}"
+        SERVICE_API + "/quizzes/get_session/{session_id}"
     )
     return jsonify(response.json()), response.status_code
 
@@ -582,7 +584,7 @@ def finish_session(current_user, session_id):
     }
 
     response = requests.post(
-        fSERVICE_API + "/quizzes/{session_id}/finish",
+        SERVICE_API + "/quizzes/{session_id}/finish",
         json=toSend
     )
 
@@ -601,6 +603,17 @@ def finish_session(current_user, session_id):
         )
 
 
+
+    return jsonify(response.json()), response.status_code
+
+
+@routes.route('/quizzes/pending', methods=['GET'])
+@protected()
+def get_pending(current_user):
+
+    response = requests.get(
+        SERVICE_API + "/quizzes/pending",
+    )
 
     return jsonify(response.json()), response.status_code
 
@@ -635,7 +648,7 @@ def patch_quiz(current_user, quiz_id):
     }
 
     response = requests.patch(
-        fSERVICE_API + "/quizzes/{quiz_id}",
+        SERVICE_API + "/quizzes/{quiz_id}",
         json=toSend
     )
 
@@ -646,7 +659,7 @@ def patch_quiz(current_user, quiz_id):
 @protected(required_role=['moderator'])
 def delete_quiz(current_user, quiz_id):
     response = requests.delete(
-        fSERVICE_API + "/quizzes/{quiz_id}"
+        SERVICE_API + "/quizzes/{quiz_id}"
     )
     return jsonify(response.json()), response.status_code
 
@@ -655,7 +668,7 @@ def delete_quiz(current_user, quiz_id):
 @protected(required_role=['admin'])
 def accept_quiz(current_user, quiz_id):
     response = requests.post(
-        fSERVICE_API + "/quizzes/{quiz_id}/accept"
+        SERVICE_API + "/quizzes/{quiz_id}/accept"
     )
     return jsonify(response.json()), response.status_code
 
@@ -670,7 +683,7 @@ def reject_quiz(current_user, quiz_id):
     }
 
     response = requests.post(
-        fSERVICE_API + "/quizzes/{quiz_id}/reject",
+        SERVICE_API + "/quizzes/{quiz_id}/reject",
         json=toSend
     )
 
