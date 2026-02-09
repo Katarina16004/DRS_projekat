@@ -87,7 +87,7 @@ function App() {
         />
 
         <Route
-          path="/admin/quizzes/quiz.id/preview"
+          path="/admin/quizzes/:quiz.id/preview"
           element={
             <ProtectedRoute requiredRole="admin">
               <QuizGradingPage />

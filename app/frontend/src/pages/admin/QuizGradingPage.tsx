@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import type { QuestionDTO } from "../../models/questions/QuestionDTO";
 import { jwtDecode } from "jwt-decode";
+import { useParams } from "react-router-dom";
 import { QuizGradingForm } from "../../components/admin/quiz_grading/QuizGradingForm";
 
 export default function QuizGradingPage() {
     const token = localStorage.getItem("token") || "";
+    const { quizId } = useParams<{ quizId: string }>();
 
     const [navBarUser, setNavBarUser] = useState<{ username: string; role: string } | null>(null);
     const [questions, setQuestions] = useState<QuestionDTO[]>([]);
