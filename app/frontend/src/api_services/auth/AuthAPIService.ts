@@ -4,7 +4,7 @@ import type { IAuthAPIService } from "./IAuthAPIService";
 import type { LoginData } from "../../models/auth/UserLoginDTO";
 import type { RegistrationData } from "../../models/auth/UserRegisterDTO";
 
-const API_URL =  import.meta.env.SERVER;
+const API_URL =  import.meta.env.VITE_SERVER;
 
 export const authApi: IAuthAPIService = {
   async login(data: LoginData): Promise<AuthResponse> {
@@ -13,7 +13,7 @@ export const authApi: IAuthAPIService = {
       formData.append("email", data.email);
       formData.append("password", data.password);
 
-      const res = await axios.post<AuthResponse>(`${API_URL}/login`, formData, {
+      const res = await axios.post<AuthResponse>(`${API_URL}login`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -34,7 +34,7 @@ export const authApi: IAuthAPIService = {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => formData.append(key, value));
 
-      const res = await axios.post<AuthResponse>(`${API_URL}/register`, formData, {
+      const res = await axios.post<AuthResponse>(`${API_URL}register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

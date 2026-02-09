@@ -3,7 +3,7 @@ import type { QuestionDTO } from "../../models/questions/QuestionDTO"
 import { type IQuestionAPIService } from "./IQuestionAPIService"
 import type { QuestionAssignedDTO } from "../../models/questions/QuestionAssignedDTO"
 
-const API_URL = import.meta.env.SERVER
+const API_URL = import.meta.env.VITE_SERVER;
 
 export const questionApi: IQuestionAPIService = {
 

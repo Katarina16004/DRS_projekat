@@ -2,7 +2,7 @@ import axios from "axios"
 import type { AnswerResponseDTO } from "../../models/answers/AnswerResponseDTO"
 import type { IAsnwerAPIService } from "./IAnswerAPIService"
 
-const API_URL = import.meta.env.SERVER
+const API_URL = import.meta.env.VITE_SERVER;
 
 export const questionApi: IAsnwerAPIService = {
 
