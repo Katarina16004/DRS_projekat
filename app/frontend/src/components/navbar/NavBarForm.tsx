@@ -2,7 +2,6 @@ import { NavLink, useLocation } from "react-router-dom";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
-import type { UserDTO } from "../../models/users/UserDTO";
 import type { UserRole } from "../../enums/user/UserRole";
 
 export const NavbarForm = ({ user, onLogout }: any) => {
@@ -32,15 +31,7 @@ export const NavbarForm = ({ user, onLogout }: any) => {
             const decoded: any = jwtDecode(token);
             const userId = decoded.id;
 
-            fetch(`http://localhost:5000/users/${userId}`)
-                .then(res => res.json())
-                .then((user: UserDTO) => {
-                    setNavBarUser({
-                        username: `${user.First_Name ?? ""} ${user.Last_Name ?? ""}`,
-                        role: user.role as UserRole,
-                        Image: user.Image || "",
-                    });
-                });
+            
         } catch {
             setNavBarUser({
                 username: "",

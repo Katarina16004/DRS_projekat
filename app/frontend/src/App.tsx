@@ -65,6 +65,14 @@ function App() {
               <UserPage />
             </ProtectedRoute>
           }
+        /> 
+        <Route
+          path="/quizzes"
+          element={
+            <ProtectedRoute requiredRole={["user", "moderator"]}>
+              <GameQuestionPage />
+            </ProtectedRoute>
+          }
         />
 
         <Route

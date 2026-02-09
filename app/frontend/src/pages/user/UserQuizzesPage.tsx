@@ -20,7 +20,6 @@ export default function UserQuizzesPage() {
     role: UserRole;
   } | null>(null);
 
-  // 🔐 decode token + fetch quizzes
   useEffect(() => {
     if (!token) return;
 
@@ -42,29 +41,29 @@ export default function UserQuizzesPage() {
       .catch(err => console.error(err));
   }, [token]);
 
-  // 🏷️ kategorije
+
   const categories = useMemo(() => {
     const unique = new Set(quizzes.map(q => q.Category));
     return Array.from(unique);
   }, [quizzes]);
 
-  // 🔍 filter
+
   const filteredQuizzes = useMemo(() => {
     if (selectedCategory === "all") return quizzes;
     return quizzes.filter(q => q.Category === selectedCategory);
   }, [quizzes, selectedCategory]);
 
-  // ▶️ PLAY
+
   const handlePlay = async (quizId: number) => {
     try {
       const session = await quizApi.startQuiz(token, quizId);
-      navigate(`/quiz/${quizId}/session/${session.session_id}`);
+      navigate(`/quizzes/${quizId}/start`);
     } catch (e) {
       console.error("Failed to start quiz", e);
     }
   };
 
-  // 🚪 logout
+
   const confirmLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
@@ -100,6 +99,7 @@ export default function UserQuizzesPage() {
                 </option>
               ))}
             </select>
+
           </div>
 
           {/* Cards */}

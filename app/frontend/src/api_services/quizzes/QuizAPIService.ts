@@ -9,12 +9,12 @@ const API_URL = import.meta.env.VITE_SERVER;
 export const quizApi: IQuizService = {
     async getAllQuizzes(token: string): Promise<QuizDTO[]> {
         try {
-            const res = await axios.get<{ success: boolean, message: string, data: QuizDTO[] }>(
+            const res = await axios.get<QuizDTO[]>(
                 `${API_URL}quizzes/all`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            return res.data.data || [];
+            return res.data || [];
         } catch (error) {
             console.error("Error while fetching all quizzes: ", error);
             return [];
