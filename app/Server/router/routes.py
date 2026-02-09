@@ -286,6 +286,8 @@ def update_profile(current_user):
         session.commit()
         return jsonify({"message": "Profile updated successfully"}), 200
     
+
+
 @routes.route("/profile/<int:user_id>", methods=['GET'])
 @protected()
 def get_profile(current_user, user_id):
@@ -601,6 +603,17 @@ def finish_session(current_user, session_id):
         )
 
 
+
+    return jsonify(response.json()), response.status_code
+
+
+@routes.route('/quizzes/pending', methods=['GET'])
+@protected()
+def get_pending(current_user):
+
+    response = requests.get(
+        SERVICE_API + "/quizzes/pending",
+    )
 
     return jsonify(response.json()), response.status_code
 

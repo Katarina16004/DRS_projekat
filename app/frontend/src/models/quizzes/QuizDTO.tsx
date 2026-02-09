@@ -5,6 +5,6 @@ export interface QuizDTO {
     Name: string
     Category: string
     Number_Of_Questions: number
-    Is_Accepted: boolean
+    Is_Accepted: number
     Rejection_Reason?: string | null
 }

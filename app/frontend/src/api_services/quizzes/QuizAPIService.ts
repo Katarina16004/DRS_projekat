@@ -23,12 +23,12 @@ export const quizApi: IQuizService = {
 
     async getQuizById(token: string, id: number): Promise<QuizDTO> {
         try {
-            const res = await axios.get<{ success: boolean, message: string, data: QuizDTO }>(
+            const res = await axios.get<QuizDTO>(
                 `${API_URL}quiz/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            return res.data.data
+            return res.data
         } catch (error) {
             console.error(`Error fetching the quiz with that ${id}: `, error)
             throw error
@@ -37,13 +37,13 @@ export const quizApi: IQuizService = {
 
     async addQuiz(token: string, quiz: QuizDTO): Promise<QuizDTO> {
         try {
-            const res = await axios.post<{ success: boolean, message: string, data: QuizDTO }>(
+            const res = await axios.post<QuizDTO>(
                 `${API_URL}add`,
                 quiz,
                 { headers: { Authorization: `Bearer ${token}` } }
             )
 
-            return res.data.data
+            return res.data
         } catch (error) {
             console.error("Error creating a new quiz: ", error)
             throw error
@@ -52,12 +52,12 @@ export const quizApi: IQuizService = {
 
     async deleteQuiz(token: string, id: number): Promise<QuizDTO> {
         try {
-            const res = await axios.delete<{ success: boolean, message: string, data: QuizDTO }>(
+            const res = await axios.delete< QuizDTO >(
                 `${API_URL}delete/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             )
 
-            return res.data.data
+            return res.data
         } catch (error) {
             console.error(`Error deleting the quiz with given id: ${id}: `, error)
             throw error
@@ -158,4 +158,19 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
+
+    async getAllPendingQuiz(token:string):Promise<QuizDTO[]>{
+        try {
+            const res = await axios.get<QuizDTO[]>(
+                `${API_URL}/quizzes/pending`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            return res.data || [];
+        } catch (error) {
+            console.error("Error while fetching all quizzes: ", error);
+            return [];
+        }
+    }
+
 }
