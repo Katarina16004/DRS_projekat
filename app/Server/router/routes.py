@@ -514,7 +514,7 @@ def remove_question_from_quiz(current_user, quiz_id, question_id):
 # Quiz
 
 @routes.route('/quizzes/all', methods=['GET'])
-@protected(required_role=['moderator'])
+@protected()
 def get_all_quiz(current_user):
     response = requests.get(SERVICE_API + "/quizzes/all")
     return jsonify(response.json()), response.status_code

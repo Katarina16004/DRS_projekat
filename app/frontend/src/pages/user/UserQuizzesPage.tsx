@@ -1,25 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
+import { UserQuizCard } from "../../components/user/UserQuizzesCard";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 import type { UserRole } from "../../enums/user/UserRole";
 import { jwtDecode } from "jwt-decode";
-import { UserQuizCard } from "../../components/user/UserQuizzesCard";
+import { quizApi } from "../../api_services/quizzes/QuizAPIService";
 
 export default function UserQuizzesPage() {
   const [quizzes, setQuizzes] = useState<QuizDTO[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const token = localStorage.getItem("token");
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const token = localStorage.getItem("token") || "";
+  const navigate = useNavigate();
 
   const [navBarUser, setNavBarUser] = useState<{
     username: string;
     role: UserRole;
-  } | null>({
-    username: "",
-    role: 'user'
-  });
+  } | null>(null);
 
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
+  // 🔐 decode token + fetch quizzes
   useEffect(() => {
     if (!token) return;
 
@@ -36,58 +37,34 @@ export default function UserQuizzesPage() {
       });
     }
 
-    // Mock podaci za prikaz
-    const mockQuizzes: QuizDTO[] = [
-      {
-        id: 1,
-        name: "General Knowledge",
-        author: "Admin",
-        category: "Trivia",
-        duration: 5,
-        status: "approved",
-        numOfQuestions: 10
-      },
-      {
-        id: 2,
-        name: "Science Quiz",
-        author: "Moderator1",
-        category: "Science",
-        duration: 7,
-        status: "approved",
-        numOfQuestions: 12
-      },
-      {
-        id: 3,
-        name: "History Challenge",
-        author: "Admin",
-        category: "History",
-        duration: 6,
-        status: "approved",
-        numOfQuestions: 8
-      }
-    ];
-
-    setQuizzes(mockQuizzes);
+    quizApi.getAllQuizzes(token)
+      .then(data => setQuizzes(data))
+      .catch(err => console.error(err));
   }, [token]);
 
+  // 🏷️ kategorije
   const categories = useMemo(() => {
-    const unique = new Set(quizzes.map(q => q.category));
+    const unique = new Set(quizzes.map(q => q.Category));
     return Array.from(unique);
   }, [quizzes]);
 
+  // 🔍 filter
   const filteredQuizzes = useMemo(() => {
     if (selectedCategory === "all") return quizzes;
-    return quizzes.filter(q => q.category === selectedCategory);
+    return quizzes.filter(q => q.Category === selectedCategory);
   }, [quizzes, selectedCategory]);
 
-  const handlePlay = (quizId: number) => {
-    console.log("Play quiz:", quizId);
+  // ▶️ PLAY
+  const handlePlay = async (quizId: number) => {
+    try {
+      const session = await quizApi.startQuiz(token, quizId);
+      navigate(`/quiz/${quizId}/session/${session.session_id}`);
+    } catch (e) {
+      console.error("Failed to start quiz", e);
+    }
   };
 
-  const handleLogout = () => {
-    setShowLogoutConfirm(true);
-  };
-
+  // 🚪 logout
   const confirmLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
@@ -95,7 +72,7 @@ export default function UserQuizzesPage() {
 
   return (
     <div className="min-h-screen font-poppins flex flex-col">
-      <NavbarForm user={navBarUser} onLogout={handleLogout} />
+      <NavbarForm user={navBarUser} onLogout={() => setShowLogoutConfirm(true)} />
 
       <div
         className="flex-1 w-full pb-16"
@@ -107,14 +84,14 @@ export default function UserQuizzesPage() {
 
           {/* Header + filter */}
           <div className="flex w-full max-w-6xl justify-between items-center mb-8 px-4">
-            <h2 className="text-3xl font-bold tracking-wider text-gray-800">
+            <h2 className="text-3xl font-bold text-gray-800">
               Quizzes
             </h2>
 
             <select
               value={selectedCategory}
               onChange={e => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 rounded-xl border border-[#82CAFF] text-[#4451A4] font-medium bg-white cursor-pointer"
+              className="px-4 py-2 rounded-xl border border-[#82CAFF] text-[#4451A4] bg-white"
             >
               <option value="all">All categories</option>
               {categories.map(cat => (
@@ -131,7 +108,7 @@ export default function UserQuizzesPage() {
           ) : (
             filteredQuizzes.map(q => (
               <UserQuizCard
-                key={q.id}
+                key={q.ID_Quiz}
                 quiz={q}
                 onPlay={handlePlay}
               />
@@ -140,30 +117,28 @@ export default function UserQuizzesPage() {
         </div>
       </div>
 
-      {/* Logout Confirmation Modal */}
+      {/* Logout modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
-            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/30"
             onClick={() => setShowLogoutConfirm(false)}
           />
 
-          <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md z-10 font-poppins">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-              Log out?
-            </h3>
+          <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md z-10">
+            <h3 className="text-2xl font-bold text-center mb-4">Log out?</h3>
             <p className="text-gray-600 text-center mb-8">
-              Are you sure you want to log out of your account?
+              Are you sure you want to log out?
             </p>
             <div className="flex justify-center gap-4">
               <button
-                className="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                className="px-6 py-2 rounded-xl border"
                 onClick={() => setShowLogoutConfirm(false)}
               >
                 Cancel
               </button>
               <button
-                className="px-6 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition font-medium"
+                className="px-6 py-2 rounded-xl bg-red-500 text-white"
                 onClick={confirmLogout}
               >
                 Log out
