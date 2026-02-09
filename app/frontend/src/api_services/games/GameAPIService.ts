@@ -2,7 +2,7 @@ import axios from "axios";
 import type { GameDTO } from "../../models/games/GameDTO";
 import type { IGameAPIService } from "./IGameAPIService";
 
-const API_URL = `http://localhost:5000/`
+const API_URL = import.meta.env.SERVER
 
 export const GameAPIService: IGameAPIService = {
     async get_all_games(token: string): Promise<GameDTO[]> {

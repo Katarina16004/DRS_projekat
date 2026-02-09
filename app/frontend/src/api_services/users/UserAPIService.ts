@@ -1,7 +1,7 @@
 import type { UserDTO } from "../../models/users/UserDTO";
 import axios from "axios";
 
-const API_URL = `http://localhost:5000/`;
+const API_URL = import.meta.env.SERVER;
 
 export const userApi = {
     async getAllUsers(token: string): Promise<UserDTO[]> {

@@ -2,14 +2,14 @@ import axios from "axios"
 import type { AnswerResponseDTO } from "../../models/answers/AnswerResponseDTO"
 import type { IAsnwerAPIService } from "./IAnswerAPIService"
 
-const API_URL = `http://localhost:5000/`
+const API_URL = import.meta.env.SERVER
 
 export const questionApi: IAsnwerAPIService = {
 
     async sumbitAnswer(token: string, session_id: string, answerID: number): Promise<AnswerResponseDTO> {
         try {
             const res = await axios.post<AnswerResponseDTO>(
-                `${API_URL}/quizzes/answer/${session_id}`,
+                `${API_URL}quizzes/answer/${session_id}`,
                 {
                     answer_id: answerID
                 },

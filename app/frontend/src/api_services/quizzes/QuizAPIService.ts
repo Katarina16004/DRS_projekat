@@ -4,7 +4,7 @@ import type { IQuizService } from "./IQuizAPIService";
 import type { CreateQuizDTO } from "../../models/quizzes/CreateQuizDTO";
 import type { GameDTO } from "../../models/games/GameDTO";
 
-const API_URL = `http://localhost:5000/`
+const API_URL = import.meta.env.SERVER
 
 export const quizApi: IQuizService = {
     async getAllQuizzes(token: string): Promise<QuizDTO[]> {

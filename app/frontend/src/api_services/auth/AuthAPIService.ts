@@ -4,7 +4,7 @@ import type { IAuthAPIService } from "./IAuthAPIService";
 import type { LoginData } from "../../models/auth/UserLoginDTO";
 import type { RegistrationData } from "../../models/auth/UserRegisterDTO";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
+const API_URL =  import.meta.env.SERVER;
 
 export const authApi: IAuthAPIService = {
   async login(data: LoginData): Promise<AuthResponse> {
