@@ -79,7 +79,32 @@ export const questionApi: IQuestionAPIService = {
             console.error("Error while creating question", error);
             throw error;
         }
-    }
+    },
 
+    async editQuestion(token: string, question_id : number ,text:string, points:number ,category:string  ):Promise<CreateQuestionDTO>{
+        try {
+            const formData = new FormData();
+            formData.append("Question_Text", text);
+            formData.append("Question_Points", points.toString());
+            formData.append("Question_Category", category);
+
+            const res = await axios.patch<CreateQuestionDTO>(
+                `${API_URL}question/${question_id}`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
+
+            return res.data;
+        } catch (error) {
+            console.error("Error while creating question", error);
+            throw error;
+        }
+
+    }
 
 }

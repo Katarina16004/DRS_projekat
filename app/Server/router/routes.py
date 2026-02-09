@@ -481,7 +481,7 @@ def update_question(current_user, ID_Question):
         'Question_Points': data["Question_Points"],
         'Question_Category': data["Question_Category"],
     }
-    response = requests.patch(SERVICE_API + "/question/" + ID_Question, json = toSend)
+    response = requests.patch(SERVICE_API + f"/question/{ID_Question}", json = toSend)
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/question/<int:ID_Question>', methods=['DELETE'])
