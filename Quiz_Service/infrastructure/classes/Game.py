@@ -49,3 +49,7 @@ class Game(db.Model):
         db.session.add(game)
         db.session.commit()
         return game
+    
+    @classmethod
+    def get_games_by_quiz_id(cls, quiz_id):
+        return cls.query.filter(cls.ID_Quiz == quiz_id).all()

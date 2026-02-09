@@ -8,5 +8,5 @@ export interface IQuestionAPIService{
     assign_question_to_quiz(token:string, quiz_id:number, question_id:number):Promise<QuestionAssignedDTO>;
     remove_question_to_quiz(token:string, quiz_id:number, question_id:number):Promise<string>;
     createQuestion(token:string, text:string, points:number ,category:string ):Promise<CreateQuestionDTO>
-
+    editQuestion(token: string, question_id : number ,text:string, points:number ,category:string  ):Promise<CreateQuestionDTO>
 }

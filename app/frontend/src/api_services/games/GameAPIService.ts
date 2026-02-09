@@ -36,7 +36,7 @@ export const GameAPIService: IGameAPIService = {
         }
     },
     async get_games_from_player(token: string, ID_Player: number): Promise<GameDTO[]> {
-                try {
+        try {
             const res = await axios.get<GameDTO[]>(
                 `${API_URL}games/${ID_Player}`,
                 {
@@ -51,9 +51,25 @@ export const GameAPIService: IGameAPIService = {
         }
     },
     async get_n_highest_scores(token: string, n: number): Promise<GameDTO[]> {
-                try {
+        try {
             const res = await axios.get<GameDTO[]>(
                 `${API_URL}/games/highest/${n}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            )
+            return res.data
+        }
+        catch (error) {
+            console.error("Error while trying to finish Quiz", error)
+            throw error
+        }
+    },
+
+    async get_games_from_quiz(token: string, ID_Quiz: number): Promise<GameDTO[]> {
+        try {
+            const res = await axios.get<GameDTO[]>(
+                `${API_URL}games/quiz/${ID_Quiz}}`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
