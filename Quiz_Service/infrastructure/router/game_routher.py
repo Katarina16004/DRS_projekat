@@ -127,3 +127,10 @@ def delete_game(ID_Game):
     game.delete()
 
     return jsonify({"message": "Game deleted successfully"}), 200
+
+
+@routes.route('/games/quiz/<int:quiz_id>', methods=['GET'])
+@protected()
+def get_games_for_quiz(current_user, quiz_id):
+    response = requests.get(SERVICE_API + f"/games/quiz/{quiz_id}")
+    return jsonify(response.json()), response.status_code

@@ -432,6 +432,26 @@ def delete_game(current_user, ID_Game):
     response = requests.get(SERVICE_API + "/games/" + ID_Game)
     return jsonify(response.json(), response.status_code)
 
+@routes.route('/games/quiz/<int:quiz_id>', methods=['GET'])
+@protected()
+def get_games_for_quiz(current_user, quiz_id):
+    response = requests.get(SERVICE_API + f"/games/quiz/{quiz_id}")
+
+    with Session.begin() as session:
+        profile = session.query(UserProfile).filter(UserProfile.ID_User == current_user).first()
+        if not profile:
+            return jsonify({"error": "Profile not found"}), 404
+        
+        path = generate_game_report(response.json())
+        send_email(
+            profile.Email,
+            profile.First_Name,
+            "Report",
+            f"Your game report",
+            path
+        )
+    return jsonify(response.json()), response.status_code
+
 # Question Service
 @routes.route('/questions/all', methods=['GET'])
 @protected(required_role=['moderator'])
