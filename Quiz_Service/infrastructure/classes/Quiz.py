@@ -7,18 +7,23 @@ class Quiz(db.Model):
     __tablename__ = 'Quiz'
 
     ID_Quiz = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    Name = db.Column(db.String(100), nullable=False)
+    Category = db.Column(db.String(100), nullable=False)
+
     Quiz_length = db.Column(db.Integer, nullable=False, default=0)
     ID_User = db.Column(db.Integer, nullable=False)
 
     Is_Accepted = db.Column(db.Boolean, nullable=False, default=False)
     Rejection_Reason = db.Column(db.String(45), nullable=True)
 
-    def __init__(self, Quiz_length, ID_User):
+    def __init__(self, Name, Category, Quiz_length, ID_User):
+        self.Name = Name
+        self.Category = Category
         self.Quiz_length = Quiz_length
         self.ID_User = ID_User
         self.Is_Accepted = False
         self.Rejection_Reason = None
-
 
     def save(self):
         db.session.add(self)
@@ -34,7 +39,6 @@ class Quiz(db.Model):
                 setattr(self, key, value)
         db.session.commit()
 
-
     def accept(self):
         self.Is_Accepted = True
         self.Rejection_Reason = None
@@ -44,7 +48,6 @@ class Quiz(db.Model):
         self.Is_Accepted = False
         self.Rejection_Reason = reason
         db.session.commit()
-
 
     @classmethod
     def get_all(cls):
@@ -72,4 +75,5 @@ class Quiz(db.Model):
 
     @classmethod
     def get_length(cls, quiz_id):
-        return db.session.query(func.count(QuestionQuiz.ID_Question)).filter(QuestionQuiz.ID_Quiz == quiz_id).scalar()
+        return db.session.query(func.count(QuestionQuiz.ID_Question)) \
+            .filter(QuestionQuiz.ID_Quiz == quiz_id).scalar()

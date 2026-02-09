@@ -609,7 +609,9 @@ def add_quiz(current_user):
 
     toSend = {
         'Quiz_length': data['Quiz_length'],
-        'ID_User': current_user
+        'ID_User': current_user,
+        'Category': data['Category'],
+        'Name':data['Name']
     }
 
     response = requests.post(

@@ -14,7 +14,7 @@ export interface IQuizService {
     finishQuiz(token: string, session_id : string):Promise<GameDTO>;
 
     createQuiz(token: string, name :string, category :string , duration: number) :Promise<number>
-    //acceptQuiz(token:string,ID_Quiz:number):Promise<string>
-    //rejectQuiz(token:string,ID_Quiz:number):Promise<string>
+    acceptQuiz(token:string,ID_Quiz:number):Promise<string>
+    rejectQuiz(token:string,ID_Quiz:number, reason:string):Promise<string>
     //getQuizByStatu(token: string, status: string): Promise<QuizDTO[]>             //filteri kod admina
 }
