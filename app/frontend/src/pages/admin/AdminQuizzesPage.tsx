@@ -6,7 +6,7 @@ import { AdminQuizzesForm } from "../../components/admin/quizzes/AdminQuizzesFor
 import type { QuizStatus } from "../../enums/quiz/QuizStatus";
 import { quizApi } from "../../api_services/quizzes/QuizAPIService";
 import { GameAPIService } from "../../api_services/games/GameAPIService";
-
+import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 
 interface AdminQuiz {
     id: number;
@@ -35,50 +35,42 @@ export default function AdminQuizzesPage() {
     useEffect(() => {
         if (!token) return;
 
-        try {
-            const decoded: any = jwtDecode(token);
-            setNavBarUser({
-                username: decoded.username,
-                role: decoded.role as UserRole,
-            });
-        } catch {
-            setNavBarUser({
-                username: "",
-                role: "admin",
-            });
-        }
+        const loadData = async () => {
+            try {
+                const decoded: any = jwtDecode(token);
+                setNavBarUser({
+                    username: decoded.username,
+                    role: decoded.role as UserRole,
+                });
 
-        const mockQuizzes: AdminQuiz[] = [
-            {
-                id: 1,
-                name: "General Knowledge",
-                category: "Trivia",
-                duration: 5,
-                numOfQuestions: 10,
-                author: "Admin",
-                status: "pending",
-            },
-            {
-                id: 2,
-                name: "Science Quiz",
-                category: "Science",
-                duration: 7,
-                numOfQuestions: 12,
-                author: "Moderator1",
-                status: "approved",
-            },
-            {
-                id: 3,
-                name: "History Challenge",
-                category: "History",
-                duration: 6,
-                numOfQuestions: 8,
-                author: "Admin",
-                status: "rejected",
-            },
-        ];
+                const data: QuizDTO[] = await quizApi.getAllQuizzes(token);
 
-        setQuizzes(mockQuizzes);
+                const mapped: AdminQuiz[] = data.map((q) => ({
+                    id: q.ID_Quiz,
+                    name: q.Name,
+                    category: q.Category,
+                    duration: q.Quiz_length,
+                    numOfQuestions: (q as any).Number_of_Questions ?? 0,
+                    author: q.ID_User?.toString() ?? "Unknown",
+                    status:
+                        (q as any).Rejection_Reason
+                            ? "rejected"
+                            : (q as any).Is_Accepted
+                                ? "approved"
+                                : "pending",
+                }));
+
+                setQuizzes(mapped);
+            } catch (err) {
+                console.error("Failed to load quizzes", err);
+                setNavBarUser({
+                    username: "",
+                    role: "admin",
+                });
+            }
+        };
+
+        loadData();
     }, [token]);
 
     const handleDelete = async (id: number) => {
@@ -102,11 +94,10 @@ export default function AdminQuizzesPage() {
     };
 
     const handleDownloadPdf = async (id: number) => {
-        try{
-        await GameAPIService.get_games_from_quiz(token!,id)
-        }
-        catch(error){
-            alert(error)
+        try {
+            await GameAPIService.get_games_from_quiz(token!, id);
+        } catch (error) {
+            alert(error);
         }
     };
 

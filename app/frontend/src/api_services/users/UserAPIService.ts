@@ -73,7 +73,7 @@ export const userApi = {
     async getProfile(token: string, userId: number): Promise<UserDTO> {
         try {
             const res = await axios.get<UserDTO>(
-                `${API_URL}${userId}`,
+                `${API_URL}profile/${userId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             return res.data;

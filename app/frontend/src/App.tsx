@@ -16,6 +16,7 @@ import UserPage from "./pages/user/UserQuizzesPage";
 import { authApi } from "./api_services/auth/AuthAPIService";
 import AdminQuizzesPage from "./pages/admin/AdminQuizzesPage";
 import GameQuestionsPage from "./pages/game/GameQuestionsPage";
+import QuizGradingPage from "./pages/admin/QuizGradingPage";
 
 function App() {
   return (
@@ -66,12 +67,12 @@ function App() {
               <UserPage />
             </ProtectedRoute>
           }
-        /> 
+        />
         <Route
           path="/quizzes/:quizId/start"
           element={
             <ProtectedRoute requiredRole={["user", "moderator"]}>
-              <GameQuestionsPage/>
+              <GameQuestionsPage />
             </ProtectedRoute>
           }
         />
@@ -81,6 +82,15 @@ function App() {
           element={
             <ProtectedRoute requiredRole="admin">
               <AdminQuizzesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/quizzes/quiz.id/preview"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <QuizGradingPage />
             </ProtectedRoute>
           }
         />
