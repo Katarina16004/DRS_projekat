@@ -3,6 +3,7 @@ from infrastructure.classes.Quiz import Quiz
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
 from infrastructure.classes.QuizSession import QuizSession 
 from infrastructure.classes.Game import Game
+from infrastructure.Database.database_connect import redis
 
 quiz_router = Blueprint('quiz_router', __name__)
 
@@ -91,8 +92,11 @@ def start_quiz(quiz_id):
 
     session = QuizSession.create_session(user_id, quiz_id)
 
+    print("CREATED SESSION:", session.session_id)
+    print("EXISTS AFTER SAVE:", redis.exists(f"quiz:session:{session.session_id}"))
+
     return jsonify({
-        "session_id": session.pk,
+        "session_id": session.session_id,
         "quiz_id": quiz_id
     }), 201
 
@@ -100,6 +104,7 @@ def start_quiz(quiz_id):
 @quiz_router.route('/quizzes/get_session/<string:session_id>', methods=['GET'])
 def get_session(session_id):
     session = QuizSession.get_session(session_id)
+
 
     if not session:
         return jsonify({"error": "Session not found or expired"}), 404

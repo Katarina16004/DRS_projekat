@@ -35,7 +35,7 @@ def get_answers_from_question(question_id):
 def submit_answer(session_id):
 
     data = request.json
-    answer_id = data.get("answer_id")
+    answer_id = data.get("ID_Answer")
     user_id = data.get("user_id")
 
     session = QuizSession.get_session(session_id)

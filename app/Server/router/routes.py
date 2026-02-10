@@ -337,18 +337,17 @@ def get_all_answers_from_question(current_user, question_id):
 @routes.route('/quizzes/answer/<string:session_id>', methods=['POST'])
 @protected()
 def submit_answer(current_user,session_id):
-    if current_user != data["user_id"]:
-        return jsonify({"msg": "User ID mismatch!"}), 401
-
     data = request.form
+    print("FORM:", data)
+
     toSend = {
         'session_id': session_id,
-        'answer_id': data["answer_id"],
+        'ID_Answer': data["ID_Answer"],
         'user_id': current_user
     }
-    response = requests.post(SERVICE_API + "/quizzes/answer", json = toSend)
-    return jsonify(response.json(), response.status_code)
-
+    response = requests.post(SERVICE_API + "/quizzes/answer/"+session_id, json = toSend)
+    return jsonify(response.json()), response.status_code
+    
 @routes.route('/answer/<int:question_id>/answers', methods=['POST'])
 @protected(required_role=['moderator'])
 def create_answer(current_user, question_id):
@@ -594,7 +593,7 @@ def start_quiz(current_user, quiz_id):
 @protected()
 def get_session(current_user, session_id):
     response = requests.get(
-        SERVICE_API + "/quizzes/get_session/{session_id}"
+        SERVICE_API + f"/quizzes/get_session/{session_id}"
     )
     return jsonify(response.json()), response.status_code
 
@@ -607,25 +606,9 @@ def finish_session(current_user, session_id):
     }
 
     response = requests.post(
-        SERVICE_API + "/quizzes/{session_id}/finish",
-        json=toSend
+    f"{SERVICE_API}/quizzes/{session_id}/finish",
+    json=toSend
     )
-
-    with Session.begin() as session:
-        profile = session.query(UserProfile).filter(UserProfile.ID_User == current_user).first()
-        if not profile:
-            return jsonify({"error": "Profile not found"}), 404
-        
-        path = generate_game_report(response.json())
-        send_email(
-            profile.Email,
-            profile.First_Name,
-            "Report",
-            f"Your last game report",
-            path
-        )
-
-
 
     return jsonify(response.json()), response.status_code
 

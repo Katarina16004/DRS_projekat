@@ -1,8 +1,10 @@
 from flask import Flask
 from sqlalchemy import text
 from flask_sqlalchemy import SQLAlchemy
-from redis_om import get_redis_connection
 import os
+from flask_redis import FlaskRedis
+
+
 
 
 app = Flask(__name__)
@@ -32,14 +34,13 @@ def test_mysql_connection():
             print(" MySQL connection failed:", e)
 
 # REDIS 
-REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = int(os.getenv("REDIS_PORT"))
 
-redis = get_redis_connection(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    decode_responses=True
-)
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+
+app.config["REDIS_URL"] = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+
+redis = FlaskRedis(app, decode_responses=True)
 
 def test_redis_connection():
     try:

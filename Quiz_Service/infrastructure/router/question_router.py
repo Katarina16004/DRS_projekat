@@ -1,6 +1,6 @@
+from infrastructure.classes.Answer import Answer
 from flask import Blueprint, request, jsonify
-from infrastructure.classes import Answer, QuizSession
-from infrastructure.router.quiz_routher import get_session
+from infrastructure.classes.QuizSession import QuizSession 
 from infrastructure.classes.Question import Question
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
 
@@ -114,9 +114,23 @@ def get_next_question(ID_Session):
     if not question_quiz:
         return jsonify({"message": "Quiz finished"}), 200
 
-    question_data = Question.get_question_with_answers(question_quiz.ID_Question)
+    question = Question.get_question_by_ID(question_quiz.ID_Question)
+    answers = Answer.get_answers_by_question(question_quiz.ID_Question)
 
-    return jsonify({"question_index": session.current_question_index,**question_data}), 200
+    return jsonify({
+        "question_index": session.current_question_index,
+        "ID_Question": question.ID_Question,
+        "Question_Text": question.Question_Text,
+        "Question_Points": question.Question_Points,
+        "Question_Category": question.Question_Category,
+        "Answers": [
+            {
+                "ID_Answer": a.ID_Answer,
+                "Answer_Text": a.Answer_Text
+            }
+            for a in answers
+        ]
+    }), 200
 
 
 @question_router.route('/questions/<int:ID_Question>/quizzes', methods=['GET'])

@@ -31,7 +31,7 @@ class Answer(db.Model):
         
     @classmethod
     def get_answer_by_id(cls, ID_Answer):
-        return cls.query.get(ID_Answer)
+        return cls.query.filter(cls.ID_Answer == ID_Answer).first()
 
     @classmethod
     def get_answers_by_question(cls, ID_Question):
@@ -41,6 +41,3 @@ class Answer(db.Model):
     def get_all(cls):
         return cls.query.all()
 
-    @classmethod
-    def get_answer_by_id(cls, ID_Question, ID_Answer):
-        return cls.query.filter(and_(cls.ID_Question == ID_Question, cls.ID_Answer == ID_Answer)).first()
