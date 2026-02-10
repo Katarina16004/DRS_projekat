@@ -104,9 +104,8 @@ export const quizApi: IQuizService = {
 
     async getSession(token:string, session_id:string):Promise<SessionDTO>{
         try {
-            const res = await axios.post<SessionDTO>(
+            const res = await axios.get<SessionDTO>(
                 `${API_URL}quizzes/get_session/${session_id}`,
-                {},
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
