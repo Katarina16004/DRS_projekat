@@ -12,16 +12,16 @@ export interface IQuizService {
     addQuiz(token: string, quiz: QuizDTO): Promise<QuizDTO>
     deleteQuiz(token: string, id: number): Promise<QuizDTO>
 
-    startQuiz(token: string, quiz_id : number ):Promise<CreateQuizDTO>;
-    finishQuiz(token: string, session_id : string):Promise<GameDTO>;
-    getSession(token:string, session_id:string):Promise<SessionDTO>;
+    startQuiz(token: string, quiz_id: number): Promise<CreateQuizDTO>;
+    finishQuiz(token: string, session_id: string): Promise<GameDTO>;
+    getSession(token: string, session_id: string): Promise<SessionDTO>;
 
-    createQuiz(token: string, name :string, category :string , duration: number) :Promise<number>
-    acceptQuiz(token:string,ID_Quiz:number):Promise<string>
-    rejectQuiz(token:string,ID_Quiz:number, reason:string):Promise<string>
-    getAllPendingQuiz(token:string):Promise<QuizDTO[]>
+    createQuiz(token: string, name: string, category: string, duration: number): Promise<number>
+    acceptQuiz(token: string, ID_Quiz: number): Promise<string>
+    rejectQuiz(token: string, ID_Quiz: number, reason: string): Promise<string>
+    getAllPendingQuiz(token: string): Promise<QuizDTO[]>
 
     getQuizzesByAuthor(token: string, author_id: number): Promise<QuizDTO[]>
-    getQuestionFromQuiz(token:string, ID_Quiz:number):Promise<QuizQuestionsDTO>
-    getQuizByStatus(token: string, status: string): Promise<QuizDTO[]>             //filteri kod admina
+    getQuestionFromQuiz(token: string, ID_Quiz: number): Promise<QuizQuestionsDTO>
+    getQuizByStatus(token: string, status: number): Promise<QuizDTO[]>             //filteri kod admina
 }

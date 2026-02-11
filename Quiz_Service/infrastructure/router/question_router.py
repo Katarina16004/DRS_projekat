@@ -2,6 +2,7 @@ from infrastructure.classes.Answer import Answer
 from flask import Blueprint, request, jsonify
 from infrastructure.classes.QuizSession import QuizSession 
 from infrastructure.classes.Question import Question
+from infrastructure.classes.Quiz import Quiz
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
 
 question_router = Blueprint('question_router',__name__)
@@ -164,8 +165,13 @@ def update_question(ID_Question):
     if not data:
         return jsonify({"error": "No data provided for update"}), 400
 
+
     q.update(**data)
 
+    quizzes = QuestionQuiz.get_quizzes_with_question(ID_Question)
+    quiz_ids = [qq.ID_Quiz for qq in quizzes]
+
+    Quiz.set_pending_for_quizzes(quiz_ids)
     return jsonify({
         "message": "Question updated successfully",
         "ID_Question": q.ID_Question,

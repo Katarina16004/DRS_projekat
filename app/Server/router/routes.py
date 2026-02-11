@@ -494,7 +494,7 @@ def get_quiz_questions(current_user, quiz_id):
     return jsonify(response.json()), response.status_code
 
 @routes.route('/quizzes/statuses/<int:status>', methods=['GET'])
-@protected(required_role=['admin'])
+@protected()
 def get_quiz_with_status(current_user, status):
     response = requests.get(
         SERVICE_API + f"/quizzes/statuses/{status}"
@@ -620,19 +620,19 @@ def finish_session(current_user, session_id):
     json=toSend
     )
 
-   # with Session.begin() as session:
-    #    profile = session.query(UserProfile).filter(UserProfile.ID_User == current_user).first()
-     #   if not profile:
-      #      return jsonify({"error": "Profile not found"}), 404
+    with Session.begin() as session:
+        profile = session.query(UserProfile).filter(UserProfile.ID_User == current_user).first()
+        if not profile:
+          return jsonify({"error": "Profile not found"}), 404
         
-       # path = generate_game_report(response.json())
-        #send_email(
-       #     profile.Email,
-       #       profile.First_Name,
-       #     "Report",
-       #     f"Your game report",
-       #     path
-       # )
+        path = generate_game_report([response.json()])
+        send_email(
+            profile.Email,
+              profile.First_Name,
+            "Report",
+            f"Your game report",
+            path
+        )
     return jsonify(response.json()), response.status_code
 
 

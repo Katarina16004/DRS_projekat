@@ -36,7 +36,7 @@ export default function UserQuizzesPage() {
       });
     }
 
-    quizApi.getAllQuizzes(token)
+    quizApi.getQuizByStatus(token,1)
       .then(data => setQuizzes(data))
       .catch(err => console.error(err));
   }, [token]);
