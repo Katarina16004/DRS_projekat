@@ -22,6 +22,7 @@ import ModeratorQuizzesPage from "./pages/moderator/ModeratorQuizzesPage";
 import AddQuizHomePage from "./pages/moderator/AddQuizHomePage";
 import AddQuestionsPage from "./pages/moderator/AddQuestionPage";
 import AddAnswersPage from "./pages/moderator/AddAnswerPage";
+import ModeratorEditPage from "./pages/moderator/ModeratorEditPage";
 
 function App() {
   return (
@@ -118,7 +119,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path="/quiz/add-questions"
           element={
@@ -127,7 +128,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path="/quiz/add-answers"
           element={
@@ -136,7 +137,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
+        <Route
+          path="/moderator/quiz/edit/:quizId"
+          element={
+            <ProtectedRoute requiredRole="moderator">
+              <ModeratorEditPage />
+            </ProtectedRoute>
+          }
+        />
+
 
 
         <Route path="/" element={<Navigate to="/login" replace />} />

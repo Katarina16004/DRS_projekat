@@ -49,9 +49,17 @@ class Quiz(db.Model):
         self.Rejection_Reason = reason
         db.session.commit()
 
-    def set_pending(self):
-        self.Is_Accepted = 0
-        self.Rejection_Reason = None
+    @classmethod
+    def set_pending(cls, quiz_ids):
+        if not quiz_ids:
+            return
+            
+        quizzes = cls.query.filter(cls.ID_Quiz.in_(quiz_ids)).all()
+
+        for quiz in quizzes:
+            quiz.Is_Accepted = 0
+            quiz.Rejection_Reason = None
+
         db.session.commit()
 
     @classmethod

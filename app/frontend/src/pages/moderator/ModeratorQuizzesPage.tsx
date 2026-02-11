@@ -72,7 +72,7 @@ export default function ModeratorQuizzesPage() {
     );
 };
 
-    const handleEdit = (quizId: number) => navigate(`/quiz/edit/${quizId}`);
+    const handleEdit = (quizId: number) => navigate(`/moderator/quiz/edit/${quizId}`);
     const handleCreate = () => navigate("/quiz/create");
 
     return (
@@ -107,12 +107,6 @@ export default function ModeratorQuizzesPage() {
                         onDelete={handleDelete}
                         onCreate={handleCreate}
                     />
-
-                    {quizzes.length === 0 && (
-                        <p className="text-gray-500 mt-20 text-center">
-                            You have not created any quizzes yet.
-                        </p>
-                    )}
                 </div>
             </div>
         </div>

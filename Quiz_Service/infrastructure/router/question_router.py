@@ -171,7 +171,7 @@ def update_question(ID_Question):
     quizzes = QuestionQuiz.get_quizzes_with_question(ID_Question)
     quiz_ids = [qq.ID_Quiz for qq in quizzes]
 
-    Quiz.set_pending_for_quizzes(quiz_ids)
+    Quiz.set_pending(quiz_ids)
     return jsonify({
         "message": "Question updated successfully",
         "ID_Question": q.ID_Question,
