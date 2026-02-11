@@ -1,6 +1,6 @@
 export interface AnswerDTO {
-  answer_id: number;
-  answer_text: string;
-  answer_is_correct: boolean    
-  user_id?: number
+  ID_Answer: number;
+  Answer_Text: string;
+  Is_Correct: boolean;    
+  ID_User?: number
 }

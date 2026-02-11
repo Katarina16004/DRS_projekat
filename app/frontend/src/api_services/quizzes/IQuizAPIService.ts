@@ -1,6 +1,7 @@
 import type { GameDTO } from "../../models/games/GameDTO";
 import type { CreateQuizDTO } from "../../models/quizzes/CreateQuizDTO";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
+import type { QuizQuestionsDTO } from "../../models/quizzes/QuizQuestionDTO";
 import type { SessionDTO } from "../../models/session/SessionDTO";
 
 
@@ -21,6 +22,6 @@ export interface IQuizService {
     getAllPendingQuiz(token:string):Promise<QuizDTO[]>
 
     getQuizzesByAuthor(token: string, author_id: number): Promise<QuizDTO[]>
-
-    //getQuizByStatus(token: string, status: string): Promise<QuizDTO[]>             //filteri kod admina
+    getQuestionFromQuiz(token:string, ID_Quiz:number):Promise<QuizQuestionsDTO>
+    getQuizByStatus(token: string, status: string): Promise<QuizDTO[]>             //filteri kod admina
 }

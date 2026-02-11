@@ -79,3 +79,7 @@ class Quiz(db.Model):
     def get_length(cls, quiz_id):
         return db.session.query(func.count(QuestionQuiz.ID_Question)) \
             .filter(QuestionQuiz.ID_Quiz == quiz_id).scalar()
+    
+    @classmethod
+    def get_by_status(cls, status):
+        return cls.query.filter(cls.Is_Accepted == status).all()

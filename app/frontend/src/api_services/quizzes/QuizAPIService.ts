@@ -4,6 +4,7 @@ import type { IQuizService } from "./IQuizAPIService";
 import type { CreateQuizDTO } from "../../models/quizzes/CreateQuizDTO";
 import type { GameDTO } from "../../models/games/GameDTO";
 import type { SessionDTO } from "../../models/session/SessionDTO";
+import type { QuizQuestionsDTO } from "../../models/quizzes/QuizQuestionDTO";
 
 const API_URL = import.meta.env.VITE_SERVER;
 
@@ -53,7 +54,7 @@ export const quizApi: IQuizService = {
 
     async deleteQuiz(token: string, id: number): Promise<QuizDTO> {
         try {
-            const res = await axios.delete< QuizDTO >(
+            const res = await axios.delete<QuizDTO>(
                 `${API_URL}delete/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -102,7 +103,7 @@ export const quizApi: IQuizService = {
         }
     },
 
-    async getSession(token:string, session_id:string):Promise<SessionDTO>{
+    async getSession(token: string, session_id: string): Promise<SessionDTO> {
         try {
             const res = await axios.get<SessionDTO>(
                 `${API_URL}quizzes/get_session/${session_id}`,
@@ -156,12 +157,12 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
-    async rejectQuiz(token: string, ID_Quiz: number,reason:string): Promise<string> {
+    async rejectQuiz(token: string, ID_Quiz: number, reason: string): Promise<string> {
         try {
             const res = await axios.post<string>(
                 `${API_URL}quizzes/${ID_Quiz}}/reject`,
                 {
-                    reason:reason
+                    reason: reason
                 },
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -176,7 +177,7 @@ export const quizApi: IQuizService = {
         }
     },
 
-    async getAllPendingQuiz(token:string):Promise<QuizDTO[]>{
+    async getAllPendingQuiz(token: string): Promise<QuizDTO[]> {
         try {
             const res = await axios.get<QuizDTO[]>(
                 `${API_URL}quizzes/pending`,
@@ -190,18 +191,43 @@ export const quizApi: IQuizService = {
         }
     },
 
-     async getQuizzesByAuthor(token: string, authorId: number): Promise<QuizDTO[]> {
-        try{
+    async getQuizzesByAuthor(token: string, authorId: number): Promise<QuizDTO[]> {
+        try {
             const res = await axios.get<QuizDTO[]>(
                 `${API_URL}quizzes/author/${authorId}`,
-                {headers: { Authorization: `Bearer ${token}`}}
+                { headers: { Authorization: `Bearer ${token}` } }
             )
 
             return res.data
-        }catch(error){
+        } catch (error) {
             console.log("Error fetching quizzez for moderator with that id: ", error)
             return []
         }
-    }
+    },
+    async getQuestionFromQuiz(token: string, ID_Quiz: number): Promise<QuizQuestionsDTO> {
+        try {
+            const res = await axios.get<QuizQuestionsDTO>(
+                `${API_URL}quizzes/${ID_Quiz}/questions`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
 
+            return res.data
+        } catch (error) {
+            console.log("Error fetching quizzez for moderator with that id: ", error)
+            throw error
+        }
+    },
+    async getQuizByStatus(token: string, status: string): Promise<QuizDTO[]>{
+                try {
+            const res = await axios.get<QuizDTO[]>(
+                `${API_URL}quizzes/statuses/${status}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+
+            return res.data
+        } catch (error) {
+            console.log("Error fetching quizzez for moderator with that id: ", error)
+            throw error
+        }
+    }
 }

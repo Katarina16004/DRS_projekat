@@ -1,7 +1,9 @@
 from flask import Blueprint, request, jsonify
+from infrastructure.classes.Question import Question
 from infrastructure.classes.Quiz import Quiz
 from infrastructure.classes.QuestionQuiz import QuestionQuiz
 from infrastructure.classes.QuizSession import QuizSession 
+from infrastructure.classes.Answer import Answer
 from infrastructure.classes.Game import Game
 from infrastructure.Database.database_connect import redis
 
@@ -53,15 +55,34 @@ def get_quiz_length(quiz_id):
     }), 200
 
 
+
 @quiz_router.route('/quizzes/<int:quiz_id>/questions', methods=['GET'])
 def get_quiz_questions(quiz_id):
     rows = QuestionQuiz.get_questions_for_quiz(quiz_id)
 
-    question_ids = [row.ID_Question for row in rows]
+    questions_data = []
+
+    for row in rows:
+        question = Question.get_question_by_ID(row.ID_Question)
+        answers = Answer.get_answers_by_question(row.ID_Question)
+
+        questions_data.append({
+            "ID_Question": question.ID_Question,
+            "Question_Text": question.Question_Text,
+            "Question_Points": question.Question_Points,
+            "Answers": [
+                {
+                    "ID_Answer": a.ID_Answer,
+                    "Answer_Text": a.Answer_Text,
+                    "Is_Correct":a.Is_Correct
+                }
+                for a in answers
+            ]
+        })
 
     return jsonify({
         "ID_Quiz": quiz_id,
-        "Questions": question_ids
+        "Questions": questions_data
     }), 200
 
 
@@ -263,3 +284,23 @@ def get_pending_quizzes():
         }
         for q in quizzes
     ])
+
+@quiz_router.route('/quizzes/statuses/<int:status>', methods=['GET'])
+def get_quizzes_by_status(status):
+    if status not in [0, 1, 2]:
+        return jsonify({"error": "Invalid status"}), 400
+
+    quizzes = Quiz.get_by_status(status)
+
+    return jsonify([
+        {
+            "ID_Quiz": q.ID_Quiz,
+            "Name": q.Name,
+            "Category": q.Category,
+            "Quiz_length": q.Quiz_length,
+            "ID_User": q.ID_User,
+            "Is_Accepted": q.Is_Accepted,
+            "Rejection_Reason": q.Rejection_Reason
+        }
+        for q in quizzes
+    ]), 200
