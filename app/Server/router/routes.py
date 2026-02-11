@@ -620,6 +620,19 @@ def finish_session(current_user, session_id):
     json=toSend
     )
 
+   # with Session.begin() as session:
+    #    profile = session.query(UserProfile).filter(UserProfile.ID_User == current_user).first()
+     #   if not profile:
+      #      return jsonify({"error": "Profile not found"}), 404
+        
+       # path = generate_game_report(response.json())
+        #send_email(
+       #     profile.Email,
+       #       profile.First_Name,
+       #     "Report",
+       #     f"Your game report",
+       #     path
+       # )
     return jsonify(response.json()), response.status_code
 
 

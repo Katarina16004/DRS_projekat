@@ -138,7 +138,7 @@ export default function UserQuizzesPage() {
                 Cancel
               </button>
               <button
-                className="px-6 py-2 rounded-xl bg-red-500 text-white"
+                className="px-6 py-2 rounded-xl bg-red-500 text-white cursor-pointer"
                 onClick={confirmLogout}
               >
                 Log out

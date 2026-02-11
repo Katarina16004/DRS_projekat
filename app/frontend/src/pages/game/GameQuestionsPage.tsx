@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast"; // ✨ Dodato
 
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 import type { QuestionDTO } from "../../models/questions/QuestionDTO";
@@ -16,7 +17,6 @@ export default function GameQuestionsPage() {
     const { quizId } = useParams<{ quizId: string }>();
     const navigate = useNavigate();
     const token = localStorage.getItem("token") || "";
-    const [userId, setUserId] = useState<string | null>(null);
 
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [quizData, setQuizData] = useState<QuizDTO | null>(null);
@@ -27,6 +27,7 @@ export default function GameQuestionsPage() {
     const [correctCount, setCorrectCount] = useState(0);
     const [wrongCount, setWrongCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [quizFinished, setQuizFinished] = useState(false);
 
     const [navBarUser, setNavBarUser] = useState<{
         username: string;
@@ -38,10 +39,10 @@ export default function GameQuestionsPage() {
         try {
             const decoded: any = jwtDecode(token);
             setNavBarUser({ username: decoded.username, role: decoded.role as UserRole });
-            setUserId(decoded.user_id); // ⬅ tu čuvaš user_id
+        
         } catch {
             setNavBarUser({ username: "", role: "user" });
-            setUserId(null);
+            
         }
     }, [token]);
 
@@ -55,9 +56,9 @@ export default function GameQuestionsPage() {
             Question_Text: questionObj.Question_Text,
             Question_Points: questionObj.Question_Points,
             Answers: questionObj.Answers?.map((a: any) => ({
-                answer_id: a.ID_Answer,
-                answer_text: a.Answer_Text,
-                answer_is_correct: a.Answer_Is_Correct ?? false
+                ID_Answer: a.ID_Answer,
+                Answer_Text: a.Answer_Text,
+                Is_Correct: a.Is_Correct ?? false
             }))
         };
     };
@@ -101,7 +102,7 @@ export default function GameQuestionsPage() {
 
     // TIMER
     useEffect(() => {
-        if (!remainingTime || loading) return;
+        if (!remainingTime || loading || quizFinished) return;
 
         const interval = setInterval(() => {
             setRemainingTime(prev => {
@@ -115,7 +116,7 @@ export default function GameQuestionsPage() {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [remainingTime, loading]);
+    }, [remainingTime, loading, quizFinished]);
 
     // SUBMIT ANSWER
     const handleAnswer = async (answerId: number) => {
@@ -123,8 +124,8 @@ export default function GameQuestionsPage() {
         try {
             console.log("📤 Submitting answer:", answerId);
 
-        const response = await answerApi.sumbitAnswer(token, sessionId, answerId, Number(userId));
-        console.log("✅ Answer response:", response);
+            const response = await answerApi.sumbitAnswer(token, sessionId, answerId);
+            console.log("✅ Answer response:", response);
 
             // Update session stats
             setScore(response.score);
@@ -133,8 +134,11 @@ export default function GameQuestionsPage() {
 
             // Load next question
             const nextQuestionRaw = await questionApi.getNextQuestion(token, sessionId);
-            if (!nextQuestionRaw || nextQuestionRaw.Message) {
-                handleQuizEnd();
+            
+            // Provera da li je stigla poruka da je kviz završen
+            if (nextQuestionRaw.Message === "Quiz finished" || nextQuestionRaw.Message) {
+                console.log("🏁 All questions answered!");
+                setQuizFinished(true);
                 return;
             }
 
@@ -146,13 +150,28 @@ export default function GameQuestionsPage() {
         }
     };
 
+    // ✨ IZMENJENO - Prikazuje toast umesto navigacije
     const handleQuizEnd = async () => {
         if (!sessionId) return;
         try {
             const result = await quizApi.finishQuiz(token, sessionId);
-            navigate(`/game-result/${result.ID_Game}`);
+            console.log("🏁 Quiz finished result:", result);
+            
+            toast.success(
+                `Quiz Completed!\n\nFinal Score: ${result.Score}\n Correct: ${correctCount}\nWrong: ${wrongCount}\n\nWait few seconds...`,
+                {
+                    duration: 5000
+                }
+            );
+
+            // reset nakon 3 sekunde
+            setTimeout(() => {
+                navigate('/user');
+            }, 5000);
+
         } catch (e) {
             console.error("❌ Finish failed", e);
+            toast.error("Failed to finish quiz!");
         }
     };
 
@@ -164,9 +183,13 @@ export default function GameQuestionsPage() {
     const formatTime = (sec: number) => `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, "0")}`;
 
     if (loading) return <div className="p-10 text-xl">Loading quiz...</div>;
-    if (!quizData || !currentQuestion) return <div className="p-10 text-xl text-red-600">Missing data!</div>;
+    if (!quizData) return <div className="p-10 text-xl text-red-600">Missing data!</div>;
+
+
+    if (!currentQuestion) return <div className="p-10 text-xl text-red-600">Missing question data!</div>;
 
     const answers = currentQuestion.Answers || [];
+    const hasValidQuestion = currentQuestion.Question_Text && answers.length > 0;
 
     return (
         <div className="min-h-screen font-poppins flex flex-col">
@@ -185,28 +208,35 @@ export default function GameQuestionsPage() {
                         </div>
                     </div>
 
-                    {/* Question */}
-                    <div className="mb-6 border-2 border-blue-500 p-4">
-                        <h3 className="text-lg font-semibold mb-4 bg-blue-100 p-2">
-                            QUESTION: {currentQuestion.Question_Text || "❌ NO TEXT"}
-                        </h3>
+                    {/* Question or Finish Message */}
+                    {hasValidQuestion ? (
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold mb-4 bg-blue-100 p-4 rounded-lg">
+                                {currentQuestion.Question_Text}
+                            </h3>
 
-                        <div className="flex flex-col gap-3 border-2 border-green-500 p-2">
-                            {answers.length === 0 ? (
-                                <div className="bg-red-100 p-4 text-red-700 font-bold">❌ NO ANSWERS AVAILABLE</div>
-                            ) : (
-                                answers.map((a, idx) => (
+                            <div className="flex flex-col gap-3">
+                                {answers.map((a, idx) => (
                                     <button
-                                        key={a.answer_id || idx} // koristimo answer_id iz DTO
-                                        onClick={() => a.answer_id && handleAnswer(a.answer_id)}
+                                        key={a.ID_Answer}
+                                        onClick={() => handleAnswer(a.ID_Answer)}
                                         className="w-full text-left px-4 py-3 rounded-xl border-2 border-gray-800 bg-yellow-100 hover:bg-blue-200 transition font-bold"
                                     >
-                                        {idx + 1}. {a.answer_text || "❌ NO TEXT"} {/* koristimo answer_text iz DTO */}
+                                        {idx + 1}. {a.Answer_Text}
                                     </button>
-                                ))
-                            )}
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="mb-6 text-center py-8">
+                            <h3 className="text-2xl font-bold text-green-600 mb-4">
+                                Finished Quiz
+                            </h3>
+                            <p className="text-gray-600">
+                                Press finish button to get results
+                            </p>
+                        </div>
+                    )}
 
                     {/* Footer stats */}
                     <div className="flex justify-between items-center mt-6">
@@ -218,7 +248,7 @@ export default function GameQuestionsPage() {
 
                         <button
                             onClick={handleQuizEnd}
-                            className="px-6 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
+                            className="px-6 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition cursor-pointer"
                         >
                             Finish Quiz
                         </button>

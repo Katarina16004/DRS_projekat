@@ -2,24 +2,30 @@ import axios from "axios"
 import type { AnswerResponseDTO } from "../../models/answers/AnswerResponseDTO"
 import type { IAsnwerAPIService } from "./IAnswerAPIService"
 import type { CreateAnswerDTO } from "../../models/answers/CreateAnswerDTO";
-import { jwtDecode } from "jwt-decode";
 
 const API_URL = import.meta.env.VITE_SERVER;
 
 export const answerApi: IAsnwerAPIService = {
 
-    async sumbitAnswer(token: string, session_id: string, answerID: number, user_id: number): Promise<AnswerResponseDTO> {
-        const decoded: any = jwtDecode(token);
-        //user_id = decoded.id;   // ovo je ID iz tokena
+    async sumbitAnswer(
+        token: string,
+        session_id: string,
+        answerID: number
+    ): Promise<AnswerResponseDTO> {
+
+        const formData = new FormData();
+        formData.append("ID_Answer", answerID.toString());
 
         const res = await axios.post<AnswerResponseDTO>(
             `${API_URL}quizzes/answer/${session_id}`,
+            formData,
             {
-                ID_Answer: answerID,
-                user_id
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
         );
+
         return res.data;
     }
     ,
