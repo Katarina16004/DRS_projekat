@@ -367,7 +367,7 @@ def update_answer(current_user, answer_id):
         'Answer_Text': data["Answer_Text"],
         'Is_Correct': data["Is_Correct"],
     }
-    response = requests.patch(SERVICE_API + "/answers/" + answer_id, json = toSend)
+    response = requests.patch(SERVICE_API + f"/answers/{answer_id}", json = toSend)
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/answers/<int:answer_id>', methods=['DELETE'])
@@ -677,7 +677,7 @@ def patch_quiz(current_user, quiz_id):
     }
 
     response = requests.patch(
-        SERVICE_API + "/quizzes/{quiz_id}",
+        SERVICE_API + f"/quizzes/{quiz_id}",
         json=toSend
     )
 
