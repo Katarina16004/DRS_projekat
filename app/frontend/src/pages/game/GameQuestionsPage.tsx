@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import toast from "react-hot-toast"; // ✨ Dodato
-
+import toast from "react-hot-toast";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 import type { QuestionDTO } from "../../models/questions/QuestionDTO";
 import type { UserRole } from "../../enums/user/UserRole";
-
 import { quizApi } from "../../api_services/quizzes/QuizAPIService";
 import { questionApi } from "../../api_services/questions/QuestionAPIService";
-
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import { answerApi } from "../../api_services/answers/AnswerAPIService";
+
 
 export default function GameQuestionsPage() {
     const { quizId } = useParams<{ quizId: string }>();
@@ -39,10 +37,10 @@ export default function GameQuestionsPage() {
         try {
             const decoded: any = jwtDecode(token);
             setNavBarUser({ username: decoded.username, role: decoded.role as UserRole });
-        
+
         } catch {
             setNavBarUser({ username: "", role: "user" });
-            
+
         }
     }, [token]);
 
@@ -72,18 +70,18 @@ export default function GameQuestionsPage() {
                 console.log("🎮 Starting quiz...");
 
                 const session = await quizApi.startQuiz(token, +quizId);
-                console.log("✅ Session:", session.session_id);
+                console.log(" Session:", session.session_id);
                 setSessionId(session.session_id);
-                
+
                 const quiz = await quizApi.getQuizById(token, +quizId);
-                console.log("✅ Quiz:", quiz);
+                console.log("Quiz:", quiz);
                 setQuizData(quiz);
 
                 setRemainingTime(quiz.Quiz_length * 60);
 
                 const firstQuestionRaw = await questionApi.getNextQuestion(token, session.session_id);
                 const firstQuestion = mapQuestion(firstQuestionRaw);
-                console.log("✅ First question:", firstQuestion);
+                console.log("First question:", firstQuestion);
                 setCurrentQuestion(firstQuestion);
 
                 const sessionState = await quizApi.getSession(token, session.session_id);
@@ -91,7 +89,7 @@ export default function GameQuestionsPage() {
                 setCorrectCount(sessionState.correct_count);
                 setWrongCount(sessionState.wrong_count);
             } catch (err) {
-                console.error("❌ Failed to start quiz:", err);
+                console.error("Failed to start quiz:", err);
             } finally {
                 setLoading(false);
             }
@@ -122,10 +120,10 @@ export default function GameQuestionsPage() {
     const handleAnswer = async (answerId: number) => {
         if (!sessionId) return;
         try {
-            console.log("📤 Submitting answer:", answerId);
+            console.log("Submitting answer:", answerId);
 
             const response = await answerApi.sumbitAnswer(token, sessionId, answerId);
-            console.log("✅ Answer response:", response);
+            console.log("Answer response:", response);
 
             // Update session stats
             setScore(response.score);
@@ -134,10 +132,10 @@ export default function GameQuestionsPage() {
 
             // Load next question
             const nextQuestionRaw = await questionApi.getNextQuestion(token, sessionId);
-            
+
             // Provera da li je stigla poruka da je kviz završen
             if (nextQuestionRaw.Message === "Quiz finished" || nextQuestionRaw.Message) {
-                console.log("🏁 All questions answered!");
+                console.log("All questions answered!");
                 setQuizFinished(true);
                 return;
             }
@@ -146,17 +144,17 @@ export default function GameQuestionsPage() {
             setCurrentQuestion(nextQuestion);
 
         } catch (e) {
-            console.error("❌ Answer submit failed", e);
+            console.error("Answer submit failed", e);
         }
     };
 
-    // ✨ IZMENJENO - Prikazuje toast umesto navigacije
+    //Prikazuje toast umesto navigacije
     const handleQuizEnd = async () => {
         if (!sessionId) return;
         try {
             const result = await quizApi.finishQuiz(token, sessionId);
-            console.log("🏁 Quiz finished result:", result);
-            
+            console.log("Quiz finished result:", result);
+
             toast.success(
                 `Quiz Completed!\n\nFinal Score: ${result.Score}\n Correct: ${correctCount}\nWrong: ${wrongCount}\n\nWait few seconds...`,
                 {
@@ -166,11 +164,11 @@ export default function GameQuestionsPage() {
 
             // reset nakon 3 sekunde
             setTimeout(() => {
-                navigate('/user');
-            }, 5000);
+                navigate(`/quizzes/${quizId}/leaderboard`);
+            }, 3000);
 
         } catch (e) {
-            console.error("❌ Finish failed", e);
+            console.error("Finish failed", e);
             toast.error("Failed to finish quiz!");
         }
     };

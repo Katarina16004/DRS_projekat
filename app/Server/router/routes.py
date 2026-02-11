@@ -289,8 +289,7 @@ def update_profile(current_user):
 
 
 @routes.route("/profile/<int:user_id>", methods=['GET'])
-@protected()
-def get_profile(current_user, user_id):
+def get_profile( user_id):
     with Session.begin() as session:
         result = (
             session.query(UserProfile, User)

@@ -10,4 +10,6 @@ export interface UserDTO {
   Street_Number: string | null;
   role: string; 
   Image?: string;
+
+  Username?: string
 }

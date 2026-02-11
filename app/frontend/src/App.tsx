@@ -23,6 +23,7 @@ import AddQuizHomePage from "./pages/moderator/AddQuizHomePage";
 import AddQuestionsPage from "./pages/moderator/AddQuestionPage";
 import AddAnswersPage from "./pages/moderator/AddAnswerPage";
 import ModeratorEditPage from "./pages/moderator/ModeratorEditPage";
+import LeaderBoardPage from "./pages/game/LeaderBoardPage";
 
 function App() {
   return (
@@ -147,7 +148,14 @@ function App() {
           }
         />
 
-
+        <Route
+          path="/quizzes/:quizId/leaderboard"
+          element={
+            <ProtectedRoute requiredRole={["user", "moderator"]}>
+              <LeaderBoardPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/404" element={<NotFoundStranica />} />

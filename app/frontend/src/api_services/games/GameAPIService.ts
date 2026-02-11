@@ -69,7 +69,7 @@ export const GameAPIService: IGameAPIService = {
     async get_games_from_quiz(token: string, ID_Quiz: number): Promise<GameDTO[]> {
         try {
             const res = await axios.get<GameDTO[]>(
-                `${API_URL}games/quiz/${ID_Quiz}}`,
+                `${API_URL}games/quiz/${ID_Quiz}`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
