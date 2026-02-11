@@ -356,7 +356,7 @@ def create_answer(current_user, question_id):
         'Answer_Text': data["Answer_Text"],
         'Is_Correct': data["Is_Correct"],
     }
-    response = requests.post(SERVICE_API + "/answer/" + question_id + "/answers", json = toSend)
+    response = requests.post(SERVICE_API + f"/answer/{question_id}/answers", json = toSend)
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/answers/<int:answer_id>', methods=['PATCH'])
@@ -422,13 +422,13 @@ def update_game(current_user, ID_Game):
         'Score': data["Score"],
         'ID_Quiz': data["ID_Quiz"],
     }
-    response = requests.patch(SERVICE_API + "/games/" + ID_Game, json = toSend)
+    response = requests.patch(SERVICE_API + f"/games/{ID_Game}", json = toSend)
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/games/<int:ID_Game>', methods=['DELETE'])
 @protected(required_role=['moderator'])
 def delete_game(current_user, ID_Game):
-    response = requests.get(SERVICE_API + "/games/" + ID_Game)
+    response = requests.get(SERVICE_API + f"/games/{ID_Game}")
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/games/quiz/<int:quiz_id>', methods=['GET'])
@@ -528,21 +528,21 @@ def create_question(current_user):
         'Question_Points': data["Question_Points"],
         'Question_Category': data["Question_Category"],
     }
-    response = requests.post(SERVICE_API + "/question/", json = toSend)
+    response = requests.post(SERVICE_API + "/question", json = toSend)
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/quizzes/<int:quiz_id>/questions/<int:question_id>', methods=['POST'])
 @protected(required_role=['moderator'])
 def assign_question_to_quiz(current_user, quiz_id, question_id):
 
-    response = requests.post(SERVICE_API + "/quizzes/" + quiz_id + "/questions/" + question_id )
+    response = requests.post(SERVICE_API + f"/quizzes/{quiz_id}/questions/{question_id}" )
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/quizzes/<int:quiz_id>/questions/<int:question_id>', methods=['DELETE'])
 @protected(required_role=['moderator'])
 def remove_question_from_quiz(current_user, quiz_id, question_id):
 
-    response = requests.delete(SERVICE_API + "/quizzes/" + quiz_id + "/questions/" + question_id )
+    response = requests.delete(SERVICE_API + f"/quizzes/{quiz_id}/questions/{question_id}" )
     return jsonify(response.json(), response.status_code)
 
 # Quiz
@@ -695,7 +695,7 @@ def get_quiz_by_id(current_user, quiz_id):
 @protected(required_role=['moderator'])
 def delete_quiz(current_user, quiz_id):
     response = requests.delete(
-        SERVICE_API + "/quizzes/{quiz_id}"
+        SERVICE_API + f"/quizzes/{quiz_id}"
     )
     return jsonify(response.json()), response.status_code
 

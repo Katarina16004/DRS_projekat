@@ -19,6 +19,10 @@ import GameQuestionsPage from "./pages/game/GameQuestionsPage";
 import QuizGradingPage from "./pages/admin/QuizGradingPage";
 import ModeratorQuizzesPage from "./pages/moderator/ModeratorQuizzesPage";
 
+import AddQuizHomePage from "./pages/moderator/AddQuizHomePage";
+import AddQuestionsPage from "./pages/moderator/AddQuestionPage";
+import AddAnswersPage from "./pages/moderator/AddAnswerPage";
+
 function App() {
   return (
     <>
@@ -105,6 +109,34 @@ function App() {
           }
         />
 
+        {/* RUTE ZA KREIRANJE KVIZA */}
+        <Route
+          path="/quiz/create"
+          element={
+            <ProtectedRoute requiredRole="moderator">
+              <AddQuizHomePage />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/quiz/add-questions"
+          element={
+            <ProtectedRoute requiredRole="moderator">
+              <AddQuestionsPage />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/quiz/add-answers"
+          element={
+            <ProtectedRoute requiredRole="moderator">
+              <AddAnswersPage />
+            </ProtectedRoute>
+          }
+        />
+        
 
 
         <Route path="/" element={<Navigate to="/login" replace />} />

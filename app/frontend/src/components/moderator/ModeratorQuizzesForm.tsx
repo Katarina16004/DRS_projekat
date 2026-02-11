@@ -15,7 +15,7 @@ export const ModeratorQuizzesForm: React.FC<Props> = ({ quizzes, onEdit, onDelet
             <div className="flex justify-end mb-6">
                 <button
                     onClick={onCreate}
-                    className="flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition"
+                    className="flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition cursor-pointer"
                 >
                     <span className="text-xl font-bold">+</span> Create Quiz
                 </button>
@@ -75,13 +75,13 @@ export const ModeratorQuizzesForm: React.FC<Props> = ({ quizzes, onEdit, onDelet
                         <div className="flex flex-col md:flex-row items-center gap-3 mt-4 md:mt-0">
                             <button
                                 onClick={() => onEdit(quiz.ID_Quiz)}
-                                className="px-6 py-2 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition"
+                                className="px-6 py-2 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition cursor-pointer"
                             >
                                 Edit
                             </button>
                             <button
                                 onClick={() => onDelete(quiz.ID_Quiz)}
-                                className="px-6 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"
+                                className="px-6 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition cursor-pointer"
                             >
                                 Delete
                             </button>

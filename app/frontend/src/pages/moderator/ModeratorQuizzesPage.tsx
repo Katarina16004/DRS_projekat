@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import { ModeratorQuizzesForm } from "../../components/moderator/ModeratorQuizzesForm";
 import { quizApi } from "../../api_services/quizzes/QuizAPIService";
+import { questionApi } from "../../api_services/questions/QuestionAPIService";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
 import type { UserRole } from "../../enums/user/UserRole";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
+import { confirmDelete } from "../../components/toast/toastYesNo";
 
 export default function ModeratorQuizzesPage() {
     const navigate = useNavigate();
@@ -38,13 +41,36 @@ export default function ModeratorQuizzesPage() {
     }, [token, navBarUser]);
 
     const handleDelete = (quizId: number) => {
-        if (!token) return;
-        if (!confirm("Are you sure you want to delete this quiz?")) return;
+    confirmDelete(
+        "Are you sure you want to delete this quiz?",
+        async () => {
+            const loadingToast = toast.loading("Deleting quiz...");
+            try {
+                // 1. Prvo učitaj sva pitanja iz kviza
+                const questionsResponse = await questionApi.getAllQuestions(token, quizId);
+                const questions = (questionsResponse as any).Questions || [];
 
-        quizApi.deleteQuiz(token, quizId)
-            .then(() => setQuizzes(prev => prev.filter(q => q.ID_Quiz !== quizId)))
-            .catch(err => console.error(err));
-    };
+                if (questions.length > 0) {
+                    toast.loading(`Removing ${questions.length} question(s)...`, { id: loadingToast });
+                    for (const question of questions) {
+                        await questionApi.remove_question_to_quiz(token, quizId, question.ID_Question);
+                    }
+                }
+
+                toast.loading("Deleting quiz...", { id: loadingToast });
+                await quizApi.deleteQuiz(token, quizId);
+
+                setQuizzes(prev => prev.filter(q => q.ID_Quiz !== quizId));
+                toast.success("Quiz deleted successfully!", { id: loadingToast });
+            } catch (err) {
+                toast.error("Failed to delete quiz. Please try again.", { id: loadingToast });
+            }
+        },
+        () => {
+            toast.error("Quiz deletion cancelled.", { icon: "🚫" });
+        }
+    );
+};
 
     const handleEdit = (quizId: number) => navigate(`/quiz/edit/${quizId}`);
     const handleCreate = () => navigate("/quiz/create");
@@ -79,7 +105,7 @@ export default function ModeratorQuizzesPage() {
                         quizzes={quizzes}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
-                        onCreate={handleCreate} // dugme u formi takođe može ostati
+                        onCreate={handleCreate}
                     />
 
                     {quizzes.length === 0 && (

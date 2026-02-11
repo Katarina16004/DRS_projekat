@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import { AddQuizHomeForm } from "../../components/moderator/AddQuizHomeForm";
 import type { UserRole } from "../../enums/user/UserRole";
+import { jwtDecode } from "jwt-decode";
 
 export default function AddQuizHomePage() {
     const navigate = useNavigate();
@@ -10,19 +11,17 @@ export default function AddQuizHomePage() {
 
     const [navBarUser, setNavBarUser] = useState<{ username: string; role: UserRole; id: number } | null>(null);
 
-    // 🔐 Decode token za navbar
-    useState(() => {
+    useEffect(() => {
         if (!token) return;
         try {
-            const decoded: any = JSON.parse(atob(token.split(".")[1])); // ili jwtDecode(token)
-            setNavBarUser({ username: decoded.username, role: decoded.role, id: decoded.id });
+            const decoded: any = jwtDecode(token);
+            setNavBarUser({ username: decoded.username, role: decoded.role as UserRole, id: decoded.id });
         } catch {
             setNavBarUser({ username: "", role: "user", id: 0 });
         }
-    });
+    }, [token]);
 
     const handleNext = (quizData: { name: string; category: string; duration: number }) => {
-        // Čuvamo podatke i idemo na AddQuestionsPage
         navigate("/quiz/add-questions", { state: { ...quizData } });
     };
 

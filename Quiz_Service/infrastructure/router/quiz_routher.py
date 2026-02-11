@@ -209,6 +209,9 @@ def update_quiz(quiz_id):
 @quiz_router.route("/quizzes/<int:quiz_id>", methods=['DELETE'])
 def delete_quiz(quiz_id):
     quiz = Quiz.get_by_ID(quiz_id)
+    games = Game.get_games_by_quiz_id(quiz_id)
+    for game in games:
+        game.delete()
 
     if not quiz:
         return jsonify({"error": "Quiz not found"}), 404

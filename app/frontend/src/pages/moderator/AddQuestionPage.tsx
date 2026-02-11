@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
 import type { QuestionDTO } from "../../models/questions/QuestionDTO";
 import type { UserRole } from "../../enums/user/UserRole";
@@ -8,7 +8,11 @@ import { AddQuestionsForm } from "../../components/moderator/AddQuestionForm";
 
 export default function AddQuestionsPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const token = localStorage.getItem("token") || "";
+
+    // Podaci iz prethodne stranice
+    const quizData = location.state as { name: string; category: string; duration: number } | null;
 
     const [navBarUser, setNavBarUser] = useState<{
         username: string;
@@ -31,6 +35,13 @@ export default function AddQuestionsPage() {
         }
     }, [token]);
 
+    // Provera da li postoje podaci o kvizu
+    useEffect(() => {
+        if (!quizData) {
+            navigate("/quiz/create");
+        }
+    }, [quizData, navigate]);
+
     const handleLogout = () => {
         localStorage.removeItem("token");
         window.location.href = "/login";
@@ -38,8 +49,15 @@ export default function AddQuestionsPage() {
 
     const handleNext = (questions: QuestionDTO[]) => {
         console.log("Questions to add answers for:", questions);
-        navigate("/add-answers", { state: { questions } }); //ruta se verovatno treba popravljati
+        navigate("/quiz/add-answers", { 
+            state: { 
+                ...quizData,
+                questions 
+            } 
+        });
     };
+
+    if (!quizData) return null;
 
     return (
         <div className="min-h-screen flex flex-col">

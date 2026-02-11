@@ -55,7 +55,7 @@ export const quizApi: IQuizService = {
     async deleteQuiz(token: string, id: number): Promise<QuizDTO> {
         try {
             const res = await axios.delete<QuizDTO>(
-                `${API_URL}delete/${id}`,
+                 `${API_URL}quizzes/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             )
 

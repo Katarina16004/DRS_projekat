@@ -1,18 +1,30 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
-interface Props {
+interface AddQuizHomeFormProps {
     onNext: (quizData: { name: string; category: string; duration: number }) => void;
 }
 
-export const AddQuizHomeForm: React.FC<Props> = ({ onNext }) => {
+export function AddQuizHomeForm({ onNext }: AddQuizHomeFormProps) {
     const [name, setName] = useState("");
     const [category, setCategory] = useState("");
-    const [duration, setDuration] = useState(10); // neki default 10 min
+    const [duration, setDuration] = useState(10);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name || !category || duration <= 0) {
-            alert("Please fill all fields correctly");
+
+        if (!name.trim()) {
+            toast.error("Quiz name is required!");
+            return;
+        }
+
+        if (!category.trim()) {
+            toast.error("Category is required!");
+            return;
+        }
+
+        if (duration < 1) {
+            toast.error("Duration must be at least 1 minute!");
             return;
         }
 
@@ -20,62 +32,74 @@ export const AddQuizHomeForm: React.FC<Props> = ({ onNext }) => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col gap-4"
-            >
-                <h2 className="text-2xl font-semibold text-gray-800 text-center">Create New Quiz</h2>
+        <div
+            className="flex-1 w-full pt-20 pb-16 flex flex-col items-center"
+            style={{ background: "linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)" }}
+        >
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl">
+                <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+                    Create New Quiz
+                </h2>
 
-                <div className="flex flex-col">
-                    <label htmlFor="name" className="mb-1 font-medium text-gray-700">
-                        Quiz Name
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                        placeholder="Enter quiz name"
-                    />
-                </div>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Quiz Name */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Quiz Name
+                        </label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Enter quiz name"
+                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500"
+                        />
+                    </div>
 
-                <div className="flex flex-col">
-                    <label htmlFor="category" className="mb-1 font-medium text-gray-700">
-                        Category
-                    </label>
-                    <input
-                        type="text"
-                        id="category"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                        placeholder="Enter category"
-                    />
-                </div>
+                    {/* Category */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Category
+                        </label>
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500"
+                        >
+                            <option value="">Select category</option>
+                            <option value="Math">Math</option>
+                            <option value="Science">Science</option>
+                            <option value="History">History</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Programming">Programming</option>
+                            <option value="General Knowledge">General Knowledge</option>
+                        </select>
+                    </div>
 
-                <div className="flex flex-col">
-                    <label htmlFor="duration" className="mb-1 font-medium text-gray-700">
-                        Duration (minutes)
-                    </label>
-                    <input
-                        type="number"
-                        id="duration"
-                        value={duration}
-                        onChange={(e) => setDuration(parseInt(e.target.value))}
-                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                        min={1}
-                    />
-                </div>
+                    {/* Duration */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Duration (minutes)
+                        </label>
+                        <input
+                            type="number"
+                            value={duration}
+                            onChange={(e) => setDuration(Number(e.target.value))}
+                            min="1"
+                            max="180"
+                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500"
+                        />
+                    </div>
 
-                <button
-                    type="submit"
-                    className="mt-4 bg-green-500 text-white py-2 rounded hover:bg-green-600 transition"
-                >
-                    Next: Add Questions
-                </button>
-            </form>
+                    {/* Next Button */}
+                    <button
+                        type="submit"
+                        className="w-full py-3 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition"
+                    >
+                        Next: Add Questions
+                    </button>
+                </form>
+            </div>
         </div>
     );
-};
+}

@@ -4,13 +4,12 @@ from infrastructure.Database.database_connect import db
 class Question(db.Model):
     __tablename__='Question'
 
-    def __init__(self,ID_Question,Question_Text,Question_Points,Question_Category):
-        self.ID_Question = ID_Question
+    def __init__(self,Question_Text,Question_Points,Question_Category):
         self.Question_Text = Question_Text
         self.Question_Points = Question_Points
         self.Question_Category = Question_Category
 
-    ID_Question = db.Column(db.Integer,primary_key=True)
+    ID_Question = db.Column(db.Integer,primary_key=True, autoincrement=True)
     Question_Text = db.Column(db.String(250), nullable=False)
     Question_Points = db.Column(db.Integer, nullable=False)
     Question_Category = db.Column(db.String(250), nullable=True)

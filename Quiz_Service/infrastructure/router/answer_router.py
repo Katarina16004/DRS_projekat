@@ -105,10 +105,17 @@ def create_answer(question_id):
             "missing": missing
         }), 400
 
+    is_correct_raw = data['Is_Correct']
+
+    if isinstance(is_correct_raw, bool):
+        is_correct = is_correct_raw
+    else:
+        is_correct = str(is_correct_raw).lower() in ['true', '1', 'yes']
+
     answer = Answer(
         ID_Question=question_id,
         Answer_Text=data['Answer_Text'],
-        Is_Correct=data['Is_Correct']
+        Is_Correct=is_correct
     )
 
     answer.save()
