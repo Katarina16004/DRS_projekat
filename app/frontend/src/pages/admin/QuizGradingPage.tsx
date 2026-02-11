@@ -24,18 +24,18 @@ export default function QuizGradingPage() {
         // TODO: fetch pitanja iz sesije ili API
         setQuestions([
             {
-                question_id: 1,
-                question_text: "Primer pitanja 1",
-                answers: [
-                    { answer_id: 1, answer_text: "Odgovor A", answer_is_correct: true },
-                    { answer_id: 2, answer_text: "Odgovor B", answer_is_correct: false },
+                ID_Question: 1,
+                Question_Text: "Primer pitanja 1",
+                Answers: [
+                    { answer_id: 1, answer_text: "Odgovor A", answer_is_correct: true},
+                    { answer_id: 2, answer_text: "Odgovor B", answer_is_correct: false},
                 ],
             },
             {
-                question_id: 2,
-                question_text: "Primer pitanja 2",
-                answers: [
-                    { answer_id: 3, answer_text: "Odgovor C", answer_is_correct: false },
+                ID_Question: 2,
+                Question_Text: "Primer pitanja 2",
+                Answers: [
+                    { answer_id: 3, answer_text: "Odgovor C", answer_is_correct: false},
                     { answer_id: 4, answer_text: "Odgovor D", answer_is_correct: true },
                 ],
             },

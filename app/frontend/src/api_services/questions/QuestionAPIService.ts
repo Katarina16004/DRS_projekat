@@ -81,7 +81,7 @@ export const questionApi: IQuestionAPIService = {
         }
     },
 
-    async editQuestion(token: string, question_id : number ,text:string, points:number ,category:string  ):Promise<CreateQuestionDTO>{
+    async editQuestion(token: string, question_id: number, text: string, points: number, category: string): Promise<CreateQuestionDTO> {
         try {
             const formData = new FormData();
             formData.append("Question_Text", text);
@@ -105,6 +105,24 @@ export const questionApi: IQuestionAPIService = {
             throw error;
         }
 
+    },
+
+    async getAllQuestions(token: string, quiz_id: number): Promise<QuestionDTO[]> {
+        try {
+            const res = await axios.get<QuestionDTO[]>(
+                `${API_URL}quizzes/${quiz_id}/questions`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+            )
+
+            return res.data;
+        } catch (error) {
+            console.log("Error fetching all questions for that quiz: ", error)
+            return []
+        }
     }
 
 }

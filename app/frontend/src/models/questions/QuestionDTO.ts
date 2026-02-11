@@ -2,12 +2,12 @@ import type { AnswerDTO } from "../answers/AnswerDTO";
 
 export interface QuestionDTO {
   question_index?: number;
-  question_id?: number;
-  question_text?: string;
-  question_points?: number;
-  answers?: AnswerDTO[];
+  ID_Question?: number;
+  Question_Text?: string;
+  Question_Points?: number;
+  Answers?: AnswerDTO[];
 
   // opcionalna polja u slucaju greske
-  message?: string;   
-  error?: string;     
+  Message?: string;   
+  Error?: string;     
 }

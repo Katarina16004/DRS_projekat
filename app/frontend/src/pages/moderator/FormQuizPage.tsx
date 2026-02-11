@@ -31,7 +31,7 @@ export default function FormQuizPage() {
     const handleSubmitQuestion = (question: QuestionDTO, selectedAnswers: AnswerDTO[]) => {
         setProcessedQuestions(prev => [...prev, { question, answers: selectedAnswers }]);
         // Ukloni pitanje iz liste
-        setQuestions(prev => prev.filter(q => q.question_id !== question.question_id));
+        setQuestions(prev => prev.filter(q => q.ID_Question !== question.ID_Question));
     };
 
     const handleSendQuiz = () => {

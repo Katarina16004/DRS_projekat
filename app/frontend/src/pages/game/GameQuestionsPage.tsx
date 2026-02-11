@@ -16,17 +16,16 @@ export default function GameQuestionsPage() {
     const { quizId } = useParams<{ quizId: string }>();
     const navigate = useNavigate();
     const token = localStorage.getItem("token") || "";
+    const [userId, setUserId] = useState<string | null>(null);
 
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [quizData, setQuizData] = useState<QuizDTO | null>(null);
     const [currentQuestion, setCurrentQuestion] = useState<QuestionDTO | null>(null);
 
     const [remainingTime, setRemainingTime] = useState(0);
-
     const [score, setScore] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
     const [wrongCount, setWrongCount] = useState(0);
-
     const [loading, setLoading] = useState(true);
 
     const [navBarUser, setNavBarUser] = useState<{
@@ -38,17 +37,30 @@ export default function GameQuestionsPage() {
         if (!token) return;
         try {
             const decoded: any = jwtDecode(token);
-            setNavBarUser({
-                username: decoded.username,
-                role: decoded.role as UserRole,
-            });
+            setNavBarUser({ username: decoded.username, role: decoded.role as UserRole });
+            setUserId(decoded.user_id); // ⬅ tu čuvaš user_id
         } catch {
-            setNavBarUser({
-                username: "",
-                role: "user",
-            });
+            setNavBarUser({ username: "", role: "user" });
+            setUserId(null);
         }
     }, [token]);
+
+
+    // HELPERS: map server response to DTO
+    const mapQuestion = (raw: any): QuestionDTO => {
+        // server vraća niz [questionObj, 200] ili samo objekat
+        const questionObj = Array.isArray(raw) ? raw[0] : raw;
+        return {
+            ID_Question: questionObj.ID_Question,
+            Question_Text: questionObj.Question_Text,
+            Question_Points: questionObj.Question_Points,
+            Answers: questionObj.Answers?.map((a: any) => ({
+                answer_id: a.ID_Answer,
+                answer_text: a.Answer_Text,
+                answer_is_correct: a.Answer_Is_Correct ?? false
+            }))
+        };
+    };
 
     // START SESSION + LOAD QUIZ + FIRST QUESTION
     useEffect(() => {
@@ -56,41 +68,40 @@ export default function GameQuestionsPage() {
 
         const startGame = async () => {
             try {
-                // 1️⃣ start session
-                const session = await quizApi.startQuiz(token, +quizId);
-                setSessionId(session.session_id);
+                console.log("🎮 Starting quiz...");
 
-                alert(session.session_id)
-                // 2️⃣ load quiz info
+                const session = await quizApi.startQuiz(token, +quizId);
+                console.log("✅ Session:", session.session_id);
+                setSessionId(session.session_id);
+                
                 const quiz = await quizApi.getQuizById(token, +quizId);
+                console.log("✅ Quiz:", quiz);
                 setQuizData(quiz);
 
-                // 3️⃣ timer
                 setRemainingTime(quiz.Quiz_length * 60);
 
-                // 4️⃣ first question
-                const firstQuestion = await questionApi.getNextQuestion(token, session.session_id);
+                const firstQuestionRaw = await questionApi.getNextQuestion(token, session.session_id);
+                const firstQuestion = mapQuestion(firstQuestionRaw);
+                console.log("✅ First question:", firstQuestion);
                 setCurrentQuestion(firstQuestion);
 
-                // 5️⃣ initial session state
                 const sessionState = await quizApi.getSession(token, session.session_id);
                 setScore(sessionState.score);
                 setCorrectCount(sessionState.correct_count);
                 setWrongCount(sessionState.wrong_count);
-
             } catch (err) {
-                console.error("Failed to start quiz:", err);
+                console.error("❌ Failed to start quiz:", err);
             } finally {
                 setLoading(false);
             }
         };
-        alert('Stigli smo do ovde')
+
         startGame();
     }, [token, quizId]);
 
     // TIMER
     useEffect(() => {
-        if (!remainingTime) return;
+        if (!remainingTime || loading) return;
 
         const interval = setInterval(() => {
             setRemainingTime(prev => {
@@ -104,46 +115,44 @@ export default function GameQuestionsPage() {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [remainingTime]);
+    }, [remainingTime, loading]);
 
     // SUBMIT ANSWER
     const handleAnswer = async (answerId: number) => {
         if (!sessionId) return;
-
         try {
-            // 1️⃣ send answer
-            await answerApi.sumbitAnswer(token, sessionId, answerId);
+            console.log("📤 Submitting answer:", answerId);
 
-            // 2️⃣ read updated session (source of truth)
-            const sessionState = await quizApi.getSession(token, sessionId);
+        const response = await answerApi.sumbitAnswer(token, sessionId, answerId, Number(userId));
+        console.log("✅ Answer response:", response);
 
-            setScore(sessionState.score);
-            setCorrectCount(sessionState.correct_count);
-            setWrongCount(sessionState.wrong_count);
+            // Update session stats
+            setScore(response.score);
+            setCorrectCount(response.correct_count);
+            setWrongCount(response.wrong_count);
 
-            // 3️⃣ next question
-            const nextQuestion = await questionApi.getNextQuestion(token, sessionId);
-
-            if (!nextQuestion || nextQuestion.message) {
+            // Load next question
+            const nextQuestionRaw = await questionApi.getNextQuestion(token, sessionId);
+            if (!nextQuestionRaw || nextQuestionRaw.Message) {
                 handleQuizEnd();
                 return;
             }
 
+            const nextQuestion = mapQuestion(nextQuestionRaw);
             setCurrentQuestion(nextQuestion);
+
         } catch (e) {
-            console.error("Answer submit failed", e);
+            console.error("❌ Answer submit failed", e);
         }
     };
 
-    // FINISH QUIZ
     const handleQuizEnd = async () => {
         if (!sessionId) return;
-
         try {
             const result = await quizApi.finishQuiz(token, sessionId);
             navigate(`/game-result/${result.ID_Game}`);
         } catch (e) {
-            console.error("Finish failed", e);
+            console.error("❌ Finish failed", e);
         }
     };
 
@@ -152,25 +161,19 @@ export default function GameQuestionsPage() {
         window.location.href = "/login";
     };
 
-    const formatTime = (sec: number) => {
-        const m = Math.floor(sec / 60);
-        const s = sec % 60;
-        return `${m}:${s.toString().padStart(2, "0")}`;
-    };
+    const formatTime = (sec: number) => `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, "0")}`;
 
-    if (loading || !quizData || !currentQuestion) {
-        return <div className="p-10 text-xl">Loading quiz...</div>;
-    }
+    if (loading) return <div className="p-10 text-xl">Loading quiz...</div>;
+    if (!quizData || !currentQuestion) return <div className="p-10 text-xl text-red-600">Missing data!</div>;
+
+    const answers = currentQuestion.Answers || [];
 
     return (
         <div className="min-h-screen font-poppins flex flex-col">
             <NavbarForm user={navBarUser} onLogout={confirmLogout} />
-
             <div
                 className="flex-1 w-full pt-20 pb-16 flex flex-col items-center"
-                style={{
-                    background: "linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)"
-                }}
+                style={{ background: "linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)" }}
             >
                 <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl">
 
@@ -183,21 +186,25 @@ export default function GameQuestionsPage() {
                     </div>
 
                     {/* Question */}
-                    <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-4">
-                            {currentQuestion.question_text}
+                    <div className="mb-6 border-2 border-blue-500 p-4">
+                        <h3 className="text-lg font-semibold mb-4 bg-blue-100 p-2">
+                            QUESTION: {currentQuestion.Question_Text || "❌ NO TEXT"}
                         </h3>
 
-                        <div className="flex flex-col gap-3">
-                            {currentQuestion.answers?.map(a => (
-                                <button
-                                    key={a.answer_id}
-                                    onClick={() => handleAnswer(a.answer_id)}
-                                    className="w-full text-left px-4 py-3 rounded-xl border border-gray-300 hover:bg-blue-100 transition"
-                                >
-                                    {a.answer_text}
-                                </button>
-                            ))}
+                        <div className="flex flex-col gap-3 border-2 border-green-500 p-2">
+                            {answers.length === 0 ? (
+                                <div className="bg-red-100 p-4 text-red-700 font-bold">❌ NO ANSWERS AVAILABLE</div>
+                            ) : (
+                                answers.map((a, idx) => (
+                                    <button
+                                        key={a.answer_id || idx} // koristimo answer_id iz DTO
+                                        onClick={() => a.answer_id && handleAnswer(a.answer_id)}
+                                        className="w-full text-left px-4 py-3 rounded-xl border-2 border-gray-800 bg-yellow-100 hover:bg-blue-200 transition font-bold"
+                                    >
+                                        {idx + 1}. {a.answer_text || "❌ NO TEXT"} {/* koristimo answer_text iz DTO */}
+                                    </button>
+                                ))
+                            )}
                         </div>
                     </div>
 
@@ -211,7 +218,7 @@ export default function GameQuestionsPage() {
 
                         <button
                             onClick={handleQuizEnd}
-                            className="px-6 py-2 bg-red-500 text-white rounded-xl"
+                            className="px-6 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
                         >
                             Finish Quiz
                         </button>

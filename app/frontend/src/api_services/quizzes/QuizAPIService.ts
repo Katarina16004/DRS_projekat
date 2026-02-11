@@ -179,7 +179,7 @@ export const quizApi: IQuizService = {
     async getAllPendingQuiz(token:string):Promise<QuizDTO[]>{
         try {
             const res = await axios.get<QuizDTO[]>(
-                `${API_URL}/quizzes/pending`,
+                `${API_URL}quizzes/pending`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -187,6 +187,20 @@ export const quizApi: IQuizService = {
         } catch (error) {
             console.error("Error while fetching all quizzes: ", error);
             return [];
+        }
+    },
+
+     async getQuizzesByAuthor(token: string, authorId: number): Promise<QuizDTO[]> {
+        try{
+            const res = await axios.get<QuizDTO[]>(
+                `${API_URL}quizzes/author/${authorId}`,
+                {headers: { Authorization: `Bearer ${token}`}}
+            )
+
+            return res.data
+        }catch(error){
+            console.log("Error fetching quizzez for moderator with that id: ", error)
+            return []
         }
     }
 

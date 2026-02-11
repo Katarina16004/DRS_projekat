@@ -485,11 +485,13 @@ def get_next_question(current_user, ID_Session):
     print("TEXT:", response.text)
     return jsonify(response.json(), response.status_code)
 
-@routes.route('/questions/<int:ID_Question>/quizzes', methods=['GET'])
+@routes.route('/quizzes/<int:quiz_id>/questions', methods=['GET'])
 @protected()
-def get_quiz_with_question(current_user, ID_Question):
-    response = requests.get(SERVICE_API + "/questions/" + ID_Question + "/quizzes")
-    return jsonify(response.json(), response.status_code)
+def get_quiz_questions(current_user, quiz_id):
+    response = requests.get(
+        SERVICE_API + f"/quizzes/{quiz_id}/questions"
+    )
+    return jsonify(response.json()), response.status_code
 
 @routes.route('/question/<int:ID_Question>', methods=['PATCH'])
 @protected(required_role=['moderator'])
@@ -568,7 +570,7 @@ def get_quiz_question(current_user, quiz_id):
 @routes.route('/quizzes/author/<int:author_id>', methods=['GET'])
 @protected()
 def get_all_author_quizes(current_user, author_id):
-    response = requests.get(SERVICE_API + "/quizzes/author/{author_id}")
+    response = requests.get(f"{SERVICE_API}/quizzes/author/{author_id}")
     return jsonify(response.json()), response.status_code
 
 

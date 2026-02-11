@@ -7,6 +7,8 @@ import type { QuizStatus } from "../../enums/quiz/QuizStatus";
 import { quizApi } from "../../api_services/quizzes/QuizAPIService";
 import { GameAPIService } from "../../api_services/games/GameAPIService";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
+import { questionApi } from "../../api_services/questions/QuestionAPIService";
+import { useNavigate } from "react-router-dom";
 
 interface AdminQuiz {
     id: number;
@@ -20,6 +22,7 @@ interface AdminQuiz {
 
 export default function AdminQuizzesPage() {
     const token = localStorage.getItem("token");
+    const navigate = useNavigate()
 
     const [navBarUser, setNavBarUser] = useState<{
         username: string;
@@ -101,6 +104,11 @@ export default function AdminQuizzesPage() {
         }
     };
 
+    const handlePreview = (id: number) => {
+        navigate(`/quizzes/${id}/questions`);
+    };
+
+
     const handleLogout = () => {
         setShowLogoutConfirm(true);
     };
@@ -140,6 +148,7 @@ export default function AdminQuizzesPage() {
                             onApprove={handleApprove}
                             onReject={handleReject}
                             onDownloadPdf={handleDownloadPdf}
+                            onPreview={handlePreview}
                         />
                     </div>
                 </div>

@@ -33,11 +33,11 @@ export const QuizGradingForm = ({ questions, onFinish }: QuizGradingFormProps) =
                     <div className="font-semibold mb-2">
                         Pitanje {currentIndex + 1} / {questions.length}
                     </div>
-                    <div className="mb-4">{currentQuestion.question_text}</div>
+                    <div className="mb-4">{currentQuestion.Question_Text}</div>
 
                     {/* Odgovori */}
                     <div className="flex flex-col gap-2">
-                        {currentQuestion.answers?.map(a => (
+                        {currentQuestion.Answers?.map(a => (
                             <div
                                 key={a.answer_id}
                                 className={`p-2 border rounded flex justify-between items-center ${a.answer_is_correct ? "bg-green-100 border-green-500" : "bg-gray-50"

@@ -6,7 +6,7 @@ from infrastructure.classes.QuestionQuiz import QuestionQuiz
 
 question_router = Blueprint('question_router',__name__)
 
-@question_router.route('/questions/all', methods=['GET'])
+@question_router.route('/questions/all', methods=['GET']) 
 def get_all_questions():
     questions = Question.get_all()
 
@@ -133,7 +133,7 @@ def get_next_question(ID_Session):
     }), 200
 
 
-@question_router.route('/questions/<int:ID_Question>/quizzes', methods=['GET'])
+@question_router.route('/quizzes/<int:ID_Question>/questions', methods=['GET'])
 def get_quizzes_with_question(ID_Question):
     rows = QuestionQuiz.get_quizzes_with_question(ID_Question)
 

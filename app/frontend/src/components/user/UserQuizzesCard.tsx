@@ -24,7 +24,6 @@ export const UserQuizCard = ({ quiz, onPlay }: UserQuizCardProps) => {
                 <Info label="Quiz name" value={quiz.Name} />
                 <Info label="Category" value={quiz.Category} />
                 <Info label="Duration" value={`${quiz.Quiz_length} min`} />
-                <Info label="Quiz ID" value={quiz.ID_Quiz.toString()} />
             </div>
 
             {/* Actions */}

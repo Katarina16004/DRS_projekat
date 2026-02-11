@@ -20,6 +20,7 @@ export interface IQuizService {
     rejectQuiz(token:string,ID_Quiz:number, reason:string):Promise<string>
     getAllPendingQuiz(token:string):Promise<QuizDTO[]>
 
+    getQuizzesByAuthor(token: string, author_id: number): Promise<QuizDTO[]>
 
-    //getQuizByStatu(token: string, status: string): Promise<QuizDTO[]>             //filteri kod admina
+    //getQuizByStatus(token: string, status: string): Promise<QuizDTO[]>             //filteri kod admina
 }

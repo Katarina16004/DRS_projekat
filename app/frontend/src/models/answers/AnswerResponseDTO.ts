@@ -5,4 +5,5 @@ export interface AnswerResponseDTO {
   score: number;
   correct_count: number;
   wrong_count: number;
+  user_id: number;
 }

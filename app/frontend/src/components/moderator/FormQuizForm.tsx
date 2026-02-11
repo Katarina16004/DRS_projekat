@@ -63,15 +63,15 @@ export const FormQuizForm = ({
 
                 {questions.map(q => (
                     <div
-                        key={q.question_id}
+                        key={q.ID_Question}
                         className={`p-2 mb-2 rounded cursor-pointer hover:bg-green-100 ${
-                            selectedQuestion?.question_id === q.question_id
+                            selectedQuestion?.ID_Question === q.ID_Question
                                 ? "bg-green-200"
                                 : ""
                         }`}
                         onClick={() => setSelectedQuestion(q)}
                     >
-                        {q.question_text || "Novo pitanje"}
+                        {q.Question_Text || "Novo pitanje"}
                     </div>
                 ))}
 
@@ -89,12 +89,12 @@ export const FormQuizForm = ({
                         {/* EDIT QUESTION TEXT */}
                         <input
                             className="border rounded p-2 mb-3 font-semibold"
-                            value={selectedQuestion.question_text}
+                            value={selectedQuestion.Question_Text}
                             placeholder="Unesi tekst pitanja"
                             onChange={e =>
                                 setSelectedQuestion({
                                     ...selectedQuestion,
-                                    question_text: e.target.value
+                                    Question_Text: e.target.value
                                 })
                             }
                         />

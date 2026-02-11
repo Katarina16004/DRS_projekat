@@ -2,30 +2,27 @@ import axios from "axios"
 import type { AnswerResponseDTO } from "../../models/answers/AnswerResponseDTO"
 import type { IAsnwerAPIService } from "./IAnswerAPIService"
 import type { CreateAnswerDTO } from "../../models/answers/CreateAnswerDTO";
+import { jwtDecode } from "jwt-decode";
 
 const API_URL = import.meta.env.VITE_SERVER;
 
 export const answerApi: IAsnwerAPIService = {
 
-    async sumbitAnswer(token: string, session_id: string, answerID: number): Promise<AnswerResponseDTO> {
-        try {
-            const res = await axios.post<AnswerResponseDTO>(
-                `${API_URL}quizzes/answer/${session_id}`,
-                {
-                    answer_id: answerID
-                },
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            )
-            return res.data
-        }
-        catch (error) {
-            console.error("Error while trying to finish Quiz", error)
-            throw error
-        }
-    },
+    async sumbitAnswer(token: string, session_id: string, answerID: number, user_id: number): Promise<AnswerResponseDTO> {
+        const decoded: any = jwtDecode(token);
+        //user_id = decoded.id;   // ovo je ID iz tokena
 
+        const res = await axios.post<AnswerResponseDTO>(
+            `${API_URL}quizzes/answer/${session_id}`,
+            {
+                ID_Answer: answerID,
+                user_id
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return res.data;
+    }
+    ,
     async createAnswer(token: string, question_id: number, answer_text: string, isCorrect: boolean): Promise<CreateAnswerDTO> {
         try {
             const formData = new FormData();

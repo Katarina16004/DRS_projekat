@@ -17,6 +17,7 @@ import { authApi } from "./api_services/auth/AuthAPIService";
 import AdminQuizzesPage from "./pages/admin/AdminQuizzesPage";
 import GameQuestionsPage from "./pages/game/GameQuestionsPage";
 import QuizGradingPage from "./pages/admin/QuizGradingPage";
+import ModeratorQuizzesPage from "./pages/moderator/ModeratorQuizzesPage";
 
 function App() {
   return (
@@ -87,13 +88,24 @@ function App() {
         />
 
         <Route
-          path="/admin/quizzes/:quiz.id/preview"
+          path="/quizzes/:quizId/questions"
           element={
             <ProtectedRoute requiredRole="admin">
               <QuizGradingPage />
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/moderator/quizzes"
+          element={
+            <ProtectedRoute requiredRole="moderator">
+              <ModeratorQuizzesPage />
+            </ProtectedRoute>
+          }
+        />
+
+
 
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/404" element={<NotFoundStranica />} />

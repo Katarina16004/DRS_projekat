@@ -25,6 +25,7 @@ interface Props {
     onApprove: (id: number) => void;
     onReject: (id: number) => void;
     onDownloadPdf: (id: number) => void;
+    onPreview: (id: number) => void
 }
 
 const StatusBadge = ({ status }: { status: QuizStatus }) => {
@@ -47,6 +48,7 @@ export const AdminQuizzesForm = ({
     onApprove,
     onReject,
     onDownloadPdf,
+    onPreview
 }: Props) => {
     const [statusFilter, setStatusFilter] = useState<QuizStatus | "all">("all");
 
@@ -114,13 +116,13 @@ export const AdminQuizzesForm = ({
                             <FaFilePdf />
                         </button>
 
-                        <NavLink
-                            to={`/admin/quizzes/${quiz.id}/preview`}
+                        <button
+                            onClick={() => onPreview(quiz.id)}
                             title="Preview quiz"
                             className="p-2 rounded-lg border hover:bg-blue-50 text-blue-600 transition"
                         >
                             <FaEye />
-                        </NavLink>
+                        </button>
 
                         {quiz.status === "pending" && (
                             <>

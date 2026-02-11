@@ -31,7 +31,7 @@ export const NavbarForm = ({ user, onLogout }: any) => {
             const decoded: any = jwtDecode(token);
             const userId = decoded.id;
 
-            
+
         } catch {
             setNavBarUser({
                 username: "",
@@ -67,11 +67,12 @@ export const NavbarForm = ({ user, onLogout }: any) => {
                             <NavLink to="/quizzes" className={navLinkClass}>
                                 Quizzes
                             </NavLink>
-                            <NavLink to="/my-quizzes" className={navLinkClass}>
+                            <NavLink to="/moderator/quizzes" className={navLinkClass}>
                                 My Quizzes
                             </NavLink>
                         </>
                     )}
+
 
                     {user.role === "user" && (
                         <NavLink to="/user" className={navLinkClass}>
