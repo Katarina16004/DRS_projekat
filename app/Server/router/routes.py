@@ -494,7 +494,7 @@ def get_quiz_questions(current_user, quiz_id):
     return jsonify(response.json()), response.status_code
 
 @routes.route('/quizzes/statuses/<int:status>', methods=['GET'])
-@protected(required_role=['admin'])
+@protected()
 def get_quiz_with_status(current_user, status):
     response = requests.get(
         SERVICE_API + f"/quizzes/statuses/{status}"

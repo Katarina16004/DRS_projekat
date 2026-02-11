@@ -217,7 +217,7 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
-    async getQuizByStatus(token: string, status: string): Promise<QuizDTO[]>{
+    async getQuizByStatus(token: string, status: number): Promise<QuizDTO[]>{
                 try {
             const res = await axios.get<QuizDTO[]>(
                 `${API_URL}quizzes/statuses/${status}`,
