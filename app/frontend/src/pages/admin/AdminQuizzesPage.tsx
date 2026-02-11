@@ -77,6 +77,7 @@ export default function AdminQuizzesPage() {
     const handleDownloadPdf = async (id: number) => {
         try {
             await GameAPIService.get_games_from_quiz(token, id);
+            toast.success("Successfully created the report for the quiz! It is sent to your e-mail adress.")
         } catch (error) {
             alert(error);
         }
