@@ -49,6 +49,11 @@ class Quiz(db.Model):
         self.Rejection_Reason = reason
         db.session.commit()
 
+    def set_pending(self):
+        self.Is_Accepted = 0
+        self.Rejection_Reason = None
+        db.session.commit()
+
     @classmethod
     def get_all(cls):
         return cls.query.all()
