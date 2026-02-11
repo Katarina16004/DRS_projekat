@@ -140,10 +140,11 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
+    
     async acceptQuiz(token: string, ID_Quiz: number): Promise<string> {
         try {
             const res = await axios.post<string>(
-                `${API_URL}quizzes/${ID_Quiz}}/accept`,
+                `${API_URL}quizzes/${ID_Quiz}/accept`,
                 {},
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -157,10 +158,11 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
+
     async rejectQuiz(token: string, ID_Quiz: number, reason: string): Promise<string> {
         try {
             const res = await axios.post<string>(
-                `${API_URL}quizzes/${ID_Quiz}}/reject`,
+                `${API_URL}quizzes/${ID_Quiz}/reject`,
                 {
                     reason: reason
                 },
@@ -204,6 +206,7 @@ export const quizApi: IQuizService = {
             return []
         }
     },
+
     async getQuestionFromQuiz(token: string, ID_Quiz: number): Promise<QuizQuestionsDTO> {
         try {
             const res = await axios.get<QuizQuestionsDTO>(
@@ -217,6 +220,7 @@ export const quizApi: IQuizService = {
             throw error
         }
     },
+
     async getQuizByStatus(token: string, status: string): Promise<QuizDTO[]>{
                 try {
             const res = await axios.get<QuizDTO[]>(

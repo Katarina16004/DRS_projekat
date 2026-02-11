@@ -539,7 +539,7 @@ def assign_question_to_quiz(current_user, quiz_id, question_id):
     return jsonify(response.json(), response.status_code)
 
 @routes.route('/quizzes/<int:quiz_id>/questions/<int:question_id>', methods=['DELETE'])
-@protected(required_role=['moderator'])
+@protected(required_role=['moderator', 'admin'])
 def remove_question_from_quiz(current_user, quiz_id, question_id):
 
     response = requests.delete(SERVICE_API + f"/quizzes/{quiz_id}/questions/{question_id}" )
@@ -692,7 +692,7 @@ def get_quiz_by_id(current_user, quiz_id):
     return jsonify(response.json()), response.status_code
 
 @routes.route('/quizzes/<int:quiz_id>', methods=['DELETE'])
-@protected(required_role=['moderator'])
+@protected(required_role=['moderator', 'admin'])
 def delete_quiz(current_user, quiz_id):
     response = requests.delete(
         SERVICE_API + f"/quizzes/{quiz_id}"
@@ -704,8 +704,9 @@ def delete_quiz(current_user, quiz_id):
 @protected(required_role=['admin'])
 def accept_quiz(current_user, quiz_id):
     response = requests.post(
-        SERVICE_API + "/quizzes/{quiz_id}/accept"
+        f"{SERVICE_API}/quizzes/{quiz_id}/accept"
     )
+
     return jsonify(response.json()), response.status_code
 
 
@@ -719,8 +720,9 @@ def reject_quiz(current_user, quiz_id):
     }
 
     response = requests.post(
-        SERVICE_API + "/quizzes/{quiz_id}/reject",
+        f"{SERVICE_API}/quizzes/{quiz_id}/reject",
         json=toSend
     )
+
 
     return jsonify(response.json()), response.status_code

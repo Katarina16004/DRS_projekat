@@ -1,119 +1,89 @@
 import { useEffect, useState } from "react";
 import { NavbarForm } from "../../components/navbar/NavBarForm";
-import { jwtDecode } from "jwt-decode";
 import type { UserRole } from "../../enums/user/UserRole";
 import { AdminQuizzesForm } from "../../components/admin/quizzes/AdminQuizzesForm";
-import type { QuizStatus } from "../../enums/quiz/QuizStatus";
 import { quizApi } from "../../api_services/quizzes/QuizAPIService";
+import { questionApi } from "../../api_services/questions/QuestionAPIService";
 import { GameAPIService } from "../../api_services/games/GameAPIService";
 import type { QuizDTO } from "../../models/quizzes/QuizDTO";
-import { questionApi } from "../../api_services/questions/QuestionAPIService";
 import { useNavigate } from "react-router-dom";
-
-interface AdminQuiz {
-    id: number;
-    name: string;
-    category: string;
-    duration: number;
-    numOfQuestions: number;
-    author: string;
-    status: QuizStatus;
-}
+import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
+import { confirmDelete } from "../../components/toast/toastYesNo";
 
 export default function AdminQuizzesPage() {
-    const token = localStorage.getItem("token");
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const token = localStorage.getItem("token") || "";
 
-    const [navBarUser, setNavBarUser] = useState<{
-        username: string;
-        role: UserRole;
-    } | null>({
-        username: "",
-        role: "admin",
-    });
-
-    const [quizzes, setQuizzes] = useState<AdminQuiz[]>([]);
-    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [quizzes, setQuizzes] = useState<QuizDTO[]>([]);
+    const [navBarUser, setNavBarUser] = useState<{ username: string; role: UserRole; id: number } | null>(null);
 
     useEffect(() => {
         if (!token) return;
 
-        const loadData = async () => {
-            try {
-                const decoded: any = jwtDecode(token);
-                setNavBarUser({
-                    username: decoded.username,
-                    role: decoded.role as UserRole,
-                });
-
-                const data: QuizDTO[] = await quizApi.getAllQuizzes(token);
-
-                const mapped: AdminQuiz[] = data.map((q) => ({
-                    id: q.ID_Quiz,
-                    name: q.Name,
-                    category: q.Category,
-                    duration: q.Quiz_length,
-                    numOfQuestions: (q as any).Number_of_Questions ?? 0,
-                    author: q.ID_User?.toString() ?? "Unknown",
-                    status:
-                        (q as any).Rejection_Reason
-                            ? "rejected"
-                            : (q as any).Is_Accepted
-                                ? "approved"
-                                : "pending",
-                }));
-
-                setQuizzes(mapped);
-            } catch (err) {
-                console.error("Failed to load quizzes", err);
-                setNavBarUser({
-                    username: "",
-                    role: "admin",
-                });
-            }
-        };
-
-        loadData();
+        try {
+            const decoded: any = jwtDecode(token);
+            setNavBarUser({ username: decoded.username, role: decoded.role as UserRole, id: decoded.id });
+        } catch {
+            setNavBarUser({ username: "", role: "admin", id: 0 });
+        }
     }, [token]);
 
-    const handleDelete = async (id: number) => {
-        setQuizzes(prev => prev.filter(q => q.id !== id));
-    };
+    useEffect(() => {
+        if (!token || !navBarUser) return;
 
-    const handleApprove = async (id: number) => {
-        setQuizzes(prev =>
-            prev.map(q =>
-                q.id === id ? { ...q, status: "approved" } : q
-            )
-        );
-    };
+        quizApi.getAllQuizzes(token)
+            .then((data) => {
+                setQuizzes(data);
+            })
+            .catch(err => console.error(err));
+    }, [token, navBarUser]);
 
-    const handleReject = async (id: number) => {
-        setQuizzes(prev =>
-            prev.map(q =>
-                q.id === id ? { ...q, status: "rejected" } : q
-            )
+    // DELETE kviza (isto kao kod moderatora)
+    const handleDelete = (quizId: number) => {
+        confirmDelete(
+            "Are you sure you want to delete this quiz?",
+            async () => {
+                const loadingToast = toast.loading("Deleting quiz...");
+                try {
+                    // 1. Učitaj sva pitanja iz kviza
+                    const questionsResponse = await questionApi.getAllQuestions(token, quizId);
+                    const questions = (questionsResponse as any).Questions || [];
+
+                    if (questions.length > 0) {
+                        toast.loading(`Removing ${questions.length} question(s)...`, { id: loadingToast });
+                        for (const question of questions) {
+                            await questionApi.remove_question_to_quiz(token, quizId, question.ID_Question);
+                        }
+                    }
+
+                    // 2. Briši kviz
+                    toast.loading("Deleting quiz...", { id: loadingToast });
+                    await quizApi.deleteQuiz(token, quizId);
+
+                    // 3. Update UI
+                    setQuizzes(prev => prev.filter(q => q.ID_Quiz !== quizId));
+                    toast.success("Quiz deleted successfully!", { id: loadingToast });
+                } catch (err) {
+                    toast.error("Failed to delete quiz. Please try again.", { id: loadingToast });
+                }
+            },
+            () => {
+                toast.error("Quiz deletion cancelled.", { icon: "🚫" });
+            }
         );
     };
 
     const handleDownloadPdf = async (id: number) => {
         try {
-            await GameAPIService.get_games_from_quiz(token!, id);
+            await GameAPIService.get_games_from_quiz(token, id);
         } catch (error) {
             alert(error);
         }
     };
 
-    const handlePreview = (id: number) => {
-        navigate(`/quizzes/${id}/questions`);
-    };
-
-
+    const handlePreview = (id: number) => navigate(`/quizzes/${id}/questions`);
     const handleLogout = () => {
-        setShowLogoutConfirm(true);
-    };
-
-    const confirmLogout = () => {
         localStorage.removeItem("token");
         window.location.href = "/login";
     };
@@ -122,70 +92,23 @@ export default function AdminQuizzesPage() {
         <div className="min-h-screen font-poppins flex flex-col">
             <NavbarForm user={navBarUser} onLogout={handleLogout} />
 
-            <div
-                className="flex-1 w-full pb-16"
-                style={{
-                    background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
-                }}
-            >
+            <div className="flex-1 w-full pb-16" style={{ background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)` }}>
                 <div className="flex flex-col items-center pt-20 pb-2 w-full">
-
-                    {/* HEADER */}
                     <div className="w-full max-w-6xl mb-8 px-4">
-                        <h2 className="text-3xl font-bold tracking-wider text-gray-800">
-                            Manage Quizzes
-                        </h2>
-                        <p className="text-gray-500 mt-1">
-                            Approve, review or delete quizzes
-                        </p>
+                        <h2 className="text-3xl font-bold tracking-wider text-gray-800">Manage Quizzes</h2>
+                        <p className="text-gray-500 mt-1">Review, delete, or download quizzes</p>
                     </div>
 
-                    {/* ADMIN LIST */}
                     <div className="w-full max-w-6xl px-4">
                         <AdminQuizzesForm
                             quizzes={quizzes}
-                            onDelete={handleDelete}
-                            onApprove={handleApprove}
-                            onReject={handleReject}
+                            onDelete={handleDelete} // DELETE logika kao kod moderatora
                             onDownloadPdf={handleDownloadPdf}
                             onPreview={handlePreview}
                         />
                     </div>
                 </div>
             </div>
-
-            {/* LOGOUT MODAL */}
-            {showLogoutConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div
-                        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-                        onClick={() => setShowLogoutConfirm(false)}
-                    />
-
-                    <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md z-10">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-                            Log out?
-                        </h3>
-                        <p className="text-gray-600 text-center mb-8">
-                            Are you sure you want to log out?
-                        </p>
-                        <div className="flex justify-center gap-4">
-                            <button
-                                className="px-6 py-2 rounded-xl border border-gray-300 hover:bg-gray-100"
-                                onClick={() => setShowLogoutConfirm(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="px-6 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600"
-                                onClick={confirmLogout}
-                            >
-                                Log out
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
