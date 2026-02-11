@@ -4,12 +4,11 @@ import type { QuizQuestionsDTO } from "../../models/quizzes/QuizQuestionDTO";
 import type { QuestionDTO } from "../../models/questions/QuestionDTO";
 
 interface ModeratorEditFormProps {
-    quizName: string;
     questions: QuizQuestionsDTO[]; // niz kvizova sa pitanjima (obično jedan kviz)
     onFinish: (updatedQuestions: { id: number; text: string; points: number }[]) => void;
 }
 
-export const ModeratorEditForm: React.FC<ModeratorEditFormProps> = ({ quizName, questions, onFinish }) => {
+export const ModeratorEditForm: React.FC<ModeratorEditFormProps> = ({ questions, onFinish }) => {
     // Flatten pitanja u lokalni state za edit
     const [editedQuestions, setEditedQuestions] = useState(
         questions.flatMap(q => q.Questions.map((ques: QuestionDTO) => ({
@@ -37,7 +36,7 @@ export const ModeratorEditForm: React.FC<ModeratorEditFormProps> = ({ quizName, 
 
     return (
         <div className="flex flex-col items-center p-6 font-poppins">
-            <h2 className="text-2xl font-bold mb-6">{quizName} - Edit Questions</h2>
+            
 
             {editedQuestions.map((q, index) => (
                 <div key={q.id} className="w-full max-w-3xl p-6 border rounded shadow mb-6">

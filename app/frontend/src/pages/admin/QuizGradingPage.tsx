@@ -77,14 +77,38 @@ export default function QuizGradingPage() {
     }
 
     return (
-        <div className="min-h-screen font-poppins flex flex-col bg-white">
-            <NavbarForm user={navBarUser} onLogout={() => (window.location.href = "/login")} />
-            <div className="flex-1 pt-16">
-                <QuizGradingForm
-                    quizName={quiz?.Name || "Quiz"}
-                    questions={questions}
-                    onFinish={handleFinish} />
+        <div className="min-h-screen font-poppins flex flex-col">
+
+            {/* Navbar */}
+            <NavbarForm
+                user={navBarUser}
+                onLogout={() => (window.location.href = "/login")}
+            />
+
+            <div
+                className="flex-1 w-full pb-16"
+                style={{
+                    background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
+                }}
+            >
+                <div className="flex flex-col items-center pt-20 pb-4 w-full">
+
+                    <div className="w-full max-w-5xl bg-white shadow-xl rounded-3xl p-10 mx-4">
+
+                        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+                            {quiz?.Name || "Quiz"} - Review
+                        </h2>
+
+                        <QuizGradingForm
+                            quizName={quiz?.Name || "Quiz"}
+                            questions={questions}
+                            onFinish={handleFinish}
+                        />
+
+                    </div>
+                </div>
             </div>
         </div>
     );
+
 }

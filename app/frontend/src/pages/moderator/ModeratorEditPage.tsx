@@ -68,26 +68,30 @@ export default function ModeratorEditPage() {
         fetchQuiz();
     }, [token, quizId]);
 
-    const handleEditChange = (updated: { id: number; text: string; points: number }[]) => {
-        setEditedQuestions(updated);
-    };
+    // const handleEditChange = (updated: { id: number; text: string; points: number }[]) => {
+    //     setEditedQuestions(updated);
+    // };
 
-    const handleFinishEditing = async () => {
-        if (!editedQuestions.length || !quiz) return;
+    const handleFinishEditing = async (updatedQuestions: { id: number; text: string; points: number }[]) => {
+        if (!updatedQuestions.length || !quiz) return;
 
         const loadingToast = toast.loading("Updating questions...");
+
         try {
-            for (const q of editedQuestions) {
+            for (const q of updatedQuestions) {
+                console.log("PATCHING:", q);
                 await questionApi.editQuestion(token, q.id, q.text, q.points, "");
             }
 
             toast.success("Quiz edited and sent for review!", { id: loadingToast });
             navigate("/moderator/quizzes");
+
         } catch (err) {
             toast.error("Failed to finish editing quiz.", { id: loadingToast });
             console.error(err);
         }
     };
+
 
     if (loading) return <div className="text-center mt-20">Loading quiz...</div>;
 
@@ -102,8 +106,9 @@ export default function ModeratorEditPage() {
         );
 
     return (
-        <div className="min-h-screen flex flex-col font-poppins">
+        <div className="min-h-screen font-poppins flex flex-col">
 
+            {/* Navbar */}
             <NavbarForm
                 user={navBarUser}
                 onLogout={() => {
@@ -112,16 +117,33 @@ export default function ModeratorEditPage() {
                 }}
             />
 
-            <div className="flex-1 w-full p-6 bg-gray-50">
-                {questions.length > 0 && (
-                    <ModeratorEditForm
-                        quizName={quiz.Name}
-                        questions={questions}
-                        onFinish={handleEditChange}
-                    />
-                )}
+            {/* ISTA gradient pozadina kao My Quizzes */}
+            <div
+                className="flex-1 w-full pb-16"
+                style={{
+                    background: `linear-gradient(135deg, #C3FDB8 0%, #FFF8C6 50%, #BDEDFF 100%)`,
+                }}
+            >
+                <div className="flex flex-col items-center pt-20 pb-4 w-full">
 
+                    {/* Card */}
+                    <div className="w-full max-w-5xl bg-white shadow-xl rounded-3xl p-10 mx-4">
+
+                        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+                            {quiz.Name} - Edit Questions
+                        </h2>
+
+                        {questions.length > 0 && (
+                            <ModeratorEditForm
+                                questions={questions}
+                                onFinish={handleFinishEditing}
+                            />
+                        )}
+
+                    </div>
+                </div>
             </div>
         </div>
     );
+
 }
